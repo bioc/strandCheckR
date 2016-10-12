@@ -4,8 +4,8 @@
 \alias{filterMultiCount}
 \title{filter several bamfiles based on the strand specific of all of them. Strand of sliding windows are caculated based on read counts.}
 \usage{
-filterMultiCount(bamfilein, bamfileout, chromosomes, win, step, threshold,
-  pvalueThreshold, minR)
+filterMultiCount(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
+  step = 100, threshold, pvalueThreshold = 0.05, minR = 0, limit = 0.25)
 }
 \arguments{
 \item{bamfilein}{the input bam files to be filterd}

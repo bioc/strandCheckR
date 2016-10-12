@@ -4,8 +4,8 @@
 \alias{filterMultiCov}
 \title{filter several bamfiles based on the strand specific of the merged files. Strand of sliding windows are caculated based on coverage.}
 \usage{
-filterMultiCov(bamfilein, bamfileout, chromosomes, win, step, threshold,
-  pvalueThreshold, minR)
+filterMultiCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
+  step = 100, threshold, pvalueThreshold = 0.05, minR = 0)
 }
 \arguments{
 \item{bamfilein}{the input bam files to be filterd}

@@ -7,7 +7,7 @@
 #' @param threshold the threshold upper which we keep the reads
 #' @param pvalueThreshold the threshold for the p-value
 #' @export
-filterMultiCov <- function(bamfilein,bamfileout,chromosomes,win,step,threshold,pvalueThreshold,minR){
+filterMultiCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0){
   library(GenomicAlignments)
   library(rbamtools)
   library(Rcpp)
@@ -15,13 +15,6 @@ filterMultiCov <- function(bamfilein,bamfileout,chromosomes,win,step,threshold,p
   #sourceCpp("computeWinCov.cpp")
   #sourceCpp("keepRead.cpp")
   logitThreshold <- binomial()$linkfun(threshold)
-  # get name and length of reference chromosome
-  #reader <- bamReader(bamfilein[1],idx=TRUE)
-  #header <- getHeader(reader)
-  #refSeq <- getHeaderText(header) %>% refSeqDict()
-  #idSeq <- refSeq@SN
-  #lenSeq <- refSeq@LN
-  #bamClose(reader)
   alignment <- readGAlignments(bamfilein[1])
   covPos <- alignment[strand(alignment)=="+"] %>% coverage()
   covNeg <- alignment[strand(alignment)=="-"] %>% coverage()

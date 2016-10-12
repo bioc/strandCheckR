@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector startNeg,IntegerVector endNeg,int end,int win,int step,double logitThreshold,int minR,double limit){
+List computeWinCount0(IntegerVector startPos,IntegerVector endPos,IntegerVector startNeg,IntegerVector endNeg,int end,int win,int step,double logitThreshold,double limit){
   int start=0;
   int preP=0;
   int preM=0;
@@ -14,21 +14,15 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
   else nbWin=1+ceil((end-win-1)/(double)step);
   IntegerVector windowP(nbWin);
   IntegerVector windowM(nbWin);
-  IntegerVector maxP(nbWin);
-  IntegerVector maxM(nbWin);
   for (int i=0;i<nbWin;i++){
     windowP[i]=0;
     windowM[i]=0;
-    maxP[i]=0;
-    maxM[i]=0;
   }
-  std::vector<int>* fragsInWin = new std::vector<int>[nbWin];
-  int currentWin=0;
   int i=0;
   while (i<startPos.size() && startPos[i]<end){
     int s = startPos[i];
     int e = endPos[i];
-    int lim = (e-s+1)*limit;
+    int lim = (int)(e-s+1)*limit;
     s = s + lim;
     e = e - lim;
     int wS=0;
@@ -42,25 +36,15 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
     if (wS<=wE) {
       for (int j=wS;j<=wE;j++){ 
         windowP[j]++;
-        fragsInWin[j].push_back(i);
       }
-    }
-    ///Compute max coverage
-    while (currentWin<wS|| (i==startPos.size()-1 && currentWin<=wE)){//current window does not contain fragment i
-      if (windowP[currentWin]>0){
-        maxP[currentWin]=getMaxCov(startPos,endPos,fragsInWin[currentWin],currentWin,win,step);
-        fragsInWin[currentWin].clear();
-      }
-      currentWin++;
     }
     i++;
   }
-  currentWin=0;
   i=0;
   while (i<startNeg.size() && startNeg[i]<end){
     int s = startNeg[i];
     int e = endNeg[i];
-    int lim = (e-s+1)*limit;
+    int lim = (int)(e-s+1)*limit;
     s = s + lim;
     e = e - lim;
     int wS=0;
@@ -74,19 +58,10 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
     if (wS<=wE){
       for (int j=wS;j<=wE;j++){
         windowM[j]++;
-        fragsInWin[j].push_back(i);
       }   
     }
-    //Compute max coverage
-    while (currentWin<wS || (i==startNeg.size()-1 && currentWin<=wE)){//current window does not contain fragment i
-      if (windowM[currentWin]>0){
-        maxM[currentWin]=getMaxCov(startNeg,endNeg,fragsInWin[currentWin],currentWin,win,step);
-        fragsInWin[currentWin].clear();
-      }
-      currentWin++;
-    }
     i++;
-}
+  }
   std::vector<double> valueP;
   std::vector<int> winP;
   std::vector<double> valueM;
@@ -94,7 +69,7 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
   for (int i=0;i<nbWin;i++){
     int Plus=windowP[i];
     int Minus=windowM[i];
-    if ((maxP[i]>minR || maxM[i]>minR)){
+    if ((Plus>0 || Minus>0)){
       double estimate = (double)Plus/(Plus+Minus);
       double error = sqrt(1./(Plus+Minus)/estimate/(1-estimate));
       double lTestimate=log(estimate/(1-estimate));
@@ -115,8 +90,8 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
   return List::create(
     _["Plus"] = DataFrame::create(_["win"]= winP,
                               _["value"]= valueP),
-      _["Minus"] =DataFrame::create(_["win"]= winM,
-                               _["value"]= valueM)
+    _["Minus"] =DataFrame::create(_["win"]= winM,
+                              _["value"]= valueM)
   );
 }
 

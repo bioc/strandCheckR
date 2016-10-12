@@ -7,7 +7,7 @@
 #' @param threshold the threshold upper which we keep the reads
 #' @param pvalueThreshold the threshold for the p-value
 #' @export
-filterMultiCount <- function(bamfilein,bamfileout,chromosomes,win,step,threshold,pvalueThreshold,minR){
+filterMultiCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0,limit=0.25){
   library(GenomicAlignments)
   library(rbamtools)
   library(Rcpp)
@@ -29,6 +29,8 @@ filterMultiCount <- function(bamfilein,bamfileout,chromosomes,win,step,threshold
   if (is.null(chromosomes)) chromosomes<-allChromosomes
   for (chr in chromosomes){
     message("Chromosome ",chr)
+    chromosomeIndex <- which(chromosomes==chr)
+    len <- lenSeq[chromosomeIndex]
     positionPos <- data.frame("group"=c(),"start"=c(),"end"=c(),"sample"=c()) #position of each fragment of positive reads
     positionNeg <- data.frame("group"=c(),"start"=c(),"end"=c(),"sample"=c()) #position of each fragment of negative reads
     index <- list() #the index of each read in the alignment from its index in positive/negative read lists
@@ -51,13 +53,16 @@ filterMultiCount <- function(bamfilein,bamfileout,chromosomes,win,step,threshold
       positionNeg <- rbind(positionNeg,neg)
       remove(neg)
     } 
-    positionPos[["firstW"]] <- ceiling((positionPos$start-win-1+floor((positionPos$end-positionPos$start+1)*25/100))/step)
-    positionNeg[["firstW"]] <- ceiling((positionNeg$start-win-1+floor((positionNeg$end-positionNeg$start+1)*25/100))/step)
-    positionPos <-  positionPos[order(positionPos$firstW),] #reorder positionPos following the starting position of each fragment
-    positionNeg <-  positionNeg[order(positionNeg$firstW),] #reorder positionNeg following the starting position of each fragment
-    chromosomeIndex <- which(chromosomes==chr)
-    len <- lenSeq[chromosomeIndex]
-    windows <- computeWinCount(positionPos$start,positionPos$end,positionNeg$start,positionNeg$end,len,win,step,logitThreshold,minR) #compute information in each sliding windows
+    if (minR==0){
+      windows <- computeWinCount0(positionPos$start,positionPos$end,positionNeg$start,positionNeg$end,len,win,step,logitThreshold,limit) #compute information in each sliding windows
+    }
+    else{
+      positionPos[["firstW"]] <- ceiling((positionPos$start-win-1+floor((positionPos$end-positionPos$start+1)*limit))/step)
+      positionNeg[["firstW"]] <- ceiling((positionNeg$start-win-1+floor((positionNeg$end-positionNeg$start+1)*limit))/step)
+      positionPos <-  positionPos[order(positionPos$firstW),] #reorder positionPos following the starting position of each fragment
+      positionNeg <-  positionNeg[order(positionNeg$firstW),] #reorder positionNeg following the starting position of each fragment
+      windows <- computeWinCount(positionPos$start,positionPos$end,positionNeg$start,positionNeg$end,len,win,step,logitThreshold,minR,limit) #compute information in each sliding windows
+    }
     windows$Plus["pvalue"] <- pnorm(windows$Plus$value,lower.tail = FALSE) #compute pvalue for positive windows
     windows$Minus["pvalue"] <- pnorm(windows$Minus$value,lower.tail = FALSE)#compute pvalue for negative windows
     keepWinPos <- filter(windows$Plus, pvalue <= pvalueThreshold)$win # the indices of positive windows to be kept

@@ -8,7 +8,7 @@
 #' @param pvalueThreshold the threshold for the p-value
 #' @param minR if a window has least than minR reads then it will be all cleaned
 #' @export
-filterOneCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0,limit=0.25){
+filterOneCountInter <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0,limit=0.25){
   #load libraries
   library(GenomicAlignments)
   library(rbamtools)
@@ -59,7 +59,7 @@ filterOneCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=1
     keepWinNeg <- filter(windows$Minus, pvalue <= pvalueThreshold)$win # the indices of negative windows to be kept
     remove(windows)
     #compute the indices of reads to be kept
-    reads <- keepReadOne(positionPos$start,positionPos$end,as.integer(positionPos$group),positionNeg$start,positionNeg$end,as.integer(positionNeg$group),keepWinPos,keepWinNeg,lenSeq[chromosomeIndex],win,step)
+    reads <- keepReadOneInter(positionPos$start,positionPos$end,as.integer(positionPos$group),positionNeg$start,positionNeg$end,as.integer(positionNeg$group),keepWinPos,keepWinNeg,lenSeq[chromosomeIndex],win,step)
     remove(positionPos)
     remove(positionNeg)
     remove(keepWinPos)

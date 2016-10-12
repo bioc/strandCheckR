@@ -1,4 +1,4 @@
-useDynLib(myRcpp)
+useDynLib(rnaCleanR)
 importFrom(Rcpp, sourceCpp)
 export(filterMultiCount)
 export(filterMultiCov)

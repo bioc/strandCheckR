@@ -2,7 +2,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List keepReadOne(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupNamePos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNameNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int end,int win,int step){
+List keepReadOneInter(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupNamePos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNameNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int end,int win,int step){
   int minP = keepWinPos[0];
   int maxP = keepWinPos[keepWinPos.size()-1];
   bool* keepPos = new bool[maxP+1];
@@ -43,7 +43,7 @@ List keepReadOne(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector g
       if (j>maxP) j=maxP;
       bl = keepPos[i];
       i++;
-      while (!bl && i<=j){
+      while (bl && i<=j){
         bl = keepPos[i];
         i++;
       }
@@ -72,7 +72,7 @@ List keepReadOne(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector g
       if (j>maxM) j=maxM;
       bl = keepNeg[i];
       i++;
-      while (!bl && i<=j){
+      while (bl && i<=j){
         bl = keepNeg[i];
         i++;
       }
@@ -82,7 +82,7 @@ List keepReadOne(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector g
   delete[] keepPos;
   delete[] keepNeg; 
   return List::create(
-      _["Pos"] = keepReadPos,
-     _["Neg"] = keepReadNeg
+    _["Pos"] = keepReadPos,
+    _["Neg"] = keepReadNeg
   );
 }

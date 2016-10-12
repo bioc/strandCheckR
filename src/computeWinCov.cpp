@@ -22,7 +22,7 @@ List computeWinCov(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector
     increase(covPosLen,iP,start,end,step,preP);
     increase(covNegLen,iM,start,end,step,preM);
     start+=step;
-    if ((Plus>0 || Minus>0) && (maxCovP>minR || maxCovN>minR)){
+    if (maxCovP>minR || maxCovN>minR){
       double estimate = (double)Plus/(Plus+Minus);
       double error = sqrt(1./(Plus+Minus)/estimate/(1-estimate));
       double lTestimate=log(estimate/(1-estimate));

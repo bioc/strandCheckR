@@ -8,7 +8,7 @@
 #' @param pvalueThreshold the threshold for the p-value
 #' @param minR if a window has least than minR reads then it will be all cleaned
 #' @export
-filterOneCov <- function(bamfilein,bamfileout,chromosomes,win,step,threshold,pvalueThreshold,minR){
+filterOneCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0){
   #load libraries
   library(GenomicAlignments)
   library(rbamtools)

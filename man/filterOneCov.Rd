@@ -4,8 +4,8 @@
 \alias{filterOneCov}
 \title{filter one bamfile based on the strand specifict of itself. Strand of sliding windows are caculated based on coverage.}
 \usage{
-filterOneCov(bamfilein, bamfileout, chromosomes, win, step, threshold,
-  pvalueThreshold, minR)
+filterOneCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
+  step = 100, threshold, pvalueThreshold = 0.05, minR = 0)
 }
 \arguments{
 \item{bamfilein}{the input bam file to be filterd}
