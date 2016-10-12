@@ -1,0 +1,7 @@
+useDynLib(rnaCleanR)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
+export(filterOneCount)
+export(filterOneCov)
+export(filterMultiCount)
+export(filterMultiCov)
