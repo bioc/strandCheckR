@@ -68,7 +68,7 @@ filterMultiCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step
     keepWinPos <- filter(windows$Plus, pvalue <= pvalueThreshold)$win # the indices of positive windows to be kept
     keepWinNeg <- filter(windows$Minus, pvalue <= pvalueThreshold)$win # the indices of negative windows to be kept
     remove(windows)
-    reads <- keepRead(length(bamfilein),positionPos$start,positionPos$end,positionPos$group,positionPos$sample,positionNeg$start,positionNeg$end,positionNeg$group,positionNeg$sample,keepWinPos,keepWinNeg,len,win,step) #compute index of positive/negative reads to be kept
+    reads <- keepRead(length(bamfilein),positionPos$start,positionPos$end,positionPos$group,positionPos$sample,positionNeg$start,positionNeg$end,positionNeg$group,positionNeg$sample,keepWinPos,keepWinNeg,len,win,step,limit) #compute index of positive/negative reads to be kept
     remove(positionPos)
     remove(positionNeg)
     remove(keepWinPos)

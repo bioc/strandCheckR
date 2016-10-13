@@ -2,7 +2,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List keepRead(int nbSample,IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupNamePos,IntegerVector samplePos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNameNeg,IntegerVector sampleNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int end,int win,int step){
+List keepRead(int nbSample,IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupNamePos,IntegerVector samplePos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNameNeg,IntegerVector sampleNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int end,int win,int step,double limit){
   int minP = keepWinPos[0];
   int maxP = keepWinPos[keepWinPos.size()-1];
   bool* keepPos = new bool[maxP+1];
@@ -25,9 +25,9 @@ List keepRead(int nbSample,IntegerVector startPosAl,IntegerVector endPosAl,Integ
     int s = startPosAl[a];
     int e = endPosAl[a];
     int sam = samplePos[a];
-    int limit = (e-s+1)*25/100;
-    s = s + limit;
-    e = e - limit;
+    int lim = (e-s+1)*limit;
+    s = s + lim;
+    e = e - lim;
     int wS=0;
     if (s>win){
       wS=ceil((s-win-1)/(double)step);//first windows that contain fragment i
@@ -54,9 +54,9 @@ List keepRead(int nbSample,IntegerVector startPosAl,IntegerVector endPosAl,Integ
     int s = startNegAl[a];
     int e = endNegAl[a];
     int sam = sampleNeg[a];
-    int limit = (e-s+1)*25/100;
-    s = s + limit;
-    e = e - limit;
+    int lim = (e-s+1)*limit;
+    s = s + lim;
+    e = e - lim;
     int wS=0;
     if (s>win){
       wS=ceil((s-win-1)/(double)step);//first windows that contain fragment i

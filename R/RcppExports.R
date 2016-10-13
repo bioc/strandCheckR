@@ -9,6 +9,10 @@ computeWinCount0 <- function(startPos, endPos, startNeg, endNeg, end, win, step,
     .Call('rnaCleanR_computeWinCount0', PACKAGE = 'rnaCleanR', startPos, endPos, startNeg, endNeg, end, win, step, logitThreshold, limit)
 }
 
+computeWinCountTest <- function(startPos, endPos, startNeg, endNeg, end, win, step, logitThreshold, minR, limit) {
+    .Call('rnaCleanR_computeWinCountTest', PACKAGE = 'rnaCleanR', startPos, endPos, startNeg, endNeg, end, win, step, logitThreshold, minR, limit)
+}
+
 computeWinCov <- function(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, logitThreshold, minR) {
     .Call('rnaCleanR_computeWinCov', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, logitThreshold, minR)
 }
@@ -17,16 +21,16 @@ getIndex <- function(strand) {
     .Call('rnaCleanR_getIndex', PACKAGE = 'rnaCleanR', strand)
 }
 
-keepRead <- function(nbSample, startPosAl, endPosAl, groupNamePos, samplePos, startNegAl, endNegAl, groupNameNeg, sampleNeg, keepWinPos, keepWinNeg, end, win, step) {
-    .Call('rnaCleanR_keepRead', PACKAGE = 'rnaCleanR', nbSample, startPosAl, endPosAl, groupNamePos, samplePos, startNegAl, endNegAl, groupNameNeg, sampleNeg, keepWinPos, keepWinNeg, end, win, step)
+keepRead <- function(nbSample, startPosAl, endPosAl, groupNamePos, samplePos, startNegAl, endNegAl, groupNameNeg, sampleNeg, keepWinPos, keepWinNeg, end, win, step, limit) {
+    .Call('rnaCleanR_keepRead', PACKAGE = 'rnaCleanR', nbSample, startPosAl, endPosAl, groupNamePos, samplePos, startNegAl, endNegAl, groupNameNeg, sampleNeg, keepWinPos, keepWinNeg, end, win, step, limit)
 }
 
 keepReadCov <- function(startAl, endAl, strand, keepWinPos, keepWinNeg, end, win, step) {
     .Call('rnaCleanR_keepReadCov', PACKAGE = 'rnaCleanR', startAl, endAl, strand, keepWinPos, keepWinNeg, end, win, step)
 }
 
-keepReadOne <- function(startPosAl, endPosAl, groupNamePos, startNegAl, endNegAl, groupNameNeg, keepWinPos, keepWinNeg, end, win, step) {
-    .Call('rnaCleanR_keepReadOne', PACKAGE = 'rnaCleanR', startPosAl, endPosAl, groupNamePos, startNegAl, endNegAl, groupNameNeg, keepWinPos, keepWinNeg, end, win, step)
+keepReadOne <- function(startPosAl, endPosAl, groupNamePos, startNegAl, endNegAl, groupNameNeg, keepWinPos, keepWinNeg, end, win, step, limit) {
+    .Call('rnaCleanR_keepReadOne', PACKAGE = 'rnaCleanR', startPosAl, endPosAl, groupNamePos, startNegAl, endNegAl, groupNameNeg, keepWinPos, keepWinNeg, end, win, step, limit)
 }
 
 keepReadOneInter <- function(startPosAl, endPosAl, groupNamePos, startNegAl, endNegAl, groupNameNeg, keepWinPos, keepWinNeg, end, win, step) {

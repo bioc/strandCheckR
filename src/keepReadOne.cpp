@@ -2,7 +2,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List keepReadOne(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupNamePos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNameNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int end,int win,int step){
+List keepReadOne(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupNamePos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNameNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int end,int win,int step,double limit){
   int minP = keepWinPos[0];
   int maxP = keepWinPos[keepWinPos.size()-1];
   bool* keepPos = new bool[maxP+1];
@@ -24,9 +24,9 @@ List keepReadOne(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector g
   for (int a=0;a<startPosAl.size();a++){
     int s = startPosAl[a];
     int e = endPosAl[a];
-    int limit = (e-s+1)*25/100;
-    s = s + limit;
-    e = e - limit;
+    int lim = (e-s+1)*limit;
+    s = s + lim;
+    e = e - lim;
     int wS=0;
     if (s>win){
       wS=ceil((s-win-1)/(double)step);//first windows that contain fragment i

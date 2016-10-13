@@ -59,7 +59,7 @@ filterOneCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=1
     keepWinNeg <- filter(windows$Minus, pvalue <= pvalueThreshold)$win # the indices of negative windows to be kept
     remove(windows)
     #compute the indices of reads to be kept
-    reads <- keepReadOne(positionPos$start,positionPos$end,as.integer(positionPos$group),positionNeg$start,positionNeg$end,as.integer(positionNeg$group),keepWinPos,keepWinNeg,lenSeq[chromosomeIndex],win,step)
+    reads <- keepReadOne(positionPos$start,positionPos$end,as.integer(positionPos$group),positionNeg$start,positionNeg$end,as.integer(positionNeg$group),keepWinPos,keepWinNeg,lenSeq[chromosomeIndex],win,step,limit)
     remove(positionPos)
     remove(positionNeg)
     remove(keepWinPos)
