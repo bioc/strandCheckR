@@ -13,6 +13,7 @@ filterMultiCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step
   library(rbamtools)
   library(Rcpp)
   library(dplyr)
+  library(magrittr)
   reader1 <- bamReader(bamfilein[1],idx=TRUE) #open a reader of the input bamfile to extract read afterward
   refSeqs <- getRefData(reader1)
   remove(reader1)
