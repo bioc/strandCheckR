@@ -1,4 +1,4 @@
-keepMultiCount <- function(bamfilein,bamfileout,chromosomes=NULL,allChromosomes,lenSeq,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0,limit=0.25){//compute the reads to be kept after filtering
+keepMultiCount <- function(bamfilein,bamfileout,chromosomes=NULL,allChromosomes,lenSeq,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0,limit=0.25){#compute the reads to be kept after filtering
   logitThreshold <- binomial()$linkfun(threshold)
   alignments <- list()
   header <- list()

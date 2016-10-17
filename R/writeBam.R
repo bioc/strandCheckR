@@ -1,4 +1,4 @@
-writeBam <- function(keep,bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq){//write the filter bamfile based on the selected keep reads
+writeBam <- function(keep,bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq){#write the filter bamfile based on the selected keep reads
   for (i in c(1:length(bamfilein))){
     reader <- bamReader(bamfilein[i],idx=TRUE) #open a reader of the input bamfile to extract read afterward
     header <- getHeader(reader) #get the header of the input bam file
