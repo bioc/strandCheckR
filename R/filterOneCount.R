@@ -7,6 +7,7 @@
 #' @param threshold the threshold upper which we keep the reads
 #' @param pvalueThreshold the threshold for the p-value
 #' @param minR if a window has least than minR reads then it will be all cleaned
+#' @param limit the proportion of a read that it should not exceed to be considered to be in a window
 #' @export
 filterOneCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0,limit=0.25){
   #load libraries
