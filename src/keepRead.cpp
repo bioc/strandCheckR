@@ -8,14 +8,14 @@ List keepRead(int nbSample,IntegerVector startPosAl,IntegerVector endPosAl,Integ
   bool* keepPos = new bool[maxP+1];
   for (int i=0;i<=maxP;i++) keepPos[i]=false;
   for (int i=0;i<keepWinPos.size();i++){
-    keepPos[keepWinPos[i]]=true;
+    keepPos[keepWinPos[i]-1]=true;
   }
   int minM = keepWinNeg[0];
   int maxM = keepWinNeg[keepWinNeg.size()-1];
   bool* keepNeg = new bool[maxM+1];
   for (int i=0;i<=maxM;i++) keepNeg[i]=false;
   for (int i=0;i<keepWinNeg.size();i++){
-    keepNeg[keepWinNeg[i]]=true;
+    keepNeg[keepWinNeg[i]-1]=true;
   }
   std::vector<int>* keepReadPos = new std::vector<int>[nbSample];
   std::vector<int>* keepReadNeg = new std::vector<int>[nbSample];
@@ -43,9 +43,10 @@ List keepRead(int nbSample,IntegerVector startPosAl,IntegerVector endPosAl,Integ
       int j=wE;
       if (j>maxP) j=maxP;
       bl = keepPos[i];
+      i++;
       while (!bl && i<=j){
-        i++;
         bl = keepPos[i];
+        i++;
       }
       if (bl){ keepReadPos[sam-1].push_back(groupNamePos[a]);}
     }
@@ -72,9 +73,10 @@ List keepRead(int nbSample,IntegerVector startPosAl,IntegerVector endPosAl,Integ
       int j=wE;
       if (j>maxM) j=maxM;
       bl = keepNeg[i];
+      i++;
       while (!bl && i<=j){
-        i++;
         bl = keepNeg[i];
+        i++;
       }
       if (bl){ keepReadNeg[sam-1].push_back(groupNameNeg[a]);}
     }

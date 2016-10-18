@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List computeWinCov(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector covNegLen,IntegerVector covNegVal,int end,int win,int step,double logitThreshold,int minR){
+List computeWinCov(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector covNegLen,IntegerVector covNegVal,int end,int win,int step,double logitThreshold,int minR,int maxR){
   int start=0;
   int preP=0;
   int preM=0;
@@ -28,13 +28,13 @@ List computeWinCov(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector
       double lTestimate=log(estimate/(1-estimate));
       double value=(lTestimate - logitThreshold)/error;
       if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
-      if (Plus>Minus){
-        if (Minus==0) valueP.push_back(1e10);
+      if (Plus>Minus || maxCovP>maxR){
+        if (Minus==0 || maxCovP>maxR) valueP.push_back(1e10);
         else valueP.push_back(value);
         windowP.push_back(c);
       }
-      else{
-        if (Plus==0) valueM.push_back(1e10);
+      else if (Plus<=Minus || maxCovN<maxR){
+        if (Plus==0 || maxCovN<maxR) valueM.push_back(1e10);
         else valueM.push_back(value);
         windowM.push_back(c);
       }
