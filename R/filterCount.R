@@ -14,12 +14,14 @@ filterCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,
   library(Rcpp)
   library(dplyr)
   library(magrittr)
-  reader1 <- bamReader(bamfilein[1],idx=TRUE) #open a reader of the input bamfile to extract read afterward
+  #open a reader of the input bamfile to get chromosomes list and their lengths
+  reader1 <- bamReader(bamfilein[1],idx=TRUE) 
   refSeqs <- getRefData(reader1)
-  remove(reader1)
+  bamClose(reader1)
   allChromosomes <- refSeqs$SN
   if (is.null(chromosomes)) chromosomes<-allChromosomes
   lenSeq <- refSeqs$LN
+  #calculate the kept reads
   keep <- keepCount(bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq,win,step,threshold,pvalueThreshold,minR,maxR,limit)
   gc()
   for (i in c(1:length(bamfilein))){

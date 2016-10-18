@@ -139,24 +139,3 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// keepReadOneInter
-List keepReadOneInter(IntegerVector startPosAl, IntegerVector endPosAl, IntegerVector groupNamePos, IntegerVector startNegAl, IntegerVector endNegAl, IntegerVector groupNameNeg, IntegerVector keepWinPos, IntegerVector keepWinNeg, int end, int win, int step);
-RcppExport SEXP rnaCleanR_keepReadOneInter(SEXP startPosAlSEXP, SEXP endPosAlSEXP, SEXP groupNamePosSEXP, SEXP startNegAlSEXP, SEXP endNegAlSEXP, SEXP groupNameNegSEXP, SEXP keepWinPosSEXP, SEXP keepWinNegSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type startPosAl(startPosAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endPosAl(endPosAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type groupNamePos(groupNamePosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type startNegAl(startNegAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endNegAl(endNegAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type groupNameNeg(groupNameNegSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type keepWinPos(keepWinPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type keepWinNeg(keepWinNegSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    Rcpp::traits::input_parameter< int >::type win(winSEXP);
-    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    rcpp_result_gen = Rcpp::wrap(keepReadOneInter(startPosAl, endPosAl, groupNamePos, startNegAl, endNegAl, groupNameNeg, keepWinPos, keepWinNeg, end, win, step));
-    return rcpp_result_gen;
-END_RCPP
-}

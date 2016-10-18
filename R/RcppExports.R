@@ -29,7 +29,3 @@ keepReadCov <- function(startAl, endAl, strand, keepWinPos, keepWinNeg, end, win
     .Call('rnaCleanR_keepReadCov', PACKAGE = 'rnaCleanR', startAl, endAl, strand, keepWinPos, keepWinNeg, end, win, step)
 }
 
-keepReadOneInter <- function(startPosAl, endPosAl, groupNamePos, startNegAl, endNegAl, groupNameNeg, keepWinPos, keepWinNeg, end, win, step) {
-    .Call('rnaCleanR_keepReadOneInter', PACKAGE = 'rnaCleanR', startPosAl, endPosAl, groupNamePos, startNegAl, endNegAl, groupNameNeg, keepWinPos, keepWinNeg, end, win, step)
-}
-

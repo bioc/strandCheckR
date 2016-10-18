@@ -36,8 +36,8 @@ filterMultiCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=1
     chromosomeIndex <- which(chromosomes==chr)
     len <- lenSeq[chromosomeIndex]
     windows <- computeWinCov(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),len,win,step,logitThreshold,minR)
-    windows$Plus["pvalue"] <- pnorm(windows$Plus$value,lower.tail = FALSE)
-    windows$Minus["pvalue"] <- pnorm(windows$Minus$value,lower.tail = FALSE)
+    windows$Plus <- mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE))
+    windows$Minus <- mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE))
     keepWinPos[[chromosomeIndex]] <- filter(windows$Plus, pvalue <= pvalueThreshold)$win
     keepWinNeg[[chromosomeIndex]] <- filter(windows$Minus, pvalue <= pvalueThreshold)$win
     remove(windows)
