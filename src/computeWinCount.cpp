@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector startNeg,IntegerVector endNeg,int end,int win,int step,double logitThreshold,int minR,double limit){
+List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector startNeg,IntegerVector endNeg,int end,int win,int step,double logitThreshold,int minR,int maxR,double limit){
   int start=0;
   int preP=0;
   int preM=0;
@@ -100,13 +100,13 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
       double lTestimate=log(estimate/(1-estimate));
       double value=(lTestimate - logitThreshold)/error;
       if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
-      if (Plus>Minus){
-        if (Minus==0) valueP.push_back(1e10);
+      if (Plus>Minus || maxP[i]>maxR){
+        if (Minus==0 || maxP[i]>maxR) valueP.push_back(1e10);//always keep these windows
         else valueP.push_back(value);
         winP.push_back(i+1);
       }
-      else{
-        if (Plus==0) valueM.push_back(1e10);
+      else if (Plus<=Minus || maxM[i]>maxR){
+        if (Plus==0 || maxM[i]>maxR) valueM.push_back(1e10);//always keep these windows
         else valueM.push_back(value);
         winM.push_back(i+1);
       }

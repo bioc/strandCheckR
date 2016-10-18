@@ -5,7 +5,8 @@
 \title{filter one bamfile based on the strand specifict of itself. Strand of sliding windows are caculated based on read counts.}
 \usage{
 filterOneCount(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
-  step = 100, threshold, pvalueThreshold = 0.05, minR = 0, limit = 0.25)
+  step = 100, threshold, pvalueThreshold = 0.05, minR = 0, maxR = 0,
+  limit = 0.25)
 }
 \arguments{
 \item{bamfilein}{the input bam file to be filterd}
@@ -23,6 +24,8 @@ filterOneCount(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
 \item{pvalueThreshold}{the threshold for the p-value}
 
 \item{minR}{if a window has least than minR reads then it will be all cleaned}
+
+\item{limit}{the proportion of a read that it should not exceed to be considered to be in a window}
 }
 \description{
 filter one bamfile based on the strand specifict of itself. Strand of sliding windows are caculated based on read counts.

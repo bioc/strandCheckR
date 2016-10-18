@@ -9,7 +9,7 @@
 #' @param minR if a window has least than minR reads then it will be all cleaned
 #' @param limit the proportion of a read that it should not exceed to be considered to be in a window
 #' @export
-filterOneCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0,limit=0.25){
+filterOneCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0,maxR=0,limit=0.25){
   #load libraries
   library(GenomicAlignments)
   library(rbamtools)
@@ -24,66 +24,47 @@ filterOneCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=1
   allChromosomes <- refSeqs$SN
   if (is.null(chromosomes)) chromosomes<-allChromosomes
   lenSeq <- refSeqs$LN
-  writer <- bamWriter(header,bamfileout) #prepare to write the output bamfile with the same header
-  nbOReads <- 0 #number of original reads
-  nbKReads <- 0 #number of kept reads
+  writer <- bamWriter(header,bamfileout) #prepare to write the output bamfile with the same headermessage("Chromosome ",chr)
   for (chr in chromosomes){
     chromosomeIndex <- which(allChromosomes==chr)
     len <- lenSeq[chromosomeIndex]
-    message("Chromosome ",chr)
-    message("Length: ",len)
     startTime <- proc.time()
-    alignmentInChr <- alignment[seqnames(alignment)==chr] #get the reads in the considering chromosome
-    index <- getIndex(as.vector(strand(alignmentInChr))) #get index of positive and negative reads
-    nbOReads <- nbOReads + length(alignmentInChr) 
-    message("Number of reads: ",length(alignmentInChr))
-    #alignment <- alignment[seqnames(alignment)!=chr] #reduce the size of alignment (for memory purpose)
-    alignmentInChrPos<-alignmentInChr[strand(alignmentInChr)=="+"]
-    positionPos<-extractAlignmentRangesOnReference(cigar(alignmentInChrPos),pos=start(alignmentInChrPos)) %>% data.frame() %>% select(-c(group_name,width))
-    remove(alignmentInChrPos)
-    alignmentInChrNeg<-alignmentInChr[strand(alignmentInChr)=="-"]
-    positionNeg<-extractAlignmentRangesOnReference(cigar(alignmentInChrNeg),pos=start(alignmentInChrNeg)) %>% data.frame() %>% select(-c(group_name,width))
-    remove(alignmentInChrNeg)
-    if (minR==0) {
-      windows <- computeWinCount0(positionPos$start,positionPos$end,positionNeg$start,positionNeg$end,len,win,step,logitThreshold,limit)
+    position <- computePosition(alignment,chr)
+    if (minR==0 && maxR==0) {
+      windows <- computeWinCount0(position$Pos$start,position$Pos$end,position$Neg$start,position$Neg$end,len,win,step,logitThreshold,limit)
     }
     else {
-      positionPos[["firstW"]] <- ceiling((positionPos$start-win-1+floor((positionPos$end-positionPos$start+1)*limit))/step)
-      positionNeg[["firstW"]] <- ceiling((positionNeg$start-win-1+floor((positionNeg$end-positionNeg$start+1)*limit))/step)
-      positionPos <-  positionPos[order(positionPos$firstW),] #reorder positionPos following the starting position of each fragment
-      positionNeg <-  positionNeg[order(positionNeg$firstW),] #reorder positionNeg following the starting position of each fragment
-      windows <- computeWinCount(positionPos$start,positionPos$end,positionNeg$start,positionNeg$end,len,win,step,logitThreshold,minR,limit)
+      position <- reorder(position,win,step,limit)
+      windows <- computeWinCount(position$Pos$start,position$Pos$end,position$Neg$start,position$Neg$end,len,win,step,logitThreshold,minR,maxR,limit)
     }
-    windows$Plus["pvalue"] <- pnorm(windows$Plus$value,lower.tail = FALSE) #compute pvalue for positive windows
-    windows$Minus["pvalue"] <- pnorm(windows$Minus$value,lower.tail = FALSE)#compute pvalue for negative windows
-    keepWinPos <- filter(windows$Plus, pvalue <= pvalueThreshold)$win # the indices of positive windows to be kept
-    keepWinNeg <- filter(windows$Minus, pvalue <= pvalueThreshold)$win # the indices of negative windows to be kept
-    remove(windows)
+    windows$Plus <- mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<=pvalueThreshold) #compute pvalue for positive windows
+    windows$Minus <- mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<= pvalueThreshold) #compute pvalue for negative windows
+    #message("keep win Pos: ",nrow(windows$Plus))
+    #message("keep win Neg: ",nrow(windows$Minus))
     #compute the indices of reads to be kept
-    reads <- keepReadOne(positionPos$start,positionPos$end,as.integer(positionPos$group),positionNeg$start,positionNeg$end,as.integer(positionNeg$group),keepWinPos,keepWinNeg,lenSeq[chromosomeIndex],win,step,limit)
-    remove(positionPos)
-    remove(positionNeg)
-    remove(keepWinPos)
-    remove(keepWinNeg)
-    reads$Pos <- unique(reads$Pos)
-    reads$Neg <- unique(reads$Neg)
-    reads <- c(index$Pos[reads$Pos],index$Neg[reads$Neg]) %>% sort()
-    remove(index)
-    message("Number of kept reads: ",length(reads))
-    nbKReads <- nbKReads + length(reads)
-    if (length(reads)>0){
+    keptFrags <- keepReadOne(position$Pos$start,position$Pos$end,as.integer(position$Pos$group),position$Neg$start,position$Neg$end,as.integer(position$Neg$group),windows$Plus$win,windows$Minus$win,len,win,step,limit)
+    remove(windows)
+    gc()
+    #message("keep frag Pos: ",length(keptFrags$Pos))
+    #message("keep frag Neg: ",length(keptFrags$Neg))
+    keptReads <- c(position$Index$Pos[unique(keptFrags$Pos)],position$Index$Neg[unique(keptFrags$Neg)]) %>% sort()
+    remove(keptFrags)
+    gc()
+    message("Chromosome: ",chr, ", Length: ",len, ", Number of reads: ",position$nbRead,", Number of kept reads: ",length(keptReads))
+    remove(position)
+    gc()
+    if (length(keptReads)>0){
       #get the range of kept reads
-      range <- bamRange(reader,c(chromosomeIndex-1,0,lenSeq[chromosomeIndex]))
+      range <- bamRange(reader,c(chromosomeIndex-1,0,len))
       #write the kept reads into output file
-      bamSave(writer,range[reads,],refid=chromosomeIndex-1)
+      bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
       remove(range)
     }
-    remove(reads)
+    remove(keptReads)
   }
-  bamClose(writer)
   remove(alignment)
+  bamClose(writer)
   bamClose(reader)
   endTime2 <- proc.time()
   message("Total elapsed time ",(endTime2-startTime)[[3]]/60," minutes")
-  return ((nbOReads-nbKReads)/nbOReads)
 }

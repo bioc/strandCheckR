@@ -37,35 +37,34 @@ filterOneCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100
     message("Length: ",len)
     #compute the normalized value of each positive/negative window to be tested by pnorm
     windows <- computeWinCov(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),len,win,step,logitThreshold,minR)
-    windows$Plus["pvalue"] <- pnorm(windows$Plus$value,lower.tail = FALSE) #compute pvalue for positive windows
-    windows$Minus["pvalue"] <- pnorm(windows$Minus$value,lower.tail = FALSE)#compute pvalue for negative windows
-    keepWinPos <- filter(windows$Plus, pvalue <= pvalueThreshold)$win # the indices of positive windows to be kept
-    keepWinNeg <- filter(windows$Minus, pvalue <= pvalueThreshold)$win # the indices of negative windows to be kept
-    remove(windows)
+    windows$Plus <- mutate(windows$Plsu,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<=pvalueThreshold) #compute pvalue for positive windows
+    windows$Minus <- mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<=pvalueThreshold)#compute pvalue for negative windows
     alignmentInChr <- alignment[seqnames(alignment)==chr] #get the reads in the considering chromosome
     alignment <- alignment[seqnames(alignment)!=chr] #reduce the size of alignment (for memory purpose)
     nbOReads <- nbOReads + length(alignmentInChr) 
     message("Number of reads: ",length(alignmentInChr))
     #compute the indices of reads to be kept
-    reads <- keepReadCov(start(alignmentInChr),end(alignmentInChr),as.vector(strand(alignmentInChr)),keepWinPos,keepWinNeg,lenSeq[chromosomeIndex],win,step)
-    remove(keepWinPos)
-    remove(keepWinNeg)
+    keptReads <- keepReadCov(start(alignmentInChr),end(alignmentInChr),as.vector(strand(alignmentInChr)),windows$Plus$win,windows$Minus@win,len,win,step)
+    remove(windows)
     remove(alignmentInChr)
-    message("Number of kept reads: ",length(reads))
+    gc()
+    message("Number of kept reads: ",length(keptReads))
     nbKReads <- nbKReads + length(reads)
     if (length(reads)>0){
       #get the range of kept reads
-      range <- bamRange(reader,c(chromosomeIndex-1,0,lenSeq[chromosomeIndex]))
+      range <- bamRange(reader,c(chromosomeIndex-1,0,len))
       #write the kept reads into output file
-      bamSave(writer,range[reads,],refid=chromosomeIndex-1)
+      bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
       remove(range)
     }
-    remove(reads)
+    remove(kepReads)
+    gc()
   }
   bamClose(writer)
   remove(alignment)
   remove(covPos)
   remove(covNeg)
+  gc()
   bamClose(reader)
   endTime2 <- proc.time()
   message("Total elapsed time ",(endTime2-startTime)[[3]]/60," minutes")

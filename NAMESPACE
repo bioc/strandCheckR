@@ -1,7 +1,7 @@
 useDynLib(rnaCleanR)
 importFrom(Rcpp, sourceCpp)
-export(filterMultiCount)
+export(filterCount)
 export(filterMultiCov)
-export(filterOneCount)
 export(filterOneCov)
+
 
