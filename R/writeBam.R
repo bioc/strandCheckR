@@ -5,6 +5,7 @@ writeBam <- function(keep,bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq
   writer <- bamWriter(header, bamfileout) #prepare to write the output bamfile with the same header
   for (chr in chromosomes) {
     chromosomeIndex <- which(allChromosomes == chr)
+    message(chr," kept ",length(keep[[chr]]))
     if (length(keep[[chr]]) > 0) {
       #get the range of kept reads
       range <- bamRange(reader, c(chromosomeIndex - 1, 0, lenSeq[chromosomeIndex]))
@@ -17,4 +18,6 @@ writeBam <- function(keep,bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq
   bamClose(writer)
   bamClose(reader)
   remove(header)
+  rm(list=ls())
+  gc()
 }

@@ -24,5 +24,7 @@ computePosition <- function(alignments,chr){
     remove(alNeg)
     gc()
   } 
+  rm(list=setdiff(ls(), c("nbRead","positionPos","positionNeg","index")))
+  gc()
   return (list(nbRead=nbRead,Pos=positionPos,Neg=positionNeg,Index=index))
 }

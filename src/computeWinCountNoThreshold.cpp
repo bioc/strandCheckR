@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector startNeg,IntegerVector endNeg,int end,int win,int step,int minR,int maxR,double limit,double logitThreshold){
+List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,IntegerVector startNeg,IntegerVector endNeg,int end,int win,int step,int minR,int maxR,double limit){
   int start=0;
   int preP=0;
   int preM=0;
@@ -46,7 +46,7 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
       }
     }
     ///Compute max coverage
-    while (currentWin<wS|| (i==startPos.size()-1 && currentWin<nbWin)){//current window does not contain fragment i
+    while (currentWin<wS|| (i==startPos.size()-1 && currentWin<=wE)){//current window does not contain fragment i
       if (windowP[currentWin]>0){
         maxP[currentWin]=getMaxCov(startPos,endPos,fragsInWin[currentWin],currentWin,win,step);
         fragsInWin[currentWin].clear();
@@ -78,7 +78,7 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
       }   
     }
     //Compute max coverage
-    while (currentWin<wS || (i==startNeg.size()-1 && currentWin<nbWin)){//current window does not contain fragment i
+    while (currentWin<wS || (i==startNeg.size()-1 && currentWin<=wE)){//current window does not contain fragment i
       if (windowM[currentWin]>0){
         maxM[currentWin]=getMaxCov(startNeg,endNeg,fragsInWin[currentWin],currentWin,win,step);
         fragsInWin[currentWin].clear();
@@ -87,6 +87,30 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
     }
     i++;
   }
+  double sP=0;
+  int cP=0;
+  double sM=0;
+  int cM=0;
+  for (int i=0;i<nbWin;i++){
+    int Plus=windowP[i];
+    int Minus=windowM[i];
+    if (Plus>Minus){
+      if (maxP[i]>=5 && maxP[i]<=50){
+        sP+=(double)Plus/(Plus+Minus);
+        cP+=1;
+        if (Plus==0 && Minus==0) std::cout<<i<<" "<<maxP[i]<<std::endl;
+      }
+    }
+    else{
+      if (maxM[i]>=5 && maxM[i]<=50){
+        sM+=(double)Minus/(Plus+Minus);
+        cM+=1;
+      }
+    }
+  }
+  double threshold=(sP/cP+sM/cM)/2;
+  std::cout<<sP<<" "<<cP<<" "<<sM<<" "<<cM<<" Suggested threshold is "<<threshold;
+  double logitThreshold=log(threshold/(1-threshold));
   std::vector<double> valueP;
   std::vector<int> winP;
   std::vector<double> valueM;
@@ -115,8 +139,8 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
   return List::create(
     _["Plus"] = DataFrame::create(_["win"]= winP,
                               _["value"]= valueP),
-    _["Minus"] =DataFrame::create(_["win"]= winM,
-                              _["value"]= valueM)
+                              _["Minus"] =DataFrame::create(_["win"]= winM,
+                                                       _["value"]= valueM)
   );
 }
 

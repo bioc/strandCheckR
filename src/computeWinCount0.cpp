@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List computeWinCount0(IntegerVector startPos,IntegerVector endPos,IntegerVector startNeg,IntegerVector endNeg,int end,int win,int step,double logitThreshold,double limit){
+List computeWinCount0(IntegerVector startPos,IntegerVector endPos,IntegerVector startNeg,IntegerVector endNeg,int end,int win,int step,double limit,double logitThreshold){
   int start=0;
   int preP=0;
   int preM=0;
@@ -66,33 +66,33 @@ List computeWinCount0(IntegerVector startPos,IntegerVector endPos,IntegerVector 
   std::vector<int> winP;
   std::vector<double> valueM;
   std::vector<int> winM;
-  for (int i=0;i<nbWin;i++){
-    int Plus=windowP[i];
-    int Minus=windowM[i];
-    if ((Plus>0 || Minus>0)){
-      double estimate = (double)Plus/(Plus+Minus);
-      double error = sqrt(1./(Plus+Minus)/estimate/(1-estimate));
-      double lTestimate=log(estimate/(1-estimate));
-      double value=(lTestimate - logitThreshold)/error;
-      if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
-      if (Plus>Minus){
-        if (Minus==0) valueP.push_back(1e10);
-        else valueP.push_back(value);
-        winP.push_back(i+1);
-      }
-      else{
-        if (Plus==0) valueM.push_back(1e10);
-        else valueM.push_back(value);
-        winM.push_back(i+1);
+    for (int i=0;i<nbWin;i++){
+      int Plus=windowP[i];
+      int Minus=windowM[i];
+      if ((Plus>0 || Minus>0)){
+        double estimate = (double)Plus/(Plus+Minus);
+        double error = sqrt(1./(Plus+Minus)/estimate/(1-estimate));
+        double lTestimate=log(estimate/(1-estimate));
+        double value=(lTestimate - logitThreshold)/error;
+        if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
+        if (Plus>Minus){
+          if (Minus==0) valueP.push_back(1e10);
+          else valueP.push_back(value);
+          winP.push_back(i+1);
+        }
+        else{
+          if (Plus==0) valueM.push_back(1e10);
+          else valueM.push_back(value);
+          winM.push_back(i+1);
+        }
       }
     }
-  }
-  return List::create(
-    _["Plus"] = DataFrame::create(_["win"]= winP,
-                              _["value"]= valueP),
-    _["Minus"] =DataFrame::create(_["win"]= winM,
-                              _["value"]= valueM)
-  );
+    return List::create(
+      _["Plus"] = DataFrame::create(_["win"]= winP,
+                                _["value"]= valueP),
+      _["Minus"] =DataFrame::create(_["win"]= winM,
+                                _["value"]= valueM)
+    );
 }
 
 
