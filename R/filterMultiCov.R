@@ -7,14 +7,12 @@
 #' @param threshold the threshold upper which we keep the reads
 #' @param pvalueThreshold the threshold for the p-value
 #' @export
-filterMultiCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0){
+filterMultiCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,pvalueThreshold=0.05,minR=0,maxR=0,threshold){
   library(GenomicAlignments)
   library(rbamtools)
   library(Rcpp)
   library(dplyr)
-  #sourceCpp("computeWinCov.cpp")
-  #sourceCpp("keepRead.cpp")
-  logitThreshold <- binomial()$linkfun(threshold)
+  if (!(missing(threshold))) logitThreshold <- binomial()$linkfun(threshold)
   alignment <- readGAlignments(bamfilein[1])
   covPos <- alignment[strand(alignment)=="+"] %>% coverage()
   covNeg <- alignment[strand(alignment)=="-"] %>% coverage()
@@ -33,9 +31,10 @@ filterMultiCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=1
   keepWinPos <- list()
   keepWinNeg <- list()
   for (chr in chromosomes){
-    chromosomeIndex <- which(chromosomes==chr)
+    chromosomeIndex <- which(idSeq==chr)
     len <- lenSeq[chromosomeIndex]
-    windows <- computeWinCov(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),len,win,step,logitThreshold,minR)
+    if (!(missing(threshold))) windows <- computeWinCov(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),len,win,step,minR,maxR,logitThreshold)
+    else windows <- computeWinCovNoThreshold(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),len,win,step,minR,maxR)
     windows$Plus <- mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE))
     windows$Minus <- mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE))
     keepWinPos[[chromosomeIndex]] <- filter(windows$Plus, pvalue <= pvalueThreshold)$win
@@ -56,7 +55,7 @@ filterMultiCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=1
     nbKReads <- 0
     for (chr in chromosomes){
       message("Chromosome ",chr)
-      chromosomeIndex <- which(chromosomes==chr)
+      chromosomeIndex <- which(idSeq==chr)
       end <- lenSeq[chromosomeIndex]
       alignmentInChr <- alignment[seqnames(alignment)==chr]
       alignment <- alignment[seqnames(alignment)!=chr]

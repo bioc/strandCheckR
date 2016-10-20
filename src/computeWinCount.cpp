@@ -101,12 +101,12 @@ List computeWinCount(IntegerVector startPos,IntegerVector endPos,IntegerVector s
       double value=(lTestimate - logitThreshold)/error;
       if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
       if (Plus>Minus || maxP[i]>maxR){
-        if (Minus==0 || (maxP[i]>maxR && maxR!=0)) valueP.push_back(1e10);//always keep these windows
+        if (Minus==0 || (maxP[i]>maxR && maxR>0)) valueP.push_back(1e10);//always keep these windows
         else valueP.push_back(value);
         winP.push_back(i+1);
       }
       else if (Plus<=Minus || maxM[i]>maxR){
-        if (Plus==0 || (maxM[i]>maxR && maxR!=0)) valueM.push_back(1e10);//always keep these windows
+        if (Plus==0 || (maxM[i]>maxR && maxR>0)) valueM.push_back(1e10);//always keep these windows
         else valueM.push_back(value);
         winM.push_back(i+1);
       }

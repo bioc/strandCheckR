@@ -8,14 +8,14 @@
 #' @param pvalueThreshold the threshold for the p-value
 #' @param minR if a window has least than minR reads then it will be all cleaned
 #' @export
-filterOneCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0){
+filterOneCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,pvalueThreshold=0.05,minR=0,maxR=0,threshold){
   #load libraries
   library(GenomicAlignments)
   library(rbamtools)
   library(Rcpp)
   library(dplyr)
   library(magrittr)
-  logitThreshold <- binomial()$linkfun(threshold) 
+  if (!(missing(threshold))) logitThreshold <- binomial()$linkfun(threshold) 
   startTime <- proc.time()
   alignment <- readGAlignments(bamfilein) # read the input alignment
   endTime1 <- proc.time()
@@ -31,33 +31,34 @@ filterOneCov <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100
   nbOReads <- 0 #number of original reads
   nbKReads <- 0 #number of kept reads
   for (chr in chromosomes){ #filter on each chromosome
-    chromosomeIndex <- which(chromosomes==chr)
+    chromosomeIndex <- which(idSeq==chr)
     len <- lenSeq[chromosomeIndex]
     message("Chromosome ",chr)
     message("Length: ",len)
     #compute the normalized value of each positive/negative window to be tested by pnorm
-    windows <- computeWinCov(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),len,win,step,logitThreshold,minR)
-    windows$Plus <- mutate(windows$Plsu,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<=pvalueThreshold) #compute pvalue for positive windows
+    if (!(missing(threshold))) windows <- computeWinCov(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),len,win,step,minR,maxR,logitThreshold)
+    else windows <- computeWinCovNoThreshold(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),len,win,step,minR,maxR)
+    windows$Plus <- mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<=pvalueThreshold) #compute pvalue for positive windows
     windows$Minus <- mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<=pvalueThreshold)#compute pvalue for negative windows
     alignmentInChr <- alignment[seqnames(alignment)==chr] #get the reads in the considering chromosome
     alignment <- alignment[seqnames(alignment)!=chr] #reduce the size of alignment (for memory purpose)
     nbOReads <- nbOReads + length(alignmentInChr) 
     message("Number of reads: ",length(alignmentInChr))
     #compute the indices of reads to be kept
-    keptReads <- keepReadCov(start(alignmentInChr),end(alignmentInChr),as.vector(strand(alignmentInChr)),windows$Plus$win,windows$Minus@win,len,win,step)
+    keptReads <- keepReadCov(start(alignmentInChr),end(alignmentInChr),as.vector(strand(alignmentInChr)),windows$Plus$win,windows$Minus$win,len,win,step)
     remove(windows)
     remove(alignmentInChr)
     gc()
     message("Number of kept reads: ",length(keptReads))
-    nbKReads <- nbKReads + length(reads)
-    if (length(reads)>0){
+    nbKReads <- nbKReads + length(keptReads)
+    if (length(keptReads)>0){
       #get the range of kept reads
       range <- bamRange(reader,c(chromosomeIndex-1,0,len))
       #write the kept reads into output file
       bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
       remove(range)
     }
-    remove(kepReads)
+    remove(keptReads)
     gc()
   }
   bamClose(writer)

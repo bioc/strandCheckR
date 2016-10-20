@@ -5,7 +5,7 @@
 \title{filter one bamfile based on the strand specifict of itself. Strand of sliding windows are caculated based on coverage.}
 \usage{
 filterOneCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
-  step = 100, threshold, pvalueThreshold = 0.05, minR = 0)
+  step = 100, pvalueThreshold = 0.05, minR = 0, maxR = 0, threshold)
 }
 \arguments{
 \item{bamfilein}{the input bam file to be filterd}
@@ -18,11 +18,11 @@ filterOneCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
 
 \item{step}{the step length to slide the window}
 
-\item{threshold}{the threshold upper which we keep the reads}
-
 \item{pvalueThreshold}{the threshold for the p-value}
 
 \item{minR}{if a window has least than minR reads then it will be all cleaned}
+
+\item{threshold}{the threshold upper which we keep the reads}
 }
 \description{
 filter one bamfile based on the strand specifict of itself. Strand of sliding windows are caculated based on coverage.

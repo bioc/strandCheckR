@@ -86,8 +86,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // computeWinCov
-List computeWinCov(IntegerVector covPosLen, IntegerVector covPosVal, IntegerVector covNegLen, IntegerVector covNegVal, int end, int win, int step, double logitThreshold, int minR, int maxR);
-RcppExport SEXP rnaCleanR_computeWinCov(SEXP covPosLenSEXP, SEXP covPosValSEXP, SEXP covNegLenSEXP, SEXP covNegValSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP logitThresholdSEXP, SEXP minRSEXP, SEXP maxRSEXP) {
+List computeWinCov(IntegerVector covPosLen, IntegerVector covPosVal, IntegerVector covNegLen, IntegerVector covNegVal, int end, int win, int step, int minR, int maxR, double logitThreshold);
+RcppExport SEXP rnaCleanR_computeWinCov(SEXP covPosLenSEXP, SEXP covPosValSEXP, SEXP covNegLenSEXP, SEXP covNegValSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP minRSEXP, SEXP maxRSEXP, SEXP logitThresholdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -98,10 +98,29 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type end(endSEXP);
     Rcpp::traits::input_parameter< int >::type win(winSEXP);
     Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< double >::type logitThreshold(logitThresholdSEXP);
     Rcpp::traits::input_parameter< int >::type minR(minRSEXP);
     Rcpp::traits::input_parameter< int >::type maxR(maxRSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeWinCov(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, logitThreshold, minR, maxR));
+    Rcpp::traits::input_parameter< double >::type logitThreshold(logitThresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(computeWinCov(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR, logitThreshold));
+    return rcpp_result_gen;
+END_RCPP
+}
+// computeWinCovNoThreshold
+List computeWinCovNoThreshold(IntegerVector covPosLen, IntegerVector covPosVal, IntegerVector covNegLen, IntegerVector covNegVal, int end, int win, int step, int minR, int maxR);
+RcppExport SEXP rnaCleanR_computeWinCovNoThreshold(SEXP covPosLenSEXP, SEXP covPosValSEXP, SEXP covNegLenSEXP, SEXP covNegValSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP minRSEXP, SEXP maxRSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type covPosLen(covPosLenSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type covPosVal(covPosValSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type covNegLen(covNegLenSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type covNegVal(covNegValSEXP);
+    Rcpp::traits::input_parameter< int >::type end(endSEXP);
+    Rcpp::traits::input_parameter< int >::type win(winSEXP);
+    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
+    Rcpp::traits::input_parameter< int >::type minR(minRSEXP);
+    Rcpp::traits::input_parameter< int >::type maxR(maxRSEXP);
+    rcpp_result_gen = Rcpp::wrap(computeWinCovNoThreshold(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR));
     return rcpp_result_gen;
 END_RCPP
 }

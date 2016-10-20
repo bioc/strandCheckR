@@ -5,7 +5,7 @@
 \title{filter several bamfiles based on the strand specific of the merged files. Strand of sliding windows are caculated based on coverage.}
 \usage{
 filterMultiCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
-  step = 100, threshold, pvalueThreshold = 0.05, minR = 0)
+  step = 100, pvalueThreshold = 0.05, minR = 0, maxR = 0, threshold)
 }
 \arguments{
 \item{bamfilein}{the input bam files to be filterd}
@@ -18,9 +18,9 @@ filterMultiCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
 
 \item{step}{the step length to slide the window}
 
-\item{threshold}{the threshold upper which we keep the reads}
-
 \item{pvalueThreshold}{the threshold for the p-value}
+
+\item{threshold}{the threshold upper which we keep the reads}
 }
 \description{
 filter several bamfiles based on the strand specific of the merged files. Strand of sliding windows are caculated based on coverage.

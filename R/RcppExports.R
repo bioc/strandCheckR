@@ -17,8 +17,12 @@ computeWinCountTest <- function(startPos, endPos, startNeg, endNeg, end, win, st
     .Call('rnaCleanR_computeWinCountTest', PACKAGE = 'rnaCleanR', startPos, endPos, startNeg, endNeg, end, win, step, logitThreshold, minR, limit)
 }
 
-computeWinCov <- function(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, logitThreshold, minR, maxR) {
-    .Call('rnaCleanR_computeWinCov', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, logitThreshold, minR, maxR)
+computeWinCov <- function(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR, logitThreshold) {
+    .Call('rnaCleanR_computeWinCov', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR, logitThreshold)
+}
+
+computeWinCovNoThreshold <- function(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR) {
+    .Call('rnaCleanR_computeWinCovNoThreshold', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR)
 }
 
 getIndex <- function(strand) {

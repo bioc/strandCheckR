@@ -126,14 +126,14 @@ List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,Inte
       if (Plus>Minus || maxP[i]>maxR){
         double value=(lTestimate - logitThresholdP)/error;
         if (lTestimate<=0) value=-(lTestimate+logitThresholdP)/error;
-        if (Minus==0 || (maxP[i]>maxR && maxR!=0)) valueP.push_back(1e10);//always keep these windows
+        if (Minus==0 || (maxP[i]>maxR && maxR>0)) valueP.push_back(1e10);//always keep these windows
         else valueP.push_back(value);
         winP.push_back(i+1);
       }
       else if (Plus<=Minus || maxM[i]>maxR){
         double value=(lTestimate - logitThresholdM)/error;
         if (lTestimate<=0) value=-(lTestimate+logitThresholdM)/error;
-        if (Plus==0 || (maxM[i]>maxR && maxR!=0)) valueM.push_back(1e10);//always keep these windows
+        if (Plus==0 || (maxM[i]>maxR && maxR>0)) valueM.push_back(1e10);//always keep these windows
         else valueM.push_back(value);
         winM.push_back(i+1);
       }

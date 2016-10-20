@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List computeWinCov(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector covNegLen,IntegerVector covNegVal,int end,int win,int step,double logitThreshold,int minR,int maxR){
+List computeWinCov(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector covNegLen,IntegerVector covNegVal,int end,int win,int step,int minR,int maxR,double logitThreshold){
   int start=0;
   int preP=0;
   int preM=0;
@@ -29,18 +29,19 @@ List computeWinCov(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector
       double value=(lTestimate - logitThreshold)/error;
       if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
       if (Plus>Minus || maxCovP>maxR){
-        if (Minus==0 || maxCovP>maxR) valueP.push_back(1e10);
+        if (Minus==0 || (maxCovP>maxR && maxR>0)) valueP.push_back(1e10);
         else valueP.push_back(value);
         windowP.push_back(c);
       }
-      else if (Plus<=Minus || maxCovN<maxR){
-        if (Plus==0 || maxCovN<maxR) valueM.push_back(1e10);
+      else if (Plus<=Minus || maxCovN>maxR){
+        if (Plus==0 || (maxCovN>maxR & maxR>0)) valueM.push_back(1e10);
         else valueM.push_back(value);
         windowM.push_back(c);
       }
     }
     c++;
   }
+  std::cout<<"WW Finished"<<std::endl;
   return List::create(
     _["Plus"] = DataFrame::create(_["win"]= windowP, _["value"]= valueP),
     _["Minus"] = DataFrame::create(_["win"]= windowM, _["value"]= valueM)
