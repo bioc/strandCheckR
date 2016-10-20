@@ -8,7 +8,7 @@
 #' @param pvalueThreshold the threshold for the p-value
 #' @param limit the proportion of a read that it should not exceed to be considered to be in a window
 #' @export
-filterCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,threshold,pvalueThreshold=0.05,minR=0,maxR=0,limit=0.25){
+filterCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,pvalueThreshold=0.05,minR=0,maxR=0,limit=0.25,threshold){
   #open a reader of the input bamfile to get chromosomes list and their lengths
   library(rbamtools)
   reader1 <- bamReader(bamfilein[1],idx=TRUE) 
@@ -18,7 +18,7 @@ filterCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,
   if (is.null(chromosomes)) chromosomes<-allChromosomes
   lenSeq <- refSeqs$LN
   #calculate the kept reads
-  keep <- keepCount(bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq,win,step,threshold,pvalueThreshold,minR,maxR,limit)
+  keep <- keepCount(bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq,win,step,pvalueThreshold,minR,maxR,limit,threshold)
   for (i in c(1:length(bamfilein))){
     message("Writing sample ", i)
     writeBam(keep[[i]],bamfilein[i],bamfileout[i],chromosomes,allChromosomes,lenSeq)  

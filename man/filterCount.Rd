@@ -5,8 +5,8 @@
 \title{filter several bamfiles based on the strand specific of all of them. Strand of sliding windows are caculated based on read counts.}
 \usage{
 filterCount(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
-  step = 100, threshold, pvalueThreshold = 0.05, minR = 0, maxR = 0,
-  limit = 0.25)
+  step = 100, pvalueThreshold = 0.05, minR = 0, maxR = 0,
+  limit = 0.25, threshold)
 }
 \arguments{
 \item{bamfilein}{the input bam files to be filterd}
@@ -19,11 +19,11 @@ filterCount(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
 
 \item{step}{the step length to slide the window}
 
-\item{threshold}{the threshold upper which we keep the reads}
-
 \item{pvalueThreshold}{the threshold for the p-value}
 
 \item{limit}{the proportion of a read that it should not exceed to be considered to be in a window}
+
+\item{threshold}{the threshold upper which we keep the reads}
 }
 \description{
 filter several bamfiles based on the strand specific of all of them. Strand of sliding windows are caculated based on read counts.

@@ -1,18 +1,19 @@
-keepCountChr <- function(nbSample,alignments,chr,len,win,step,pvalueThreshold,minR,maxR,limit,logitThreshold){#compute the reads to be kept for the whole genome
+keepCountChr <- function(nbSample,alignments,chr,len,win,step,pvalueThreshold,minR,maxR,limit,threshold){#compute the reads to be kept for the whole genome
   message("Chromosome: ",chr,", Length: ",len)
+  if (!missing(threshold)) logitThreshold <- binomial()$linkfun(threshold)
   position <- computePosition(alignments,chr)
-  if (minR==0 && maxR==0 && !(missing(logitThreshold))){
+  if (minR==0 && maxR==0 && !(missing(threshold))){
     windows <- computeWinCount0(position$Pos$start,position$Pos$end,position$Neg$start,position$Neg$end,len,win,step,limit,logitThreshold) #compute information in each sliding windows
   }
   else{
     position <- reorder(position,win,step,limit)
-    if (missing(logitThreshold)) 
+    if (missing(threshold)) 
       windows <- computeWinCountNoThreshold(position$Pos$start,position$Pos$end,position$Neg$start,position$Neg$end,len,win,step,minR,maxR,limit) #compute information in each sliding windows
     else 
       windows <- computeWinCount(position$Pos$start,position$Pos$end,position$Neg$start,position$Neg$end,len,win,step,minR,maxR,limit,logitThreshold) #compute information in each sliding windows
   }
   windows$Plus <- mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<=pvalueThreshold) #get kept positive windows
-  windows$Minus <- mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<= pvalueThreshold) #get negative windows
+  windows$Minus <- mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<= pvalueThreshold) #get kept negative windows
   keptFrags <- keepRead(nbSample,position$Pos$start,position$Pos$end,position$Pos$group,position$Pos$sample,position$Neg$start,position$Neg$end,position$Neg$group,position$Neg$sample,windows$Plus$win,windows$Minus$win,len,win,step,limit) 
   remove(windows)
   gc()

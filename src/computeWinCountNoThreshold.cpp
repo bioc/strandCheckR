@@ -98,7 +98,6 @@ List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,Inte
       if (maxP[i]>=5 && maxP[i]<=50){
         sP+=(double)Plus/(Plus+Minus);
         cP+=1;
-        if (Plus==0 && Minus==0) std::cout<<i<<" "<<maxP[i]<<std::endl;
       }
     }
     else{
@@ -108,9 +107,11 @@ List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,Inte
       }
     }
   }
-  double threshold=(sP/cP+sM/cM)/2;
-  std::cout<<sP<<" "<<cP<<" "<<sM<<" "<<cM<<" Suggested threshold is "<<threshold;
-  double logitThreshold=log(threshold/(1-threshold));
+  double thresholdP=(sP/cP);
+  double thresholdM=(sM/cM);
+  std::cout<<"Suggested thresholds are "<<thresholdP<<" "<<thresholdM<<std::endl;
+  double logitThresholdP=log(thresholdP/(1-thresholdP));
+  double logitThresholdM=log(thresholdM/(1-thresholdM));
   std::vector<double> valueP;
   std::vector<int> winP;
   std::vector<double> valueM;
@@ -122,14 +123,16 @@ List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,Inte
       double estimate = (double)Plus/(Plus+Minus);
       double error = sqrt(1./(Plus+Minus)/estimate/(1-estimate));
       double lTestimate=log(estimate/(1-estimate));
-      double value=(lTestimate - logitThreshold)/error;
-      if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
       if (Plus>Minus || maxP[i]>maxR){
+        double value=(lTestimate - logitThresholdP)/error;
+        if (lTestimate<=0) value=-(lTestimate+logitThresholdP)/error;
         if (Minus==0 || (maxP[i]>maxR && maxR!=0)) valueP.push_back(1e10);//always keep these windows
         else valueP.push_back(value);
         winP.push_back(i+1);
       }
       else if (Plus<=Minus || maxM[i]>maxR){
+        double value=(lTestimate - logitThresholdM)/error;
+        if (lTestimate<=0) value=-(lTestimate+logitThresholdM)/error;
         if (Plus==0 || (maxM[i]>maxR && maxR!=0)) valueM.push_back(1e10);//always keep these windows
         else valueM.push_back(value);
         winM.push_back(i+1);
@@ -139,8 +142,8 @@ List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,Inte
   return List::create(
     _["Plus"] = DataFrame::create(_["win"]= winP,
                               _["value"]= valueP),
-                              _["Minus"] =DataFrame::create(_["win"]= winM,
-                                                       _["value"]= valueM)
+    _["Minus"] =DataFrame::create(_["win"]= winM,
+                              _["value"]= valueM)
   );
 }
 
