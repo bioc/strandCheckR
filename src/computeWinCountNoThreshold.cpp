@@ -46,7 +46,7 @@ List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,Inte
       }
     }
     ///Compute max coverage
-    while (currentWin<wS|| (i==startPos.size()-1 && currentWin<=wE)){//current window does not contain fragment i
+    while (currentWin<wS|| (i==startPos.size()-1 && currentWin<nbWin)){//current window does not contain fragment i
       if (windowP[currentWin]>0){
         maxP[currentWin]=getMaxCov(startPos,endPos,fragsInWin[currentWin],currentWin,win,step);
         fragsInWin[currentWin].clear();
@@ -78,7 +78,7 @@ List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,Inte
       }   
     }
     //Compute max coverage
-    while (currentWin<wS || (i==startNeg.size()-1 && currentWin<=wE)){//current window does not contain fragment i
+    while (currentWin<wS || (i==startNeg.size()-1 && currentWin<nbWin)){//current window does not contain fragment i
       if (windowM[currentWin]>0){
         maxM[currentWin]=getMaxCov(startNeg,endNeg,fragsInWin[currentWin],currentWin,win,step);
         fragsInWin[currentWin].clear();
@@ -89,27 +89,40 @@ List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,Inte
   }
   double sP=0;
   int cP=0;
+  int cnP=0;
   double sM=0;
   int cM=0;
+  int cnM=0;
   for (int i=0;i<nbWin;i++){
     int Plus=windowP[i];
     int Minus=windowM[i];
     if (Plus>Minus){
       if (maxP[i]>=5 && maxP[i]<=50){
         sP+=(double)Plus/(Plus+Minus);
-        cP+=1;
+        cP++;
       }
+      else if (maxP[i]>50) cnP++;
     }
     else{
       if (maxM[i]>=5 && maxM[i]<=50){
         sM+=(double)Minus/(Plus+Minus);
-        cM+=1;
+        cM++;
       }
+      else if (maxM[i]>50) cnM++;
     }
   }
   double thresholdP=(sP/cP);
+  if (cP/(double)(cP+cnP)>=0.9) std::cout<<"Suggested threshold for positive window is "<<thresholdP<<std::endl;
+  else {
+    thresholdP=0.7;
+    std::cout<<"Can not estimate threshold for positive window, take the default threshold "<<thresholdP<<std::endl;
+  }
   double thresholdM=(sM/cM);
-  std::cout<<"Suggested thresholds are "<<thresholdP<<" "<<thresholdM<<std::endl;
+  if (cM/(double)(cM+cnM)>=0.9) std::cout<<"Suggested threshold for negative window is  "<<thresholdM<<std::endl;
+  else{
+    thresholdM=0.7;
+    std::cout<<"Can not estimate threshold for negative window, take the default threshold "<<thresholdP<<std::endl;
+  }
   double logitThresholdP=log(thresholdP/(1-thresholdP));
   double logitThresholdM=log(thresholdM/(1-thresholdM));
   std::vector<double> valueP;
@@ -123,18 +136,22 @@ List computeWinCountNoThreshold(IntegerVector startPos,IntegerVector endPos,Inte
       double estimate = (double)Plus/(Plus+Minus);
       double error = sqrt(1./(Plus+Minus)/estimate/(1-estimate));
       double lTestimate=log(estimate/(1-estimate));
-      if (Plus>Minus || maxP[i]>maxR){
-        double value=(lTestimate - logitThresholdP)/error;
-        if (lTestimate<=0) value=-(lTestimate+logitThresholdP)/error;
+      if (Plus>Minus || (maxP[i]>maxR && maxR>0)){
         if (Minus==0 || (maxP[i]>maxR && maxR>0)) valueP.push_back(1e10);//always keep these windows
-        else valueP.push_back(value);
+        else {
+          double value=(lTestimate - logitThresholdP)/error;
+          if (lTestimate<=0) value=-(lTestimate+logitThresholdP)/error;
+          valueP.push_back(value);
+        }
         winP.push_back(i+1);
       }
-      else if (Plus<=Minus || maxM[i]>maxR){
-        double value=(lTestimate - logitThresholdM)/error;
-        if (lTestimate<=0) value=-(lTestimate+logitThresholdM)/error;
+      else if (Plus<=Minus || (maxM[i]>maxR && maxR>0)){
         if (Plus==0 || (maxM[i]>maxR && maxR>0)) valueM.push_back(1e10);//always keep these windows
-        else valueM.push_back(value);
+        else{
+          double value=(lTestimate - logitThresholdM)/error;
+          if (lTestimate<=0) value=-(lTestimate+logitThresholdM)/error;
+          valueM.push_back(value);
+        } 
         winM.push_back(i+1);
       }
     }

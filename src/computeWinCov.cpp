@@ -28,12 +28,12 @@ List computeWinCov(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector
       double lTestimate=log(estimate/(1-estimate));
       double value=(lTestimate - logitThreshold)/error;
       if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
-      if (Plus>Minus || maxCovP>maxR){
+      if (Plus>Minus || (maxCovP>maxR && maxR>0)){
         if (Minus==0 || (maxCovP>maxR && maxR>0)) valueP.push_back(1e10);
         else valueP.push_back(value);
         windowP.push_back(c);
       }
-      else if (Plus<=Minus || maxCovN>maxR){
+      else if (Plus<=Minus || (maxCovN>maxR & maxR>0)){
         if (Plus==0 || (maxCovN>maxR & maxR>0)) valueM.push_back(1e10);
         else valueM.push_back(value);
         windowM.push_back(c);
@@ -41,7 +41,6 @@ List computeWinCov(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector
     }
     c++;
   }
-  std::cout<<"WW Finished"<<std::endl;
   return List::create(
     _["Plus"] = DataFrame::create(_["win"]= windowP, _["value"]= valueP),
     _["Minus"] = DataFrame::create(_["win"]= windowM, _["value"]= valueM)

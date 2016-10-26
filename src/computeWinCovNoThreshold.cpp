@@ -33,8 +33,10 @@ List computeWinCovNoThreshold(IntegerVector covPosLen,IntegerVector covPosVal,In
   }
   double sP=0;
   int cP=0;
+  int cnP=0;
   double sM=0;
   int cM=0;
+  int cnM=0;
   for (int i=0;i<nbWin;i++){
     int Plus=windowP[i];
     int Minus=windowM[i];
@@ -43,17 +45,28 @@ List computeWinCovNoThreshold(IntegerVector covPosLen,IntegerVector covPosVal,In
         sP+=(double)Plus/(Plus+Minus);
         cP+=1;
       }
+      else if (maxP[i]>50) cnP++;
     }
     else{
       if (maxM[i]>=5 && maxM[i]<=50){
         sM+=(double)Minus/(Plus+Minus);
         cM+=1;
       }
+      else if (maxM[i]>50) cnM++;
     }
   }
   double thresholdP=(sP/cP);
+  if (cP/(double)(cP+cnP)>=0.95) std::cout<<"Suggested threshold for positive window is "<<thresholdP<<std::endl;
+  else {
+    thresholdP=0.7;
+    std::cout<<"Can not estimate threshold for positive window, take the default threshold "<<thresholdP<<std::endl;
+  }
   double thresholdM=(sM/cM);
-  std::cout<<"Suggested thresholds are "<<thresholdP<<" "<<thresholdM<<std::endl;
+  if (cM/(double)(cM+cnM)>=0.95) std::cout<<"Suggested threshold for negative window is "<<thresholdM<<std::endl;
+  else{
+    thresholdM=0.7;
+    std::cout<<"Can not estimate threshold for negative window, take the default threshold "<<thresholdP<<std::endl;
+  }
   double logitThresholdP=log(thresholdP/(1-thresholdP));
   double logitThresholdM=log(thresholdM/(1-thresholdM));
   std::vector<double> valueP;

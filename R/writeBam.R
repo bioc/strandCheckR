@@ -10,13 +10,12 @@ writeBam <- function(keep,bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq
       range <- bamRange(reader, c(chromosomeIndex - 1, 0, lenSeq[chromosomeIndex]))
       #write the kept reads into output file
       bamSave(writer, range[keep[[chr]], ], refid = chromosomeIndex - 1)
-      keep[[chr]] <- c(1)
       remove(range)
+      keep[[chr]] <- c(1)
     }
   }
   bamClose(writer)
   bamClose(reader)
-  remove(header)
   rm(list=ls())
   gc()
 }

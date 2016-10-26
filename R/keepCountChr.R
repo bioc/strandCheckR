@@ -1,7 +1,6 @@
-keepCountChr <- function(nbSample,alignments,chr,len,win,step,pvalueThreshold,minR,maxR,limit,threshold){#compute the reads to be kept for the whole genome
-  message("Chromosome: ",chr,", Length: ",len)
+keepCountChr <- function(nbSample,alignments,len,win,step,pvalueThreshold,minR,maxR,limit,threshold){#compute the reads to be kept for the whole genome
   if (!missing(threshold)) logitThreshold <- binomial()$linkfun(threshold)
-  position <- computePosition(alignments,chr)
+  position <- computePosition(alignments)
   if (minR==0 && maxR==0 && !(missing(threshold))){
     windows <- computeWinCount0(position$Pos$start,position$Pos$end,position$Neg$start,position$Neg$end,len,win,step,limit,logitThreshold) #compute information in each sliding windows
   }
@@ -16,7 +15,6 @@ keepCountChr <- function(nbSample,alignments,chr,len,win,step,pvalueThreshold,mi
   windows$Minus <- mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% filter(pvalue<= pvalueThreshold) #get kept negative windows
   keptFrags <- keepRead(nbSample,position$Pos$start,position$Pos$end,position$Pos$group,position$Pos$sample,position$Neg$start,position$Neg$end,position$Neg$group,position$Neg$sample,windows$Plus$win,windows$Minus$win,len,win,step,limit) 
   remove(windows)
-  gc()
   keep <- list()
   for (i in c(1:nbSample)){
     keep[[i]] <- c(position$Index[[i]]$Pos[unique(keptFrags$Pos[[i]])],position$Index[[i]]$Neg[unique(keptFrags$Neg[[i]])]) %>% sort() 

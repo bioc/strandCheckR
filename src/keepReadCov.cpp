@@ -33,9 +33,10 @@ IntegerVector keepReadCov(IntegerVector startAl,IntegerVector endAl,CharacterVec
         int j=x2;
         if (j>maxP) j=maxP;
         bl = keepPos[i];
+        i++;
         while (!bl && i<=j){
-          i++;
           bl = keepPos[i];
+          i++;
         }
         if (bl){ keepReads.push_back(a+1);}
       }
@@ -46,9 +47,10 @@ IntegerVector keepReadCov(IntegerVector startAl,IntegerVector endAl,CharacterVec
           int j=y2;
           if (j>maxP) j=maxP;
           bool bl = keepPos[i];
+          i++;
           while (!bl && i<=j){
-            i++;
             bl = keepPos[i];
+            i++;
           }
           if (bl){ keepReads.push_back(a+1);}
         }
@@ -61,9 +63,10 @@ IntegerVector keepReadCov(IntegerVector startAl,IntegerVector endAl,CharacterVec
         int j=x2;
         if (j>maxM) j=maxM;
         bl = keepNeg[i];
+        i++;
         while (!bl && i<=j){
-          i++;
           bl = keepNeg[i];
+          i++;
         }
         if (bl){ keepReads.push_back(a+1);}
       }
@@ -74,9 +77,10 @@ IntegerVector keepReadCov(IntegerVector startAl,IntegerVector endAl,CharacterVec
           int j=y2;
           if (j>maxM) j=maxM;
           bool bl = keepNeg[i];
+          i++;
           while (!bl && i<=j){
-            i++;
             bl = keepNeg[i];
+            i++;
           }
           if (bl){ keepReads.push_back(a+1);}
         }

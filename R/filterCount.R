@@ -21,8 +21,7 @@ filterCount <- function(bamfilein,bamfileout,chromosomes=NULL,win=1000,step=100,
   keep <- keepCount(bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq,win,step,pvalueThreshold,minR,maxR,limit,threshold)
   for (i in c(1:length(bamfilein))){
     message("Writing sample ", i)
-    writeBam(keep[[i]],bamfilein[i],bamfileout[i],chromosomes,allChromosomes,lenSeq)  
+    writeBam(keep[[i]],bamfilein[i],bamfileout[i],chromosomes,allChromosomes,lenSeq)
     keep[[i]] <- c(1)
-    gc()
   }
 }
