@@ -17,8 +17,29 @@ computeWinCountTest <- function(startPos, endPos, startNeg, endNeg, end, win, st
     .Call('rnaCleanR_computeWinCountTest', PACKAGE = 'rnaCleanR', startPos, endPos, startNeg, endNeg, end, win, step, logitThreshold, minR, limit)
 }
 
-computeWinCov <- function(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR, logitThreshold) {
-    .Call('rnaCleanR_computeWinCov', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR, logitThreshold)
+#' @title  compute strand information of sliding window based on coverage
+#'
+#' @description non
+#'
+#' @param covPosLen the length the Rle object, which is the coverage comes from positive reads
+#' @param covPosVal the value the Rle object, which is the coverage comes from positive reads
+#' @param covNegLen the length the Rle object, which is the coverage comes from negative reads
+#' @param covNegVal the value the Rle object, which is the coverage comes from negative reads
+#' @param end the last base on the reference chromosome that the sliding window atteint
+#' @param win the size of the sliding window
+#' @param step the step of the sliding window
+#' @param minCov if a window has the max coverage least than minCov, then it will be rejected
+#' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept
+#' @param logitThreshold the logit of the threshold
+#'
+#' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
+#' 
+#' @examples
+#' computeWinCov(c(10000,200,30,1,20,50),c(0,2,3,4,1,2),c(10020,300,20,1,10,15),c(0,1,3,5,1,3),10200,1000,100,2,50,0.8472979)
+#' 
+#' @export
+computeWinCov <- function(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minCov, maxCov, logitThreshold) {
+    .Call('rnaCleanR_computeWinCov', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minCov, maxCov, logitThreshold)
 }
 
 computeWinCovNoThreshold <- function(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR) {
@@ -35,6 +56,14 @@ keepRead <- function(nbSample, startPosAl, endPosAl, groupNamePos, samplePos, st
 
 keepReadCov <- function(startAl, endAl, strand, keepWinPos, keepWinNeg, end, win, step) {
     .Call('rnaCleanR_keepReadCov', PACKAGE = 'rnaCleanR', startAl, endAl, strand, keepWinPos, keepWinNeg, end, win, step)
+}
+
+keepReadProba <- function(nbSample, startPosAl, endPosAl, groupNamePos, samplePos, startNegAl, endNegAl, groupNameNeg, sampleNeg, keepWinPos, proporPos, keepWinNeg, proporNeg, end, win, step, limit) {
+    .Call('rnaCleanR_keepReadProba', PACKAGE = 'rnaCleanR', nbSample, startPosAl, endPosAl, groupNamePos, samplePos, startNegAl, endNegAl, groupNameNeg, sampleNeg, keepWinPos, proporPos, keepWinNeg, proporNeg, end, win, step, limit)
+}
+
+test <- function(d) {
+    .Call('rnaCleanR_test', PACKAGE = 'rnaCleanR', d)
 }
 
 winInGene <- function(startGenePos, endGenePos, startGeneNeg, endGeneNeg, end, win, step, lim) {

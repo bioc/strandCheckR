@@ -2,10 +2,11 @@
 % Please edit documentation in R/filterOneCov.R
 \name{filterOneCov}
 \alias{filterOneCov}
-\title{filter one bamfile based on the strand specifict of itself. Strand of sliding windows are caculated based on coverage.}
+\title{Filter One Bam File Based On Coverage}
 \usage{
 filterOneCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
-  step = 100, pvalueThreshold = 0.05, minR = 0, maxR = 0, threshold)
+  step = 100, pvalueThreshold = 0.05, minCov = 0, maxCov = 0,
+  threshold = 0.7)
 }
 \arguments{
 \item{bamfilein}{the input bam file to be filterd}
@@ -20,11 +21,17 @@ filterOneCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
 
 \item{pvalueThreshold}{the threshold for the p-value}
 
-\item{minR}{if a window has least than minR reads then it will be all cleaned}
+\item{minCov}{if a window has the max coverage least than minCov, then it will be rejected}
+
+\item{maxCov}{if a window has the max coverage greater than maxCov, then it will be kept}
 
 \item{threshold}{the threshold upper which we keep the reads}
 }
 \description{
-filter one bamfile based on the strand specifict of itself. Strand of sliding windows are caculated based on coverage.
+filter one bamfile based on the strand specifict of itself. 
+Strand of sliding windows are caculated based on the sum of coverage.
+}
+\details{
+None
 }
 

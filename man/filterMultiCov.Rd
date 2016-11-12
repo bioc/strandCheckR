@@ -2,10 +2,11 @@
 % Please edit documentation in R/filterMultiCov.R
 \name{filterMultiCov}
 \alias{filterMultiCov}
-\title{filter several bamfiles based on the strand specific of the merged files. Strand of sliding windows are caculated based on coverage.}
+\title{Filter Using Merged Files}
 \usage{
 filterMultiCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
-  step = 100, pvalueThreshold = 0.05, minR = 0, maxR = 0, threshold)
+  step = 100, pvalueThreshold = 0.05, minR = 0, maxR = 0,
+  threshold = 0.7)
 }
 \arguments{
 \item{bamfilein}{the input bam files to be filterd}
@@ -20,9 +21,20 @@ filterMultiCov(bamfilein, bamfileout, chromosomes = NULL, win = 1000,
 
 \item{pvalueThreshold}{the threshold for the p-value}
 
+\item{minR}{if a window has the max coverage least than minR, then it will be rejected}
+
+\item{maxR}{if a window has the max coverage greater than maxR, then it will be kept}
+
 \item{threshold}{the threshold upper which we keep the reads}
 }
+\value{
+the proportion of removed reads in every sample
+}
 \description{
-filter several bamfiles based on the strand specific of the merged files. Strand of sliding windows are caculated based on coverage.
+Filter several bamfiles based on the strand specific of the merged files. 
+The strand of each sliding window is caculated based on coverage.
+}
+\details{
+None
 }
 

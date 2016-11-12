@@ -1,5 +1,17 @@
+#' @title Write Bam File
+#' 
+#' @description write the reads into the output bamfile
+#' 
+#' @details None
+#' 
+#' @param keep the indices of the reads in the input bamfile to be kept
+#' @param bamfilein the input bam file 
+#' @param bamfileout the output bam file
+#' @param chromosomes the list of chromosomes to write
+#' @param allChromosomes the list of all chromosomes
+#' @param lenSeq the length of every chromosome
+#'
 writeBam <- function(keep,bamfilein,bamfileout,chromosomes,allChromosomes,lenSeq) {
-  #write the filter bamfile based on the selected keep reads
   reader <- bamReader(bamfilein, idx = TRUE) #open a reader of the input bamfile to extract read afterward
   header <- getHeader(reader) #get the header of the input bam file
   writer <- bamWriter(header, bamfileout) #prepare to write the output bamfile with the same header
