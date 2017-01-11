@@ -5,89 +5,9 @@
 
 using namespace Rcpp;
 
-// computeWinCount
-List computeWinCount(IntegerVector startPos, IntegerVector endPos, IntegerVector startNeg, IntegerVector endNeg, int end, int win, int step, int minR, int maxR, double limit, double logitThreshold);
-RcppExport SEXP rnaCleanR_computeWinCount(SEXP startPosSEXP, SEXP endPosSEXP, SEXP startNegSEXP, SEXP endNegSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP minRSEXP, SEXP maxRSEXP, SEXP limitSEXP, SEXP logitThresholdSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type startPos(startPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endPos(endPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type startNeg(startNegSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endNeg(endNegSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    Rcpp::traits::input_parameter< int >::type win(winSEXP);
-    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< int >::type minR(minRSEXP);
-    Rcpp::traits::input_parameter< int >::type maxR(maxRSEXP);
-    Rcpp::traits::input_parameter< double >::type limit(limitSEXP);
-    Rcpp::traits::input_parameter< double >::type logitThreshold(logitThresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeWinCount(startPos, endPos, startNeg, endNeg, end, win, step, minR, maxR, limit, logitThreshold));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeWinCount0
-List computeWinCount0(IntegerVector startPos, IntegerVector endPos, IntegerVector startNeg, IntegerVector endNeg, int end, int win, int step, double limit, double logitThreshold);
-RcppExport SEXP rnaCleanR_computeWinCount0(SEXP startPosSEXP, SEXP endPosSEXP, SEXP startNegSEXP, SEXP endNegSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP limitSEXP, SEXP logitThresholdSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type startPos(startPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endPos(endPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type startNeg(startNegSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endNeg(endNegSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    Rcpp::traits::input_parameter< int >::type win(winSEXP);
-    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< double >::type limit(limitSEXP);
-    Rcpp::traits::input_parameter< double >::type logitThreshold(logitThresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeWinCount0(startPos, endPos, startNeg, endNeg, end, win, step, limit, logitThreshold));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeWinCountNoThreshold
-List computeWinCountNoThreshold(IntegerVector startPos, IntegerVector endPos, IntegerVector startNeg, IntegerVector endNeg, int end, int win, int step, int minR, int maxR, double limit);
-RcppExport SEXP rnaCleanR_computeWinCountNoThreshold(SEXP startPosSEXP, SEXP endPosSEXP, SEXP startNegSEXP, SEXP endNegSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP minRSEXP, SEXP maxRSEXP, SEXP limitSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type startPos(startPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endPos(endPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type startNeg(startNegSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endNeg(endNegSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    Rcpp::traits::input_parameter< int >::type win(winSEXP);
-    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< int >::type minR(minRSEXP);
-    Rcpp::traits::input_parameter< int >::type maxR(maxRSEXP);
-    Rcpp::traits::input_parameter< double >::type limit(limitSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeWinCountNoThreshold(startPos, endPos, startNeg, endNeg, end, win, step, minR, maxR, limit));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeWinCountTest
-List computeWinCountTest(IntegerVector startPos, IntegerVector endPos, IntegerVector startNeg, IntegerVector endNeg, int end, int win, int step, double logitThreshold, int minR, double limit);
-RcppExport SEXP rnaCleanR_computeWinCountTest(SEXP startPosSEXP, SEXP endPosSEXP, SEXP startNegSEXP, SEXP endNegSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP logitThresholdSEXP, SEXP minRSEXP, SEXP limitSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type startPos(startPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endPos(endPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type startNeg(startNegSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endNeg(endNegSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    Rcpp::traits::input_parameter< int >::type win(winSEXP);
-    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< double >::type logitThreshold(logitThresholdSEXP);
-    Rcpp::traits::input_parameter< int >::type minR(minRSEXP);
-    Rcpp::traits::input_parameter< double >::type limit(limitSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeWinCountTest(startPos, endPos, startNeg, endNeg, end, win, step, logitThreshold, minR, limit));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeWinCov
-List computeWinCov(IntegerVector covPosLen, IntegerVector covPosVal, IntegerVector covNegLen, IntegerVector covNegVal, int end, int win, int step, int minCov, int maxCov, double logitThreshold);
-RcppExport SEXP rnaCleanR_computeWinCov(SEXP covPosLenSEXP, SEXP covPosValSEXP, SEXP covNegLenSEXP, SEXP covNegValSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP minCovSEXP, SEXP maxCovSEXP, SEXP logitThresholdSEXP) {
+// computeWin
+List computeWin(IntegerVector covPosLen, IntegerVector covPosVal, IntegerVector covNegLen, IntegerVector covNegVal, double readLength, int end, int win, int step, int minCov, int maxCov, double logitThreshold);
+RcppExport SEXP rnaCleanR_computeWin(SEXP covPosLenSEXP, SEXP covPosValSEXP, SEXP covNegLenSEXP, SEXP covNegValSEXP, SEXP readLengthSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP minCovSEXP, SEXP maxCovSEXP, SEXP logitThresholdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -95,19 +15,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type covPosVal(covPosValSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type covNegLen(covNegLenSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type covNegVal(covNegValSEXP);
+    Rcpp::traits::input_parameter< double >::type readLength(readLengthSEXP);
     Rcpp::traits::input_parameter< int >::type end(endSEXP);
     Rcpp::traits::input_parameter< int >::type win(winSEXP);
     Rcpp::traits::input_parameter< int >::type step(stepSEXP);
     Rcpp::traits::input_parameter< int >::type minCov(minCovSEXP);
     Rcpp::traits::input_parameter< int >::type maxCov(maxCovSEXP);
     Rcpp::traits::input_parameter< double >::type logitThreshold(logitThresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeWinCov(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minCov, maxCov, logitThreshold));
+    rcpp_result_gen = Rcpp::wrap(computeWin(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov, maxCov, logitThreshold));
     return rcpp_result_gen;
 END_RCPP
 }
-// computeWinCovNoThreshold
-List computeWinCovNoThreshold(IntegerVector covPosLen, IntegerVector covPosVal, IntegerVector covNegLen, IntegerVector covNegVal, int end, int win, int step, int minR, int maxR);
-RcppExport SEXP rnaCleanR_computeWinCovNoThreshold(SEXP covPosLenSEXP, SEXP covPosValSEXP, SEXP covNegLenSEXP, SEXP covNegValSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP minRSEXP, SEXP maxRSEXP) {
+// computeWin1
+List computeWin1(IntegerVector covPosLen, IntegerVector covPosVal, IntegerVector covNegLen, IntegerVector covNegVal, double readLength, int end, int win, int step, int minCov, int maxCov, double logitThreshold);
+RcppExport SEXP rnaCleanR_computeWin1(SEXP covPosLenSEXP, SEXP covPosValSEXP, SEXP covNegLenSEXP, SEXP covNegValSEXP, SEXP readLengthSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP minCovSEXP, SEXP maxCovSEXP, SEXP logitThresholdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -115,12 +36,33 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type covPosVal(covPosValSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type covNegLen(covNegLenSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type covNegVal(covNegValSEXP);
+    Rcpp::traits::input_parameter< double >::type readLength(readLengthSEXP);
     Rcpp::traits::input_parameter< int >::type end(endSEXP);
     Rcpp::traits::input_parameter< int >::type win(winSEXP);
     Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< int >::type minR(minRSEXP);
-    Rcpp::traits::input_parameter< int >::type maxR(maxRSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeWinCovNoThreshold(covPosLen, covPosVal, covNegLen, covNegVal, end, win, step, minR, maxR));
+    Rcpp::traits::input_parameter< int >::type minCov(minCovSEXP);
+    Rcpp::traits::input_parameter< int >::type maxCov(maxCovSEXP);
+    Rcpp::traits::input_parameter< double >::type logitThreshold(logitThresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(computeWin1(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov, maxCov, logitThreshold));
+    return rcpp_result_gen;
+END_RCPP
+}
+// computeWin2
+List computeWin2(IntegerVector covPosLen, IntegerVector covPosVal, IntegerVector covNegLen, IntegerVector covNegVal, double readLength, int end, int win, int step, int minCov);
+RcppExport SEXP rnaCleanR_computeWin2(SEXP covPosLenSEXP, SEXP covPosValSEXP, SEXP covNegLenSEXP, SEXP covNegValSEXP, SEXP readLengthSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP minCovSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type covPosLen(covPosLenSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type covPosVal(covPosValSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type covNegLen(covNegLenSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type covNegVal(covNegValSEXP);
+    Rcpp::traits::input_parameter< double >::type readLength(readLengthSEXP);
+    Rcpp::traits::input_parameter< int >::type end(endSEXP);
+    Rcpp::traits::input_parameter< int >::type win(winSEXP);
+    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
+    Rcpp::traits::input_parameter< int >::type minCov(minCovSEXP);
+    rcpp_result_gen = Rcpp::wrap(computeWin2(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -136,101 +78,26 @@ BEGIN_RCPP
 END_RCPP
 }
 // keepRead
-List keepRead(int nbSample, IntegerVector startPosAl, IntegerVector endPosAl, IntegerVector groupNamePos, IntegerVector samplePos, IntegerVector startNegAl, IntegerVector endNegAl, IntegerVector groupNameNeg, IntegerVector sampleNeg, IntegerVector keepWinPos, IntegerVector keepWinNeg, int end, int win, int step, double limit);
-RcppExport SEXP rnaCleanR_keepRead(SEXP nbSampleSEXP, SEXP startPosAlSEXP, SEXP endPosAlSEXP, SEXP groupNamePosSEXP, SEXP samplePosSEXP, SEXP startNegAlSEXP, SEXP endNegAlSEXP, SEXP groupNameNegSEXP, SEXP sampleNegSEXP, SEXP keepWinPosSEXP, SEXP keepWinNegSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP limitSEXP) {
+List keepRead(IntegerVector startPosAl, IntegerVector endPosAl, IntegerVector groupPos, IntegerVector startNegAl, IntegerVector endNegAl, IntegerVector groupNeg, NumericVector proporWinPos, NumericVector proporWinNeg, IntegerVector keepWinPos, IntegerVector keepWinNeg, int maxWin, int win, int step, double errorRate);
+RcppExport SEXP rnaCleanR_keepRead(SEXP startPosAlSEXP, SEXP endPosAlSEXP, SEXP groupPosSEXP, SEXP startNegAlSEXP, SEXP endNegAlSEXP, SEXP groupNegSEXP, SEXP proporWinPosSEXP, SEXP proporWinNegSEXP, SEXP keepWinPosSEXP, SEXP keepWinNegSEXP, SEXP maxWinSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP errorRateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nbSample(nbSampleSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type startPosAl(startPosAlSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type endPosAl(endPosAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type groupNamePos(groupNamePosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type samplePos(samplePosSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type groupPos(groupPosSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type startNegAl(startNegAlSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type endNegAl(endNegAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type groupNameNeg(groupNameNegSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sampleNeg(sampleNegSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type groupNeg(groupNegSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type proporWinPos(proporWinPosSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type proporWinNeg(proporWinNegSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type keepWinPos(keepWinPosSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type keepWinNeg(keepWinNegSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
+    Rcpp::traits::input_parameter< int >::type maxWin(maxWinSEXP);
     Rcpp::traits::input_parameter< int >::type win(winSEXP);
     Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< double >::type limit(limitSEXP);
-    rcpp_result_gen = Rcpp::wrap(keepRead(nbSample, startPosAl, endPosAl, groupNamePos, samplePos, startNegAl, endNegAl, groupNameNeg, sampleNeg, keepWinPos, keepWinNeg, end, win, step, limit));
-    return rcpp_result_gen;
-END_RCPP
-}
-// keepReadCov
-IntegerVector keepReadCov(IntegerVector startAl, IntegerVector endAl, CharacterVector strand, IntegerVector keepWinPos, IntegerVector keepWinNeg, int end, int win, int step);
-RcppExport SEXP rnaCleanR_keepReadCov(SEXP startAlSEXP, SEXP endAlSEXP, SEXP strandSEXP, SEXP keepWinPosSEXP, SEXP keepWinNegSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type startAl(startAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endAl(endAlSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type strand(strandSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type keepWinPos(keepWinPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type keepWinNeg(keepWinNegSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    Rcpp::traits::input_parameter< int >::type win(winSEXP);
-    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    rcpp_result_gen = Rcpp::wrap(keepReadCov(startAl, endAl, strand, keepWinPos, keepWinNeg, end, win, step));
-    return rcpp_result_gen;
-END_RCPP
-}
-// keepReadProba
-List keepReadProba(int nbSample, IntegerVector startPosAl, IntegerVector endPosAl, IntegerVector groupNamePos, IntegerVector samplePos, IntegerVector startNegAl, IntegerVector endNegAl, IntegerVector groupNameNeg, IntegerVector sampleNeg, IntegerVector keepWinPos, DoubleVector proporPos, IntegerVector keepWinNeg, DoubleVector proporNeg, int end, int win, int step, double limit);
-RcppExport SEXP rnaCleanR_keepReadProba(SEXP nbSampleSEXP, SEXP startPosAlSEXP, SEXP endPosAlSEXP, SEXP groupNamePosSEXP, SEXP samplePosSEXP, SEXP startNegAlSEXP, SEXP endNegAlSEXP, SEXP groupNameNegSEXP, SEXP sampleNegSEXP, SEXP keepWinPosSEXP, SEXP proporPosSEXP, SEXP keepWinNegSEXP, SEXP proporNegSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP limitSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nbSample(nbSampleSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type startPosAl(startPosAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endPosAl(endPosAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type groupNamePos(groupNamePosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type samplePos(samplePosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type startNegAl(startNegAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endNegAl(endNegAlSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type groupNameNeg(groupNameNegSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type sampleNeg(sampleNegSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type keepWinPos(keepWinPosSEXP);
-    Rcpp::traits::input_parameter< DoubleVector >::type proporPos(proporPosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type keepWinNeg(keepWinNegSEXP);
-    Rcpp::traits::input_parameter< DoubleVector >::type proporNeg(proporNegSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    Rcpp::traits::input_parameter< int >::type win(winSEXP);
-    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< double >::type limit(limitSEXP);
-    rcpp_result_gen = Rcpp::wrap(keepReadProba(nbSample, startPosAl, endPosAl, groupNamePos, samplePos, startNegAl, endNegAl, groupNameNeg, sampleNeg, keepWinPos, proporPos, keepWinNeg, proporNeg, end, win, step, limit));
-    return rcpp_result_gen;
-END_RCPP
-}
-// test
-DataFrame test(DataFrame d);
-RcppExport SEXP rnaCleanR_test(SEXP dSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< DataFrame >::type d(dSEXP);
-    rcpp_result_gen = Rcpp::wrap(test(d));
-    return rcpp_result_gen;
-END_RCPP
-}
-// winInGene
-List winInGene(IntegerVector startGenePos, IntegerVector endGenePos, IntegerVector startGeneNeg, IntegerVector endGeneNeg, int end, int win, int step, double lim);
-RcppExport SEXP rnaCleanR_winInGene(SEXP startGenePosSEXP, SEXP endGenePosSEXP, SEXP startGeneNegSEXP, SEXP endGeneNegSEXP, SEXP endSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP limSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type startGenePos(startGenePosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endGenePos(endGenePosSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type startGeneNeg(startGeneNegSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type endGeneNeg(endGeneNegSEXP);
-    Rcpp::traits::input_parameter< int >::type end(endSEXP);
-    Rcpp::traits::input_parameter< int >::type win(winSEXP);
-    Rcpp::traits::input_parameter< int >::type step(stepSEXP);
-    Rcpp::traits::input_parameter< double >::type lim(limSEXP);
-    rcpp_result_gen = Rcpp::wrap(winInGene(startGenePos, endGenePos, startGeneNeg, endGeneNeg, end, win, step, lim));
+    Rcpp::traits::input_parameter< double >::type errorRate(errorRateSEXP);
+    rcpp_result_gen = Rcpp::wrap(keepRead(startPosAl, endPosAl, groupPos, startNegAl, endNegAl, groupNeg, proporWinPos, proporWinNeg, keepWinPos, keepWinNeg, maxWin, win, step, errorRate));
     return rcpp_result_gen;
 END_RCPP
 }

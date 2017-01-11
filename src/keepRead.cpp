@@ -1,99 +1,88 @@
 #include <Rcpp.h>
 using namespace Rcpp;
-
+// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
-List keepRead(int nbSample,IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupNamePos,IntegerVector samplePos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNameNeg,IntegerVector sampleNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int end,int win,int step,double limit){
-  int minP = keepWinPos[0];
-  int maxP = keepWinPos[keepWinPos.size()-1];
-  bool* keepPos = new bool[maxP+1];
-  for (int i=0;i<=maxP;i++) keepPos[i]=false;
+List keepRead(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupPos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNeg,NumericVector proporWinPos,NumericVector proporWinNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int maxWin,int win,int step,double errorRate){
+  int minP = startPosAl[0];
+  int minN = startNegAl[0];
+  int* keepWin = new int[maxWin];
+  for (int i=0;i<maxWin;i++) keepWin[i]=0;
   for (int i=0;i<keepWinPos.size();i++){
-    keepPos[keepWinPos[i]-1]=true;
+    keepWin[keepWinPos[i]-1]=1;
   }
-  int minM = keepWinNeg[0];
-  int maxM = keepWinNeg[keepWinNeg.size()-1];
-  bool* keepNeg = new bool[maxM+1];
-  for (int i=0;i<=maxM;i++) keepNeg[i]=false;
   for (int i=0;i<keepWinNeg.size();i++){
-    keepNeg[keepWinNeg[i]-1]=true;
+    if (keepWin[keepWinNeg[i]-1]==1){
+      keepWin[keepWinNeg[i]-1]=2;
+    }
+    else keepWin[keepWinNeg[i]-1]=-1;
   }
-  std::vector<int>* keepReadPos = new std::vector<int>[nbSample];
-  std::vector<int>* keepReadNeg = new std::vector<int>[nbSample];
-  int countP=0;
-  int countM=0;
+  NumericVector probPosWin(maxWin);
+  NumericVector probNegWin(maxWin);
+  for (int i=0;i<maxWin;i++){
+    probPosWin[i] = errorRate;
+    probNegWin[i] = errorRate;
+  }
+  for (int w=0;w<keepWinPos.length();w++){
+    int i = keepWinPos[w];
+    if (keepWin[i-1]==1){
+      probPosWin[i-1]=(2-1/proporWinPos[w]);
+    }
+    else if (keepWin[i-1]==2){
+      probPosWin[i-1]=(1-errorRate);
+      probNegWin[i-1]=(1-errorRate);
+    }
+  }
+  for (int w=0;w<keepWinNeg.length();w++){
+    int i = keepWinNeg[w];
+    if (keepWin[i-1]==-1){
+      probNegWin[i-1]=((1-2*proporWinNeg[w])/(1-proporWinNeg[w]));
+    }
+  }
+  NumericVector probPosAl(startPosAl.size()+1);  
+  for (int i=0;i<startPosAl.size();i++) probPosAl[i]=0;
   for (int a=0;a<startPosAl.size();a++){
     int s = startPosAl[a];
     int e = endPosAl[a];
-    int sam = samplePos[a];
-    int lim = (e-s+1)*limit;
-    s = s + lim;
-    e = e - lim;
-    int wS=0;
-    if (s>win){
-      wS=ceil((s-win-1)/(double)step);//first windows that contain fragment i
+    int x1 = 1+ceil((double)(s-win)/step);//the first windows that the start position of the read is in
+    int x2 = 1+floor((double)(e-1)/step);//the last windows that the end position of the read is in
+    if (x1<0) x1=0;
+    double prob = 0;
+    for (int k=x1;k<=x2;k++){ 
+      prob=std::max(prob,probPosWin[k]);
     }
-    int wE=maxP;
-    if (e<(1+step*(maxP))){
-      wE=floor(e/(double)step);//last window that contain fragment i
-    }
-    bool bl=false;
-    if (wE>=minP && wS<=maxP){
-      int i=wS;
-      if (i<minP) i=minP;
-      int j=wE;
-      if (j>maxP) j=maxP;
-      bl = keepPos[i];
-      i++;
-      while (!bl && i<=j){
-        bl = keepPos[i];
-        i++;
-      }
-      if (bl){ keepReadPos[sam-1].push_back(groupNamePos[a]);}
-    }
+    probPosAl[groupPos[a]]=std::max(probPosAl[groupPos[a]],prob);
   }
+  NumericVector probNegAl(startNegAl.size()+1); 
+  for (int i=0;i<startNegAl.size();i++) probNegAl[i]=0;
   for (int a=0;a<startNegAl.size();a++){
     int s = startNegAl[a];
     int e = endNegAl[a];
-    int sam = sampleNeg[a];
-    int lim = (e-s+1)*limit;
-    s = s + lim;
-    e = e - lim;
-    int wS=0;
-    if (s>win){
-      wS=ceil((s-win-1)/(double)step);//first windows that contain fragment i
+    int x1 = 1+ceil((double)(s-win)/step);//the first windows that the start position of the read is in
+    int x2 = 1+floor((double)(e-1)/step);//the last windows that the end position of the read is in
+    if (x1<0) x1=0;
+    double prob = 0;
+    for (int k=x1;k<=x2;k++){ 
+      prob=std::max(prob,probNegWin[k]);
     }
-    int wE=maxM;
-    if (e<(1+step*(maxM))){
-      wE=floor(e/(double)step);//last window that contain fragment i
-    }
-    bool bl=false;
-    if (wE>=minM && wS<=maxM){
-      int i=wS;
-      if (i<minM) i=minM;
-      int j=wE;
-      if (j>maxM) j=maxM;
-      bl = keepNeg[i];
-      i++;
-      while (!bl && i<=j){
-        bl = keepNeg[i];
-        i++;
-      }
-      if (bl){ keepReadNeg[sam-1].push_back(groupNameNeg[a]);}
+    probNegAl[groupNeg[a]]=std::max(probNegAl[groupNeg[a]],prob);
+  }
+  
+  std::default_random_engine generator;
+  std::vector<int> listKeepPosReads;
+  std::vector<int> listKeepNegReads;
+  for (int i=0;i<startPosAl.size();i++){
+    std::binomial_distribution<int> distribution(1,probPosAl[groupPos[i]]);
+    if (distribution(generator)){
+      listKeepPosReads.push_back(groupPos[i]);
     }
   }
-  delete[] keepPos;
-  delete[] keepNeg; 
-  List lPos(nbSample);
-  for (int i=0;i<nbSample;i++){
-    lPos[i] = wrap(keepReadPos[i]);
+  for (int i=0;i<startNegAl.size();i++){
+    std::binomial_distribution<int> distribution(1,probNegAl[groupNeg[i]]);
+    if (distribution(generator)){
+      listKeepNegReads.push_back(groupNeg[i]);
+    }
   }
-  List lNeg(nbSample);
-  for (int i=0;i<nbSample;i++){
-    lNeg[i] = wrap(keepReadNeg[i]);
-  }
-  return List::create(_["Pos"] = lPos, _["Neg"] = lNeg);
-  /*return List::create(
-    _["Pos"] = wrap(keepReadPos),
-    _["Neg"] = wrap(keepReadNeg)
-  );*/
+  return List::create(
+    _["Pos"] = listKeepPosReads,
+    _["Neg"] = listKeepNegReads);
 }
