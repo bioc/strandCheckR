@@ -2,25 +2,33 @@
 % Please edit documentation in R/filterOne.R
 \name{filterOne}
 \alias{filterOne}
-\title{Filter One Bam File Based On Coverage}
+\title{Filter One Bam File}
 \usage{
 filterOne(bamfilein, bamfileout, statfile, histPlot = FALSE,
-  winPlot = FALSE, histPlotFile, winPlotFile, chromosomes = NULL,
-  readLength, win, step, pvalueThreshold = 0.05, minCov = 0, maxCov = 0,
-  breaks = 100, threshold = 0.7, errorRate = 0.01)
+  winPlot = FALSE, histPlotFile, winPlotFile, readLength,
+  chromosomes = NULL, win, step, pvalueThreshold = 0.05, minCov = 0,
+  maxCov = 0, breaks = 100, threshold = 0.7, errorRate = 0.01)
 }
 \arguments{
 \item{bamfilein}{the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
 
-\item{bamfileout}{the output bam file}
+\item{bamfileout}{the output filtered bam file}
 
 \item{statfile}{the file to write the summary of the results}
 
+\item{histPlot}{if it's TRUE then a histogram plot about the positive proportion over all window will be generated. It's FALSE by default.}
+
+\item{winPlot}{if it's TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.}
+
+\item{histPlotFile}{the file to write the histogram plot when histPlot is TRUE}
+
+\item{winPlotFile}{the file to write the window plot when winPlot is TRUE}
+
 \item{chromosomes}{the list of chromosomes to be filtered}
 
-\item{win}{the length of the sliding window. 1000 by default}
+\item{win}{the length of the sliding window}
 
-\item{step}{the step length to slide the window. 100 by default}
+\item{step}{the step length to sliding the window}
 
 \item{pvalueThreshold}{the threshold for the p-value. 0.05 by default}
 
@@ -28,22 +36,22 @@ filterOne(bamfilein, bamfileout, statfile, histPlot = FALSE,
 
 \item{maxCov}{if a window has the max coverage greater than maxCov, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.}
 
-\item{breaks}{the breaks to plot histogram}
+\item{breaks}{the breaks the histogram when histPlot is TRUE}
 
 \item{threshold}{the threshold upper which we keep the reads. 0.7 by default}
 
-\item{histfile}{the file to write the histogram of the positive proportions over all windows}
+\item{errorRate}{the probability that an RNA read takes the false strand}
 }
 \description{
-Filter double strand DNA from a strand specific RNA-seq. Positive/negative strands of sliding windows are caculated based on the coverage of positive/negative reads that overlap the window.
+Filter DNA from a strand specific RNA-seq using a window sliding across the genome. Positive/negative strands of sliding windows are caculated based on the coverage of positive/negative reads that overlap the window.
 }
 \details{
-filterOneCov reads a bam file containing strand specific RNA reads, and filter the potential double strand contamination DNA from that. 
+filterOne reads a bam file containing strand specific RNA reads, and filter the potential double strand contamination DNA from that. 
 Using a window sliding across the genome, we estimate the probability to keep or reject it based on the proportion of positive/negative reads in the window.
 }
 \examples{
  
-bamfilein <- system.file("data","chr1.bam",package = "rnaCleanR")
-filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histfile = "hist.png", readLength = 100, threshold = 0.7)
+bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
+filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
 }
 

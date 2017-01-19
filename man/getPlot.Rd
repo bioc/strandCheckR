@@ -31,4 +31,8 @@ getPlot(bamfilein, histPlotFile, winPlotFile, chromosomes = NULL, readLength,
 \description{
 Plot the histogram of the positive proportion over all sliding windows, and the plot presenting number of reads vs positive proportion over all sliding windows.
 }
+\examples{
+bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
+getPlot(bamfilein,histPlotFile = "hist.pdf", winPlotFile = "win.pdf",readLength = 100)
+}
 

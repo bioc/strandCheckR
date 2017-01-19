@@ -2,7 +2,7 @@
 % Please edit documentation in R/filterMulti.R
 \name{filterMulti}
 \alias{filterMulti}
-\title{Filter Using Merged Files}
+\title{Filter Several Bam Files}
 \usage{
 filterMulti(bamfilein, bamfileout, statfile, chromosomes = NULL, readLength,
   win, step, pvalueThreshold = 0.05, minCov = 0, maxCov = 0,
@@ -27,14 +27,19 @@ filterMulti(bamfilein, bamfileout, statfile, chromosomes = NULL, readLength,
 
 \item{maxR}{if a window has the max coverage greater than maxR, then it will be kept}
 }
-\value{
-the proportion of removed reads in every sample
-}
 \description{
 Filter several bamfiles based on the strand specific of the merged files. 
 The strand of each sliding window is caculated based on coverage.
 }
 \details{
 None
+
+filterMulti reads a set of bam files containing strand specific RNA reads, and filter the potential double strand contamination DNA from all these files. 
+This method also uses sliding windows approach as method filterOne, but it uses the strand information of the reads coming from all input bam files.
+}
+\examples{
+ 
+bamfilein <- system.file("data",c("s1.chr1.bam","s2.chr1.bam"),package = "rnaCleanR")
+filterMulti(bamfilein,bamfileout=c("s1.filter.bam","s2.filter.bam"),statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
 }
 

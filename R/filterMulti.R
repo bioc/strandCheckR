@@ -1,4 +1,4 @@
-#' @title Filter Using Merged Files
+#' @title Filter Several Bam Files
 #' 
 #' @description Filter several bamfiles based on the strand specific of the merged files. 
 #' The strand of each sliding window is caculated based on coverage.
@@ -15,8 +15,13 @@
 #' @param minR if a window has the max coverage least than minR, then it will be rejected
 #' @param maxR if a window has the max coverage greater than maxR, then it will be kept
 #'
+#' @details filterMulti reads a set of bam files containing strand specific RNA reads, and filter the potential double strand contamination DNA from all these files. 
+#' This method also uses sliding windows approach as method filterOne, but it uses the strand information of the reads coming from all input bam files.
 #' 
-#' @return the proportion of removed reads in every sample
+#' @examples  
+#' bamfilein <- system.file("data",c("s1.chr1.bam","s2.chr1.bam"),package = "rnaCleanR")
+#' filterMulti(bamfilein,bamfileout=c("s1.filter.bam","s2.filter.bam"),statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
+#' @export
 #' 
 filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes=NULL,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,threshold=0.7,errorRate=0.01){
   startTime <- proc.time()
@@ -58,16 +63,11 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes=NULL,readLengt
   }
   keepWinPos <- list()
   keepWinNeg <- list()
-  maxWin <- rep(0,length(idSeq))
   for (chr in chromosomes){
     chromosomeIndex <- which(idSeq==chr)
     len <- lenSeq[chromosomeIndex]
     #compute the normalized value of each positive/negative window to be tested by pnorm
-    windows <- computeWinCov(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
-    
-    maxWin[chromosomeIndex] <- 0
-    if (nrow(windows$Plus)>0) maxWin[chromosomeIndex] <- windows$Plus$win[nrow(windows$Plus)]
-    if (nrow(windows$Minus)>0) maxWin[chromosomeIndex] <- max(maxWin[chromosomeIndex],windows$Minus$win[nrow(windows$Minus)])
+    windows <- computeWin(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
     
     windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter( pvalue <= pvalueThreshold) %>% dplyr::select(c(win,propor))
     windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue <= pvalueThreshold) %>% dplyr::select(c(win,propor))
@@ -84,7 +84,7 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes=NULL,readLengt
   append <- FALSE
   for (i in seq_along(bamfilein)){
     cat(paste0("File ",i," : ",bamfilein[i],"\n"),file = statfile,append = append)
-    alignment <- readGAlignments(bamfilein[i])
+    alignment <- GenomicAlignments::readGAlignments(bamfilein[i])
     reader <- bamReader(bamfilein[i],idx=TRUE)
     header <- getHeader(reader)
     writer <- bamWriter(header,bamfileout[i])
@@ -99,32 +99,27 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes=NULL,readLengt
       nbOReadsChr <- length(alignmentInChr)
       nbOReads[i] <- nbOReads[i] + nbOReadsChr
       
-      position <- data.frame("group"=c(),"start"=c(),"end"=c(),"sample"=c()) #position of each fragment 
-      alPos <- alignmentInChr[strand(alignmentInChr)=='+']
-      alNeg <- alignmentInChr[strand(alignmentInChr)=='-']
       index <- getIndex(as.vector(strand(alignmentInChr)))
+      fragments <- getFragment(alignmentInChr)
       remove(alignmentInChr)
-      positionPos <- GenomicAlignments::extractAlignmentRangesOnReference(GenomicAlignments::cigar(alPos),pos=start(alPos)) %>% data.frame() %>% dplyr::select(-c(group_name,width))  
-      positionPos <- positionPos[order(positionPos$start),]
-      positionNeg <- GenomicAlignments::extractAlignmentRangesOnReference(GenomicAlignments::cigar(alNeg),pos=start(alNeg)) %>% data.frame() %>% dplyr::select(-c(group_name,width))  
-      positionNeg <- positionNeg[order(positionNeg$start),]
       
-      reads <- c()
-      if (maxWin[chromosomeIndex]>0){
-        reads <- keepRead(positionPos$start,positionPos$end,positionPos$group,positionNeg$start,positionNeg$end,positionNeg$group,keepWinPos[[chromosomeIndex]]$propor,keepWinNeg[[chromosomeIndex]]$propor,keepWinPos[[chromosomeIndex]]$win,keepWinNeg[[chromosomeIndex]]$win,maxWin[chromosomeIndex],win,step,errorRate);   
+      keptReads <- c()
+      if (nrow(keepWinPos[[chromosomeIndex]])>0 || nrow(keepWinNeg[[chromosomeIndex]])>0){
+        keptReads <- keepRead(fragments$Pos,fragments$Neg,keepWinPos[[chromosomeIndex]],keepWinNeg[[chromosomeIndex]],win,step,errorRate);   
       }
-      reads <- c(index$Pos[unique(reads$Pos)],index$Neg[unique(reads$Neg)]) %>% sort() 
+      keptReads <- c(index$Pos[unique(keptReads$Pos)],index$Neg[unique(keptReads$Neg)]) %>% sort() 
+      remove(keptFragments)
       if (chromosomeIndex>1){
         append <- TRUE
       }
-      cat(paste0("Chromosome ",chr,", length: ",end,", number of original reads: ",nbOReadsChr,", number of kept reads: ",length(reads),"\n"),file=statfile,append=append)
-      nbKReads[i] <- nbKReads[i] + length(reads)
-      if (length(reads)>0){
+      cat(paste0("Chromosome ",chr,", length: ",end,", number of original reads: ",nbOReadsChr,", number of kept reads: ",length(keptReads),"\n"),file=statfile,append=append)
+      nbKReads[i] <- nbKReads[i] + length(keptReads)
+      if (length(keptReads)>0){
         range <- bamRange(reader,c(chromosomeIndex-1,0,end))
-        bamSave(writer,range[reads,],refid=chromosomeIndex-1)
+        bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
         remove(range)
       }
-      remove(reads)
+      remove(keptReads)
       if (i==length(bamfilein)){
         keepWinPos[[chromosomeIndex]] <- c(1)
         keepWinNeg[[chromosomeIndex]] <- c(1)

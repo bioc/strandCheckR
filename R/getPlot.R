@@ -12,19 +12,23 @@
 #' @param breaks the breaks of the histogram plot
 #' @param xlim xlim of the window plot
 #' @param minCov the min coverage of a window under which the window is ignored
-#' @import Rcpp
-#' @import magrittr
-#' @import S4Vectors
-#' @import BiocGenerics
+#' 
+#' @examples 
+#' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
+#' getPlot(bamfilein,histPlotFile = "hist.pdf", winPlotFile = "win.pdf",readLength = 100)
 #' @export
 #' 
 getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes = NULL, readLength,win,step,breaks = 100,xlim,minCov=0){
   # read the input alignments and compute positive/negative coverge
   if (missing(win)){ 
-    win = 10*readLength
+    win <- ifelse(missing(readLength),1000,10*readLength)
   }
   if (missing(step)){
-    step = readLength
+    step <- ifelse(missing(readLength),100,readLength)
+  }
+  if (missing(statfile)){
+    message("Summary is written to file out.stat")
+    statfile <- "out.stat"
   }
   
   alignment <- GenomicAlignments::readGAlignments(bamfilein) 
@@ -44,7 +48,7 @@ getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes = NULL, readL
     chromosomeIndex <- which(allChromosomes==chr)
     len <- lenSeq[chromosomeIndex]
     #compute strand information in each window
-    windows <- rbind(windows,computeWin2(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov))
+    windows <- rbind(windows,computeWinPlot(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov))
   }
   if (missing(histPlotFile)){
     histPlotFile <- paste0(bamfilein,"_hist.pdf")

@@ -1,3 +1,16 @@
+#' @title Plot the number of reads vs positive proportion over all sliding windows.
+#' 
+#' @description Plot the number of reads vs positive proportion over all sliding windows. Windows are grouped based on their maximum coverage. By default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+
+#' @param windows data frame containing the positive proportion of each window, the sum of reads of the window and the coverage group that it belongs to.
+#' @param winfile the file to write the window plot
+#' @param xlim xlim of the window plot
+#' 
+#' @examples 
+#' windows <- data.frame("propor"=runif(1000, min=0, max=1),"sum" = sample(2:1000,1000,replace=TRUE), "group"=sample(1:8, 1000, replace=TRUE))
+#' winPlot(windows,"win.pdf")
+#' @export
+#'
 winPlot <- function(windows,winfile,xlim){
   allCols <- c("blue","green","cyan","pink","orange","red","brown","black")
   leg <- c("0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000")

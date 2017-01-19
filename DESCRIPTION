@@ -1,12 +1,11 @@
 Package: rnaCleanR
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: Filter potential contaminated double strand DNA from strand-specific RNA bam file
 Version: 1.0
 Date: 2016-10-11
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more
-    full sentences.
+Author: Thu Hien To & Steve Pederson
+Maintainer: Hien To <hien.to@adelaide.edu.au>
+Description: This package aims to quantify and remove contaminated double strand DNA from a strand-specific RNA sample. It uses a window sliding across each chromosome, and consider the proportion of positive/negative reads in each window comparing to a given threshold, to decide wheather a window is kept or removed. Then we assigne to each read fragment a probability of being kept based on the proportion of positive/negative of the kept windows that contain the fragment. There are also options and methods to plot the positive/negative proportions of all sliding windows, which allow users to have an idea of how much the sample was contaminated and the appropriate threshold to be used.
 License: GPL (>= 2)
 Imports:
     Rcpp (>= 0.12.7)
