@@ -2,16 +2,17 @@
 #include "utils.h"
 using namespace Rcpp;
 
-//' @title  compute strand information of sliding window based on coverage
+//' @title  Compute strand information of sliding window (plot version)
 //'
-//' @description non
-//'
-//' @param covPosLen the length the Rle object, which is the coverage comes from positive reads
-//' @param covPosVal the value the Rle object, which is the coverage comes from positive reads
-//' @param covNegLen the length the Rle object, which is the coverage comes from negative reads
-//' @param covNegVal the value the Rle object, which is the coverage comes from negative reads
-//' @param readLength the average length of reads
+//' @description Compute the positive proportion, sum of reads, max coverage and the group of each window. Windows are grouped based on their maximum coverage. By default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+//' This method is used when we only need the information to plot, and do not need to filter the reads afterward.
+//' 
+//' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
+//' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
+//' @param covNegLen the run length of an Rle object which is the coverage comes from negative reads
+//' @param covNegVal the run value of an Rle object which is the coverage comes from negative reads
 //' @param end the last base on the reference chromosome that the sliding window atteint
+//' @param readLength the average length of reads
 //' @param win the size of the sliding window
 //' @param step the step of the sliding window
 //' @param minCov if a window has the max coverage least than minCov, then it will be rejected
@@ -19,14 +20,28 @@ using namespace Rcpp;
 //' @param logitThreshold the logit of the threshold
 //'
 //' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
-//' 
+//' Each data frame contains contain the information of proportion of postive reads, the max coverage and the group of max coverage
 //' @examples
-//' computeWin2(c(10000,200,30,1,20,50),c(0,2,3,4,1,2),c(10020,300,20,1,10,15),c(0,1,3,5,1,3),100,10200,1000,100,0)
+//' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
+//' alignment <- GenomicAlignments::readGAlignments(bamfilein) 
+//' alignmentInChr1 <- alignment[seqnames(alignment)=="1"] 
+//' covPos <- alignmentInChr1[strand(alignment)=="+"] %>% GenomicAlignments::coverage() 
+//' covNeg <- alignmentInChr1[strand(alignment)=="-"] %>% GenomicAlignments::coverage() 
+//' len <- length(covChr)
+//' readLength <- 100
+//' win <- 1000
+//' step <- 100
+//' minCov <- 0
+//' maxCov <- 0
+//' logitThreshold <- binomial()$linkfun(0.7) 
+//' windows <- computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,logitThreshold)
+//' 
 //' 
 //' @export
+//' 
 // [[Rcpp::export]]
 
-List computeWin2(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector covNegLen,IntegerVector covNegVal,double readLength,int end,int win,int step,int minCov){
+List computeWinPlot(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector covNegLen,IntegerVector covNegVal,double readLength,int end,int win,int step,int minCov){
   int start=0;
   int preP=0;
   int preM=0;

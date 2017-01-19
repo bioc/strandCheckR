@@ -1,15 +1,7 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// This is a simple example of exporting a C++ function to R. You can
-// source this function into an R session using the Rcpp::sourceCpp 
-// function (or via the Source button on the editor toolbar). Learn
-// more about Rcpp at:
-//
-//   http://www.rcpp.org/
-//   http://adv-r.had.co.nz/Rcpp.html
-//   http://gallery.rcpp.org/
-//
+//' @title  This file contains some functions that are used in more than one method. These include the methods that slide the windows upon the runLength and runValue of an Rle object (normally positive/negative coverage) to get the information of the windows such as sum positive/negative coverage, max coverage
 
 void increase(IntegerVector len,int& ind, int start, int end, int inc, int& pre){
   int next = start;

@@ -1,5 +1,5 @@
-#ifndef PKG_FOO1_H
-#define PKG_FOO1_H
+#ifndef PKG_UTILS_H
+#define PKG_UTILS_H
 
 using namespace Rcpp;
 void increase(IntegerVector len,int& ind, int start, int end, int inc, int& pre);
