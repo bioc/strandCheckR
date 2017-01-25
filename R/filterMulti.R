@@ -92,29 +92,27 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes=NULL,readLengt
       append <- TRUE
     }
     for (chr in chromosomes){
-      chromosomeIndex <- which(idSeq==chr)
-      end <- lenSeq[chromosomeIndex]
-      alignmentInChr <- alignment[seqnames(alignment)==chr]#get the reads in the considering chromosome
-      alignment <- alignment[seqnames(alignment)!=chr]#reduce the size of alignment (for memory purpose)
-      nbOReadsChr <- length(alignmentInChr)
-      nbOReads[i] <- nbOReads[i] + nbOReadsChr
-      
-      index <- getIndex(as.vector(strand(alignmentInChr)))
-      fragments <- getFragment(alignmentInChr)
-      remove(alignmentInChr)
-      
       keptReads <- c()
+      nbOReadsChr <- 0
       if (nrow(keepWinPos[[chromosomeIndex]])>0 || nrow(keepWinNeg[[chromosomeIndex]])>0){
+        chromosomeIndex <- which(idSeq==chr)
+        end <- lenSeq[chromosomeIndex]
+        alignmentInChr <- alignment[seqnames(alignment)==chr]#get the reads in the considering chromosome
+        alignment <- alignment[seqnames(alignment)!=chr]#reduce the size of alignment (for memory purpose)
+        nbOReadsChr <- length(alignmentInChr)
+        nbOReads[i] <- nbOReads[i] + nbOReadsChr
+        
+        index <- getIndex(as.vector(strand(alignmentInChr)))
+        fragments <- getFragment(alignmentInChr)
+        remove(alignmentInChr)
         keptReads <- keepRead(fragments$Pos,fragments$Neg,keepWinPos[[chromosomeIndex]],keepWinNeg[[chromosomeIndex]],win,step,errorRate);   
+        keptReads <- c(index$Pos[unique(keptReads$Pos)],index$Neg[unique(keptReads$Neg)]) %>% sort() 
+        
+        cat(paste0("Chromosome ",chr,", length: ",end,", number of original reads: ",nbOReadsChr,", number of kept reads: ",length(keptReads),"\n"),file=statfile,append=append)
+        if (append==FALSE) append <- TRUE
       }
-      keptReads <- c(index$Pos[unique(keptReads$Pos)],index$Neg[unique(keptReads$Neg)]) %>% sort() 
-      remove(keptFragments)
-      if (chromosomeIndex>1){
-        append <- TRUE
-      }
-      cat(paste0("Chromosome ",chr,", length: ",end,", number of original reads: ",nbOReadsChr,", number of kept reads: ",length(keptReads),"\n"),file=statfile,append=append)
-      nbKReads[i] <- nbKReads[i] + length(keptReads)
       if (length(keptReads)>0){
+        nbKReads[i] <- nbKReads[i] + length(keptReads)
         range <- bamRange(reader,c(chromosomeIndex-1,0,end))
         bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
         remove(range)

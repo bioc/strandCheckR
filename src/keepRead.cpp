@@ -1,9 +1,9 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-//' @title  calculate the reads to be kept based of the kept windows
+//' @title  Calculate the reads to be kept based of the kept windows
 //'
-//' @description non
+//' @description 
 //'
 //' @param posFragments the data frame contains the information of positive fragments (generated from the function getFragment)
 //' @param negFragments the data frame contains the information of negative fragments (generated from the function getFragment)
@@ -16,10 +16,10 @@ using namespace Rcpp;
 //' @return A list of two vectors containing the positive and negative reads to be kept
 //' 
 //' @examples
-//' posFragments <- data.frame("group"=,"start"=,"end"=)
-//' negFragments <- data.frame("group"=,"start"=,"end"=)
-//' keptPosWin <- data.frame("win"=,"propor"=)
-//' keptNegWin <- data.frame("win"=,"propor"=)
+//' posFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
+//' negFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
+//' keptPosWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0, max=1))
+//' keptNegWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0, max=1))
 //' win <- 1000
 //' step <- 100
 //' errorRate <- 0.01

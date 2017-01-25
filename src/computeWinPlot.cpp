@@ -4,8 +4,8 @@ using namespace Rcpp;
 
 //' @title  Compute strand information of sliding window (plot version)
 //'
-//' @description Compute the positive proportion, sum of reads, max coverage and the group of each window. Windows are grouped based on their maximum coverage. By default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
-//' This method is used when we only need the information to plot, and do not need to filter the reads afterward.
+//' @description Compute the positive proportion, sum of reads, max coverage and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+//' This method is used in the getPlot function when we only need the information to plot, and do not need to filter the reads afterward.
 //' 
 //' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
 //' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
@@ -70,6 +70,7 @@ List computeWinPlot(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVecto
         pro.push_back(estimate);
         sum.push_back((Plus+Minus)/(double)readLength);
         maxC.push_back(max);
+        window.push_back(c);
         if (max>1000) group.push_back(8);
         else if (max>500) group.push_back(7);
         else if (max>200) group.push_back(6);
@@ -83,7 +84,7 @@ List computeWinPlot(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVecto
     }
     c++;
   }
-  return DataFrame::create(_["propor"]=pro, _["sum"]= sum, _ ["max"]= maxC, _ ["group"] = group);
+  return DataFrame::create(_["win"]=window,_["propor"]=pro, _["sum"]= sum, _ ["max"]= maxC, _ ["group"] = group);
 }
 
 

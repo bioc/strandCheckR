@@ -35,8 +35,8 @@ A list of two data frames Plus and Minus which respectively contains information
 Each data frame contains contain the information of proportion of postive reads, the max coverage and the group of max coverage
 }
 \description{
-Compute the positive proportion, sum of reads, max coverage and the group of each window. Windows are grouped based on their maximum coverage. By default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
-This method is used when we only need the information to plot, and do not need to filter the reads afterward.
+Compute the positive proportion, sum of reads, max coverage and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+This method is used in the getPlot function when we only need the information to plot, and do not need to filter the reads afterward.
 }
 \examples{
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")

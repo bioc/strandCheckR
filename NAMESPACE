@@ -1,6 +1,7 @@
 export(computeWin)
 export(computeWinVerbose)
 export(computeWinPlot)
+export(keepRead)
 export(filterMulti)
 export(filterOne)
 export(getFragment)

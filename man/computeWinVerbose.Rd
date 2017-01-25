@@ -35,7 +35,8 @@ A list of two data frames Plus and Minus which respectively contains information
 Each data frame contains contain the information of window number, proportion of postive reads, the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error), the sum of coverage, the max coverage and the group of max coverage
 }
 \description{
-non
+Compute the positive proportion, the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error), the sum of coverage, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+This method is used in the filter method when we have to filter the input bam files together with plotting the window information.
 }
 \examples{
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")

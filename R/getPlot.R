@@ -36,19 +36,19 @@ getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes = NULL, readL
   covNeg <- alignment[strand(alignment)=="-"] %>% GenomicAlignments::coverage() 
   
   #get the names of all chromosomes
-  allChromosomes <- levels(seqnames(alignment)) 
+  allChromosomes <- levels(seqnames(alignment1)) 
   if (is.null(chromosomes)) chromosomes <- allChromosomes
   
   #get the length of each chromosome 
   lenSeq<-sapply(covPos,function(covChr) length(covChr)) 
   
-  windows <-data.frame("win"=c(),"propor"=c(),"sum"=c(),"max"=c(),"group"=c())
+  windows1 <-data.frame("win"=c(), "chr"=c(),"propor"=c(),"sum"=c(),"max"=c(),"group"=c())
   
   for (chr in chromosomes){ #filter on each chromosome
     chromosomeIndex <- which(allChromosomes==chr)
     len <- lenSeq[chromosomeIndex]
     #compute strand information in each window
-    windows <- rbind(windows,computeWinPlot(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov))
+    windows1 <- rbind(windows1,computeWinPlot(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov) %>% dplyr::mutate("chr"=chr))
   }
   if (missing(histPlotFile)){
     histPlotFile <- paste0(bamfilein,"_hist.pdf")

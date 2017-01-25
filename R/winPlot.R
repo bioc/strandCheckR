@@ -1,6 +1,6 @@
 #' @title Plot the number of reads vs positive proportion over all sliding windows.
 #' 
-#' @description Plot the number of reads vs positive proportion over all sliding windows. Windows are grouped based on their maximum coverage. By default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+#' @description Plot the number of reads vs positive proportion over all sliding windows. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
 
 #' @param windows data frame containing the positive proportion of each window, the sum of reads of the window and the coverage group that it belongs to.
 #' @param winfile the file to write the window plot

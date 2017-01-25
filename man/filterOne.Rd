@@ -4,10 +4,10 @@
 \alias{filterOne}
 \title{Filter One Bam File}
 \usage{
-filterOne(bamfilein, bamfileout, statfile, histPlot = FALSE,
-  winPlot = FALSE, histPlotFile, winPlotFile, readLength,
-  chromosomes = NULL, win, step, pvalueThreshold = 0.05, minCov = 0,
-  maxCov = 0, breaks = 100, threshold = 0.7, errorRate = 0.01)
+filterOne(bamfilein, bamfileout, statfile, chromosomes, histPlot = FALSE,
+  winPlot = FALSE, histPlotFile, winPlotFile, readLength, win, step,
+  pvalueThreshold = 0.05, minCov = 0, maxCov = 0, breaks = 100,
+  threshold = 0.7, errorRate = 0.01)
 }
 \arguments{
 \item{bamfilein}{the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
@@ -16,6 +16,8 @@ filterOne(bamfilein, bamfileout, statfile, histPlot = FALSE,
 
 \item{statfile}{the file to write the summary of the results}
 
+\item{chromosomes}{the list of chromosomes to be filtered}
+
 \item{histPlot}{if it's TRUE then a histogram plot about the positive proportion over all window will be generated. It's FALSE by default.}
 
 \item{winPlot}{if it's TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.}
@@ -23,8 +25,6 @@ filterOne(bamfilein, bamfileout, statfile, histPlot = FALSE,
 \item{histPlotFile}{the file to write the histogram plot when histPlot is TRUE}
 
 \item{winPlotFile}{the file to write the window plot when winPlot is TRUE}
-
-\item{chromosomes}{the list of chromosomes to be filtered}
 
 \item{win}{the length of the sliding window}
 

@@ -14,7 +14,7 @@ winPlot(windows, winfile, xlim)
 \item{xlim}{xlim of the window plot}
 }
 \description{
-Plot the number of reads vs positive proportion over all sliding windows. Windows are grouped based on their maximum coverage. By default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+Plot the number of reads vs positive proportion over all sliding windows. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
 }
 \examples{
 windows <- data.frame("propor"=runif(1000, min=0, max=1),"sum" = sample(2:1000,1000,replace=TRUE), "group"=sample(1:8, 1000, replace=TRUE))

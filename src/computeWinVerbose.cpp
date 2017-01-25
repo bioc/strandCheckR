@@ -4,8 +4,9 @@ using namespace Rcpp;
 
 //' @title  Compute strand information of sliding window (verbose version)
 //'
-//' @description non
-//'
+//' @description Compute the positive proportion, the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error), the sum of coverage, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+//' This method is used in the filter method when we have to filter the input bam files together with plotting the window information.
+//' 
 //' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
 //' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
 //' @param covNegLen the run length of an Rle object which is the coverage comes from negative reads

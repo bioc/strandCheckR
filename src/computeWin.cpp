@@ -5,7 +5,8 @@ using namespace Rcpp;
 //' @title  Compute strand information of sliding window 
 //'
 //' @description Compute the positive proportion and the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error)
-//'
+//' This method is used in the filter function when we don't need to plot the window informaion
+//' 
 //' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
 //' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
 //' @param covNegLen the run length of an Rle object which is the coverage comes from negative reads

@@ -36,6 +36,7 @@ Each data frame contains contain the information of window number, proportion of
 }
 \description{
 Compute the positive proportion and the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error)
+This method is used in the filter function when we don't need to plot the window informaion
 }
 \examples{
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
