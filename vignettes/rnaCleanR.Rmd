@@ -1,0 +1,41 @@
+---
+title: "Using rnaCleanR package"
+author: "Thu Hien To & Steve Pederson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+rnaCleanR is a package used to quantify and remove double-strand DNA within a strand-specific RNA-seq. It takes as input one or several bam files and use a window slding across the whole genome to compute the amount of positive/negative reads in each window. Then the users can get some plots on those windows: 1) a histogram about the frequency of positive proportion over all windows, which give you an idea on how much double-strand DNA is contained in your sample; 2) a plot on sum of reads vs positive proportion, which give you an idea about which threshold to be used for filtering your sample. Then, the users can filter their RNA sample using an appropriate threshold.
+
+## Get plots
+
+```{r getplot,  eval=FALSE}
+file <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
+getPlot(bamfilein = file,readLength = 100,histPlotFile = "hist.pdf",winPlotFile = "win.pdf")
+```
+
+Two figures `hist.pdf` and `win.pdf` will be created
+
+## Filter one bam file
+
+```{r filterOne, eval=FALSE}
+file <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
+filterOne(bamfilein = file,bamfileout = "filter.bam", readLength = 100, threshold = 0.7)
+```
+
+
+## Filter multiple bam files
+
+```{r filterMulti, eval=FALSE}
+file <- system.file("data",c("s1.chr1.bam","s2.chr1.bam"),package = "rnaCleanR")
+filterMulti(bamfilein = file,bamfileout = c("filter1.bam","filter2.bam"), readLength = 100, threshold = 0.7)
+
+```
+
+

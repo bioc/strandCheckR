@@ -10,7 +10,7 @@
 #' @param winPlot if it's TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.
 #' @param histPlotFile the file to write the histogram plot when histPlot is TRUE
 #' @param winPlotFile the file to write the window plot when winPlot is TRUE
-#' @paraam readLength the average length of the reads
+#' @param readLength the average length of the reads
 #' @param chromosomes the list of chromosomes to be filtered
 #' @param win the length of the sliding window
 #' @param step the step length to sliding the window

@@ -1,7 +1,7 @@
 #' @title Filter Several Bam Files
 #' 
 #' @description Filter several bamfiles based on the strand specific of the merged files. 
-#' The strand of each sliding window is caculated based on coverage.
+#' The strand of each sliding window is calculated based on coverage.
 #' 
 #' @details None
 #' 

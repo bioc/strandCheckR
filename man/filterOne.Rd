@@ -26,6 +26,8 @@ filterOne(bamfilein, bamfileout, statfile, chromosomes, histPlot = FALSE,
 
 \item{winPlotFile}{the file to write the window plot when winPlot is TRUE}
 
+\item{readLength}{the average length of the reads}
+
 \item{win}{the length of the sliding window}
 
 \item{step}{the step length to sliding the window}
