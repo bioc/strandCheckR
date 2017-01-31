@@ -14,7 +14,7 @@ getPlot(bamfilein, histPlotFile, winPlotFile, chromosomes = NULL, readLength,
 
 \item{winPlotFile}{the file name of the windows plot}
 
-\item{chromosomes}{the list of chromosomes to be filtered}
+\item{chromosomes}{the list of chromosomes to be considered}
 
 \item{readLength}{the average length of the reads in the input bam file}
 
@@ -26,10 +26,10 @@ getPlot(bamfilein, histPlotFile, winPlotFile, chromosomes = NULL, readLength,
 
 \item{xlim}{xlim of the window plot}
 
-\item{minCov}{the min coverage of a window under which the window is ignored}
+\item{minCov}{the coverage of a window under which the window is ignored}
 }
 \description{
-Plot the histogram of the positive proportion over all sliding windows, and the plot presenting number of reads vs positive proportion over all sliding windows.
+Generate the histogram of the positive proportions, and the plot presenting number of reads vs positive proportion over all sliding windows.
 }
 \examples{
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")

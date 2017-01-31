@@ -66,17 +66,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// getIndex
-List getIndex(CharacterVector strand);
-RcppExport SEXP rnaCleanR_getIndex(SEXP strandSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< CharacterVector >::type strand(strandSEXP);
-    rcpp_result_gen = Rcpp::wrap(getIndex(strand));
-    return rcpp_result_gen;
-END_RCPP
-}
 // keepRead
 List keepRead(DataFrame posFragments, DataFrame negFragments, DataFrame keptPosWin, DataFrame keptNegWin, int win, int step, double errorRate);
 RcppExport SEXP rnaCleanR_keepRead(SEXP posFragmentsSEXP, SEXP negFragmentsSEXP, SEXP keptPosWinSEXP, SEXP keptNegWinSEXP, SEXP winSEXP, SEXP stepSEXP, SEXP errorRateSEXP) {

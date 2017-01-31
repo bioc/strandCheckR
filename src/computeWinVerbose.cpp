@@ -4,8 +4,8 @@ using namespace Rcpp;
 
 //' @title  Compute strand information of sliding window (verbose version)
 //'
-//' @description Compute the positive proportion, the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error), the sum of coverage, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
-//' This method is used in the filter method when we have to filter the input bam files together with plotting the window information.
+//' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+//' This method is used in the method filterOne when we have to filter the input bam files together with plotting the window information.
 //' 
 //' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
 //' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
@@ -15,12 +15,12 @@ using namespace Rcpp;
 //' @param readLength the average length of reads
 //' @param win the size of the sliding window
 //' @param step the step of the sliding window
-//' @param minCov if a window has the max coverage least than minCov, then it will be rejected
-//' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept
+//' @param minCov if a window has the max coverage smaller than minCov, then it will be rejected regardless its strand proportion.
+//' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept regardless its strand proportion. If maxCov=0 then it doesn't have any effect on selecting windows.
 //' @param logitThreshold the logit of the threshold
 //'
-//' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
-//' Each data frame contains contain the information of window number, proportion of postive reads, the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error), the sum of coverage, the max coverage and the group of max coverage
+//' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows.
+//' Each data frame contains the information of window number, proportion of postive reads, the normalized value calculated from the estimated proportion and error, the sum of reads, the max coverage and the group of max coverage.
 //' @examples
 //' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
 //' alignment <- GenomicAlignments::readGAlignments(bamfilein) 

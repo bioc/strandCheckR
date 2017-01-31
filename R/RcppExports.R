@@ -3,8 +3,8 @@
 
 #' @title  Compute strand information of sliding window 
 #'
-#' @description Compute the positive proportion and the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error)
-#' This method is used in the filter function when we don't need to plot the window informaion
+#' @description Compute the positive proportion and the value to be tested afterward to decide whether the window is kept or not (this value is calculated from the estimated proportion and error).
+#' This method is used in the functions filterOne and filterMulti when we don't need other information of the windows for plotting.
 #' 
 #' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
 #' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
@@ -14,12 +14,15 @@
 #' @param readLength the average length of reads
 #' @param win the size of the sliding window
 #' @param step the step of the sliding window
-#' @param minCov if a window has the max coverage least than minCov, then it will be rejected
-#' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept
+#' @param minCov if a window has the max coverage smaller than minCov, then it will be rejected regardless its strand proportion.
+#' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept regardless its strand proportion. If maxCov=0 then it doesn't have any effect on selecting windows.
 #' @param logitThreshold the logit of the threshold
 #'
-#' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
-#' Each data frame contains contain the information of window number, proportion of postive reads, and the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error)
+#' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows. 
+#' Each data frame contains the information of window number, proportion of postive reads, and the value to be tested afterward to decide whether the window is kept or not (this value is calculated from the estimated proportion and error).
+#' 
+#' @seealso filterOne, filterMulti
+#' 
 #' @examples
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
 #' alignment <- GenomicAlignments::readGAlignments(bamfilein) 
@@ -54,9 +57,7 @@ computeWin <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLength, e
 #' @param readLength the average length of reads
 #' @param win the size of the sliding window
 #' @param step the step of the sliding window
-#' @param minCov if a window has the max coverage least than minCov, then it will be rejected
-#' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept
-#' @param logitThreshold the logit of the threshold
+#' @param minCov if a window has the max coverage least than minCov, then it will not be counted
 #'
 #' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
 #' Each data frame contains contain the information of proportion of postive reads, the max coverage and the group of max coverage
@@ -71,9 +72,7 @@ computeWin <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLength, e
 #' win <- 1000
 #' step <- 100
 #' minCov <- 0
-#' maxCov <- 0
-#' logitThreshold <- binomial()$linkfun(0.7) 
-#' windows <- computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,logitThreshold)
+#' windows <- computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
 #' 
 #' 
 #' @export
@@ -84,8 +83,8 @@ computeWinPlot <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLengt
 
 #' @title  Compute strand information of sliding window (verbose version)
 #'
-#' @description Compute the positive proportion, the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error), the sum of coverage, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
-#' This method is used in the filter method when we have to filter the input bam files together with plotting the window information.
+#' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+#' This method is used in the method filterOne when we have to filter the input bam files together with plotting the window information.
 #' 
 #' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
 #' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
@@ -95,12 +94,12 @@ computeWinPlot <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLengt
 #' @param readLength the average length of reads
 #' @param win the size of the sliding window
 #' @param step the step of the sliding window
-#' @param minCov if a window has the max coverage least than minCov, then it will be rejected
-#' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept
+#' @param minCov if a window has the max coverage smaller than minCov, then it will be rejected regardless its strand proportion.
+#' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept regardless its strand proportion. If maxCov=0 then it doesn't have any effect on selecting windows.
 #' @param logitThreshold the logit of the threshold
 #'
-#' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
-#' Each data frame contains contain the information of window number, proportion of postive reads, the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error), the sum of coverage, the max coverage and the group of max coverage
+#' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows.
+#' Each data frame contains the information of window number, proportion of postive reads, the normalized value calculated from the estimated proportion and error, the sum of reads, the max coverage and the group of max coverage.
 #' @examples
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
 #' alignment <- GenomicAlignments::readGAlignments(bamfilein) 
@@ -122,27 +121,34 @@ computeWinVerbose <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLe
     .Call('rnaCleanR_computeWinVerbose', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov, maxCov, logitThreshold)
 }
 
-#' @title  Get the indices of positive and negative reads in a given alignment
+#' @title  Calculate the reads to be kept.
 #'
-#' @description non
+#' @description Calculate the reads to be kept based of the strand proportion of kept windows.
 #'
-#' @param strand a string vector contain the "+" or "_"
+#' @param posFragments the data frame contains the information of positive fragments (generated from the function getFragment)
+#' @param negFragments the data frame contains the information of negative fragments (generated from the function getFragment)
+#' @param keptPosWin the data frame contains the information of positive kept windows 
+#' @param keptNegWin the data frame contains the information of negative kept windows 
+#' @param win the size of the sliding windows
+#' @param step the size of the step of sliding windows
+#' @param errorRate the probability that an RNA read takes the false strand
 #'
-#' @return A list of two vectors which contains the order of each positive, negative strands within the input strand vector
+#' @return A list of two vectors containing the positive and negative reads to be kept
 #' 
 #' @examples
-#' strand <- rep("+",1000)
-#' negInd <- sample(1:1000,400,replace = FALSE)
-#' strand[negInd] <- "_"
-#' index <- getIndex(strand)
-#' 
+#' posFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) 
+#' posFragments <- posFragments[order(posFragments$start),] %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
+#' negFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) 
+#' negFragments <- negFragments[order(negFragments$start),] %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
+#' keptPosWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0, max=1))
+#' keptNegWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0, max=1))
+#' win <- 1000
+#' step <- 100
+#' errorRate <- 0.01
+#' keepRead(posFragments,negFragments,keptPosWin,keptNegWin,win,step,errorRate)
 #' 
 #' @export
 #' 
-getIndex <- function(strand) {
-    .Call('rnaCleanR_getIndex', PACKAGE = 'rnaCleanR', strand)
-}
-
 keepRead <- function(posFragments, negFragments, keptPosWin, keptNegWin, win, step, errorRate) {
     .Call('rnaCleanR_keepRead', PACKAGE = 'rnaCleanR', posFragments, negFragments, keptPosWin, keptNegWin, win, step, errorRate)
 }

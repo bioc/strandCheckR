@@ -11,7 +11,8 @@ getFragment(alignment)
 }
 \value{
 a list of two data frame for fragments come from positive and negative reads. Each data frame has information
-about the start/end position of the fragments and the group which allows the refer which read that the fragment comes from
+about the start/end position of the fragments and the group which allows the refer which read that the fragment comes from.
+The returned data frame are sorted in increasing order of starting position.
 }
 \description{
 This method use the cigar and the start mapping position of each reads to generate the position of each spliced alignment

@@ -24,11 +24,7 @@ computeWinPlot(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win,
 
 \item{step}{the step of the sliding window}
 
-\item{minCov}{if a window has the max coverage least than minCov, then it will be rejected}
-
-\item{maxCov}{if a window has the max coverage greater than maxCov, then it will be kept}
-
-\item{logitThreshold}{the logit of the threshold}
+\item{minCov}{if a window has the max coverage least than minCov, then it will not be counted}
 }
 \value{
 A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
@@ -49,9 +45,7 @@ readLength <- 100
 win <- 1000
 step <- 100
 minCov <- 0
-maxCov <- 0
-logitThreshold <- binomial()$linkfun(0.7) 
-windows <- computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,logitThreshold)
+windows <- computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
 
 
 }

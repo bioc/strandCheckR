@@ -18,9 +18,9 @@ filterOne(bamfilein, bamfileout, statfile, chromosomes, histPlot = FALSE,
 
 \item{chromosomes}{the list of chromosomes to be filtered}
 
-\item{histPlot}{if it's TRUE then a histogram plot about the positive proportion over all window will be generated. It's FALSE by default.}
+\item{histPlot}{if TRUE then a histogram of positive proportion over all window will be generated. It's FALSE by default.}
 
-\item{winPlot}{if it's TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.}
+\item{winPlot}{if TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.}
 
 \item{histPlotFile}{the file to write the histogram plot when histPlot is TRUE}
 
@@ -38,22 +38,26 @@ filterOne(bamfilein, bamfileout, statfile, chromosomes, histPlot = FALSE,
 
 \item{maxCov}{if a window has the max coverage greater than maxCov, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.}
 
-\item{breaks}{the breaks the histogram when histPlot is TRUE}
+\item{breaks}{the breaks of histogram when histPlot is TRUE}
 
 \item{threshold}{the threshold upper which we keep the reads. 0.7 by default}
 
-\item{errorRate}{the probability that an RNA read takes the false strand}
+\item{errorRate}{the probability that an RNA read takes the false strand. 0.01 by default}
 }
 \description{
-Filter DNA from a strand specific RNA-seq using a window sliding across the genome. Positive/negative strands of sliding windows are caculated based on the coverage of positive/negative reads that overlap the window.
+Filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
 }
 \details{
-filterOne reads a bam file containing strand specific RNA reads, and filter the potential double strand contamination DNA from that. 
-Using a window sliding across the genome, we estimate the probability to keep or reject it based on the proportion of positive/negative reads in the window.
+filterOne reads a bam file containing strand specific RNA reads, and filter putative double strand DNA. 
+Using a window sliding across the genome, we calculate the positive/negative proportion of reads in that window.
+Each alignment will be kept with a probability depending on the positive/negative proportions of all windows containing that alignment.
 }
 \examples{
  
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
 filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
+}
+\seealso{
+getPlot, filterMulti
 }
 

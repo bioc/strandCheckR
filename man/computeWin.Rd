@@ -24,19 +24,19 @@ computeWin(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win,
 
 \item{step}{the step of the sliding window}
 
-\item{minCov}{if a window has the max coverage least than minCov, then it will be rejected}
+\item{minCov}{if a window has the max coverage smaller than minCov, then it will be rejected regardless its strand proportion.}
 
-\item{maxCov}{if a window has the max coverage greater than maxCov, then it will be kept}
+\item{maxCov}{if a window has the max coverage greater than maxCov, then it will be kept regardless its strand proportion. If maxCov=0 then it doesn't have any effect on selecting windows.}
 
 \item{logitThreshold}{the logit of the threshold}
 }
 \value{
-A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
-Each data frame contains contain the information of window number, proportion of postive reads, and the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error)
+A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows. 
+Each data frame contains the information of window number, proportion of postive reads, and the value to be tested afterward to decide whether the window is kept or not (this value is calculated from the estimated proportion and error).
 }
 \description{
-Compute the positive proportion and the value to be tested afterward to decide wheather the window is kept or not (this value is calculated from the estimated proportion and error)
-This method is used in the filter function when we don't need to plot the window informaion
+Compute the positive proportion and the value to be tested afterward to decide whether the window is kept or not (this value is calculated from the estimated proportion and error).
+This method is used in the functions filterOne and filterMulti when we don't need other information of the windows for plotting.
 }
 \examples{
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
@@ -53,5 +53,8 @@ maxCov <- 0
 logitThreshold <- binomial()$linkfun(0.7) 
 windows <- computeWin(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,maxCov,logitThreshold)
 
+}
+\seealso{
+filterOne, filterMulti
 }
 

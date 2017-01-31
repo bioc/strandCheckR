@@ -1,13 +1,16 @@
-#' @title Plot the number of reads vs positive proportion over all sliding windows.
+#' @title Plot the number of reads vs positive proportion of the input windows.
 #' 
-#' @description Plot the number of reads vs positive proportion over all sliding windows. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+#' @description Plot the number of reads vs positive proportion, and the groups of the input windows. This method is called by the function getPlot or filterOne.
 
 #' @param windows data frame containing the positive proportion of each window, the sum of reads of the window and the coverage group that it belongs to.
+#' Windows are normally calculated in the method getPlot or fitlerOne. These methods groupe windows based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
 #' @param winfile the file to write the window plot
 #' @param xlim xlim of the window plot
 #' 
+#' @seealso getPlot, filterOne
+#' 
 #' @examples 
-#' windows <- data.frame("propor"=runif(1000, min=0, max=1),"sum" = sample(2:1000,1000,replace=TRUE), "group"=sample(1:8, 1000, replace=TRUE))
+#' windows <- data.frame("propor"=runif(1000, min=0, max=1),"sum" = sample(1:5000,1000,replace=TRUE), "group"=sample(1:8, 1000, replace=TRUE))
 #' winPlot(windows,"win.pdf")
 #' @export
 #'

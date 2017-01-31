@@ -28,18 +28,21 @@ filterMulti(bamfilein, bamfileout, statfile, chromosomes = NULL, readLength,
 \item{maxR}{if a window has the max coverage greater than maxR, then it will be kept}
 }
 \description{
-Filter several bamfiles based on the strand specific of the merged files. 
-The strand of each sliding window is caculated based on coverage.
+Filter several bam files based on the strand specific of the merged files. 
+The strand of each sliding window is calculated based on coverage.
 }
 \details{
 None
 
 filterMulti reads a set of bam files containing strand specific RNA reads, and filter the potential double strand contamination DNA from all these files. 
-This method also uses sliding windows approach as method filterOne, but it uses the strand information of the reads coming from all input bam files.
+Similar to the filterOne method, it uses a window sliding across the whole genome, but on the merged alignments from all input bam file.
 }
 \examples{
  
 bamfilein <- system.file("data",c("s1.chr1.bam","s2.chr1.bam"),package = "rnaCleanR")
 filterMulti(bamfilein,bamfileout=c("s1.filter.bam","s2.filter.bam"),statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
+}
+\seealso{
+filterOne, getPlot
 }
 

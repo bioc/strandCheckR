@@ -1,13 +1,13 @@
 #' @title Filter One Bam File 
 #' 
-#' @description Filter DNA from a strand specific RNA-seq using a window sliding across the genome. Positive/negative strands of sliding windows are caculated based on the coverage of positive/negative reads that overlap the window.
+#' @description Filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome. 
 
 #' 
 #' @param bamfilein the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param bamfileout the output filtered bam file
 #' @param statfile the file to write the summary of the results
-#' @param histPlot if it's TRUE then a histogram plot about the positive proportion over all window will be generated. It's FALSE by default.
-#' @param winPlot if it's TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.
+#' @param histPlot if TRUE then a histogram of positive proportion over all window will be generated. It's FALSE by default.
+#' @param winPlot if TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.
 #' @param histPlotFile the file to write the histogram plot when histPlot is TRUE
 #' @param winPlotFile the file to write the window plot when winPlot is TRUE
 #' @param readLength the average length of the reads
@@ -16,14 +16,17 @@
 #' @param step the step length to sliding the window
 #' @param threshold the threshold upper which we keep the reads. 0.7 by default
 #' @param pvalueThreshold the threshold for the p-value. 0.05 by default
-#' @param breaks the breaks the histogram when histPlot is TRUE
+#' @param breaks the breaks of histogram when histPlot is TRUE
 #' @param minCov if a window has the max coverage least than minCov, then it will be rejected regardless the strand proportion. 0 by default
 #' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.
-#' @param errorRate the probability that an RNA read takes the false strand
+#' @param errorRate the probability that an RNA read takes the false strand. 0.01 by default
 #' 
 #' 
-#' @details filterOne reads a bam file containing strand specific RNA reads, and filter the potential double strand contamination DNA from that. 
-#' Using a window sliding across the genome, we estimate the probability to keep or reject it based on the proportion of positive/negative reads in the window.
+#' @details filterOne reads a bam file containing strand specific RNA reads, and filter putative double strand DNA. 
+#' Using a window sliding across the genome, we calculate the positive/negative proportion of reads in that window.
+#' Each alignment will be kept with a probability depending on the positive/negative proportions of all windows containing that alignment.
+#' 
+#' @seealso getPlot, filterMulti
 #' 
 #' @examples  
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
@@ -97,13 +100,15 @@ filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,histPlot=FALSE,w
       nbOReadsChr <- length(alignmentInChr)
       nbOReads <- nbOReads + nbOReadsChr
       
-      index <- getIndex(as.vector(strand(alignmentInChr)))
+      strand <- as.vector(strand(alignmentInChr))
+      indexPos <- which(strand=="+")
+      indexNeg <- which(strand=="-")
+      remove(strand)
       fragments <- getFragment(alignmentInChr)
       remove(alignmentInChr)
-      
       keptReads <- keepRead(fragments$Pos,fragments$Neg,windows$Plus,windows$Minus,win,step,errorRate);   
       remove(windows)
-      keptReads <- c(index$Pos[unique(keptReads$Pos)],index$Neg[unique(keptReads$Neg)]) %>% sort() 
+      keptReads <- c(indexPos[unique(keptReads$Pos)],indexNeg[unique(keptReads$Neg)]) %>% sort() 
       cat(paste0("Sequence ",chr,", length: ",len,", number of reads: ",nbOReadsChr,", number of kept reads: ",length(keptReads),"\n"),file=statfile,append=append)
       if (append==FALSE) append <- TRUE  
     }

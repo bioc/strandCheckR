@@ -5,7 +5,8 @@
 #' @param alignment the alignments to get spliced fragments
 #' 
 #' @return a list of two data frame for fragments come from positive and negative reads. Each data frame has information
-#' about the start/end position of the fragments and the group which allows the refer which read that the fragment comes from
+#' about the start/end position of the fragments and the group which allows the refer which read that the fragment comes from.
+#' The returned data frame are sorted in increasing order of starting position.
 #' 
 #' @examples 
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")

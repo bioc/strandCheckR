@@ -15,9 +15,7 @@ using namespace Rcpp;
 //' @param readLength the average length of reads
 //' @param win the size of the sliding window
 //' @param step the step of the sliding window
-//' @param minCov if a window has the max coverage least than minCov, then it will be rejected
-//' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept
-//' @param logitThreshold the logit of the threshold
+//' @param minCov if a window has the max coverage least than minCov, then it will not be counted
 //'
 //' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
 //' Each data frame contains contain the information of proportion of postive reads, the max coverage and the group of max coverage
@@ -32,9 +30,7 @@ using namespace Rcpp;
 //' win <- 1000
 //' step <- 100
 //' minCov <- 0
-//' maxCov <- 0
-//' logitThreshold <- binomial()$linkfun(0.7) 
-//' windows <- computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,logitThreshold)
+//' windows <- computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
 //' 
 //' 
 //' @export

@@ -1,17 +1,17 @@
 #' @title Get The Plots Generated From Input Bam File
 #' 
-#' @description Plot the histogram of the positive proportion over all sliding windows, and the plot presenting number of reads vs positive proportion over all sliding windows.
+#' @description Generate the histogram of the positive proportions, and the plot presenting number of reads vs positive proportion over all sliding windows.
 
 #' @param bamfilein the input bam file 
 #' @param histPlotFile the file name of the histogram plot
 #' @param winPlotFile the file name of the windows plot
-#' @param chromosomes the list of chromosomes to be filtered
+#' @param chromosomes the list of chromosomes to be considered
 #' @param readLength the average length of the reads in the input bam file
 #' @param win the length of the sliding window
 #' @param step the step length to slide the window
 #' @param breaks the breaks of the histogram plot
 #' @param xlim xlim of the window plot
-#' @param minCov the min coverage of a window under which the window is ignored
+#' @param minCov the coverage of a window under which the window is ignored
 #' 
 #' @examples 
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")

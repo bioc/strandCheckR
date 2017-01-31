@@ -2,23 +2,26 @@
 % Please edit documentation in R/histPlot.R
 \name{histPlot}
 \alias{histPlot}
-\title{Plot the histogram of positive proportion of all sliding windows}
+\title{Plot the histogram of positive proportions of the input windows}
 \usage{
-histPlot(windows, histfile, breaks)
+histPlot(windows, histfile = "hist.pdf", breaks = 100)
 }
 \arguments{
 \item{windows}{the data frame containing the positive proportion of each window and the coverage group that it belongs to.
-By default definition, group can be 1,2...,8 which means its max coverage is respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"}
+Windows are normally calculated in the method getPlot or fitlerOne. These methods by default define a group of a window as 1,2...,8 which means its max coverage is respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"}
 
 \item{histfile}{the file to write the histogram}
 
 \item{breaks}{the number of cells for the histogram}
 }
 \description{
-Plot the histogram of positive proportion of all sliding windows
+Plot the histogram of positive proportions, and the groups of the input windows. This method is called by the function getPlot or filterOne.
 }
 \examples{
 windows <- data.frame("propor"=runif(1000, min=0, max=1),"group"=sample(1:8, 1000, replace=TRUE))
 histPlot(windows,"hist.pdf",100)
+}
+\seealso{
+getPlot, filterOne
 }
 

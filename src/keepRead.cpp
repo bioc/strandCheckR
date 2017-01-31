@@ -1,33 +1,37 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-//' @title  Calculate the reads to be kept based of the kept windows
+//' @title  Calculate the reads to be kept.
 //'
-//' @description 
+//' @description Calculate the reads to be kept based of the strand proportion of kept windows.
 //'
 //' @param posFragments the data frame contains the information of positive fragments (generated from the function getFragment)
 //' @param negFragments the data frame contains the information of negative fragments (generated from the function getFragment)
-//' @param keptPosWin the data frame contains the information of windows that we'll keep positive fragments
-//' @param keptNegWin the data frame contains the information of windows that we'll keep negative fragments
+//' @param keptPosWin the data frame contains the information of positive kept windows 
+//' @param keptNegWin the data frame contains the information of negative kept windows 
 //' @param win the size of the sliding windows
 //' @param step the size of the step of sliding windows
 //' @param errorRate the probability that an RNA read takes the false strand
 //'
-//' @return A list of two vectors containing the positive and negative reads to be kept
+//' @return A list of two vectors containing the positive and negative reads to be kept.
 //' 
 //' @examples
-//' posFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
-//' negFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
-//' keptPosWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0, max=1))
-//' keptNegWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0, max=1))
+//' posFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) 
+//' posFragments <- posFragments[order(posFragments$start),] %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
+//' negFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) 
+//' negFragments <- negFragments[order(negFragments$start),] %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
+//' keptPosWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0.7, max=1))
+//' keptNegWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0, max=0.3))
 //' win <- 1000
 //' step <- 100
 //' errorRate <- 0.01
 //' keepRead(posFragments,negFragments,keptPosWin,keptNegWin,win,step,errorRate)
 //' 
 //' @export
-// [[Rcpp::plugins(cpp11)]]
+//' 
 // [[Rcpp::export]]
+
+
 List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin,DataFrame keptNegWin,int win,int step,double errorRate){
 //List keepFragment(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupPos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNeg,NumericVector proporWinPos,NumericVector proporWinNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int nbWin,int win,int step,double errorRate){
   //Get columns of each data frame
