@@ -4,8 +4,8 @@
 \alias{getPlot}
 \title{Get The Plots Generated From Input Bam File}
 \usage{
-getPlot(bamfilein, histPlotFile, winPlotFile, chromosomes = NULL, readLength,
-  win, step, breaks = 100, xlim, minCov = 0)
+getPlot(bamfilein, histPlotFile, winPlotFile, chromosomes, readLength, win,
+  step, breaks = 100, xlim, minCov = 0)
 }
 \arguments{
 \item{bamfilein}{the input bam file}

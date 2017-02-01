@@ -18,7 +18,7 @@
 #' getPlot(bamfilein,histPlotFile = "hist.pdf", winPlotFile = "win.pdf",readLength = 100)
 #' @export
 #' 
-getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes = NULL, readLength,win,step,breaks = 100,xlim,minCov=0){
+getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes, readLength,win,step,breaks = 100,xlim,minCov=0){
   # read the input alignments and compute positive/negative coverge
   if (missing(win)){ 
     win <- ifelse(missing(readLength),1000,10*readLength)
@@ -33,8 +33,10 @@ getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes = NULL, readL
   covNeg <- alignment[strand(alignment)=="-"] %>% GenomicAlignments::coverage() 
   
   #get the names of all chromosomes
-  allChromosomes <- levels(seqnames(alignment)) 
-  if (is.null(chromosomes)) chromosomes <- allChromosomes
+  allChromosomes <-seqlevels(alignment)
+  if (missing(chromosomes)){
+    chromosomes <- allChromosomes
+  }  
   
   #get the length of each chromosome 
   lenSeq<-sapply(covPos,function(covChr) length(covChr)) 

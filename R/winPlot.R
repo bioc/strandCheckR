@@ -16,7 +16,7 @@
 #'
 winPlot <- function(windows,winfile,xlim){
   allCols <- c("blue","green","cyan","pink","orange","red","brown","black")
-  leg <- c("0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000")
+  leg <- c("0-10","10-100","100-1000",">1000")
   windows$propor <- round(windows$propor,2)
   windows$sum <- round(windows$sum)
   windows <- windows[!duplicated(windows),]

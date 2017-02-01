@@ -16,7 +16,7 @@
 #'
 histPlot <- function(windows,histfile="hist.pdf",breaks=100){
   allCols <- c("blue","green","cyan","pink","orange","red","brown","black")
-  leg <- c("0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000")
+  leg <- c("0-10","10-100","100-1000",">1000")
   windows$propor <- round(windows$propor*breaks)
   histo <- data.frame("propor"=c(),"group"=c(),"freq"=c())
   for (i in 0:breaks){

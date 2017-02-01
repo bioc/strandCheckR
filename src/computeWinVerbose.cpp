@@ -4,7 +4,7 @@ using namespace Rcpp;
 
 //' @title  Compute strand information of sliding window (verbose version)
 //'
-//' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+//' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000"
 //' This method is used in the method filterOne when we have to filter the input bam files together with plotting the window information.
 //' 
 //' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
@@ -85,14 +85,10 @@ List computeWinVerbose(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVe
           proporP.push_back(estimate);
           sumP.push_back((Plus+Minus)/(double)readLength);
           maxCP.push_back(maxCovP);
-          if (maxCovP>1000) groupP.push_back(8);
-          else if (maxCovP>500) groupP.push_back(7);
-          else if (maxCovP>200) groupP.push_back(6);
-          else if (maxCovP>100) groupP.push_back(5);
-          else if (maxCovP>50) groupP.push_back(4);
-          else if (maxCovP>20) groupP.push_back(3);
-          else if (maxCovP>10) groupP.push_back(2);
-          else if (maxCovP>0) groupP.push_back(1);
+          if (max>1000) groupP.push_back(4);
+          else if (max>100) groupP.push_back(3);
+          else if (max>10) groupP.push_back(2);
+          else if (max>0) groupP.push_back(1);
         }
         if (Plus<=Minus || (maxCovM>maxCov && maxCov>0)){
           if (Plus==0 || (maxCovM>maxCov && maxCov>0)) valueM.push_back(1e10);
@@ -101,14 +97,10 @@ List computeWinVerbose(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVe
           proporM.push_back(estimate);
           sumM.push_back((Plus+Minus)/(double)readLength);
           maxCM.push_back(maxCovM);
-          if (maxCovM>1000) groupM.push_back(8);
-          else if (maxCovM>500) groupM.push_back(7);
-          else if (maxCovM>200) groupM.push_back(6);
-          else if (maxCovM>100) groupM.push_back(5);
-          else if (maxCovM>50) groupM.push_back(4);
-          else if (maxCovM>20) groupM.push_back(3);
-          else if (maxCovM>10) groupM.push_back(2);
-          else if (maxCovM>0) groupM.push_back(1);
+          if (max>1000) groupM.push_back(4);
+          else if (max>100) groupM.push_back(3);
+          else if (max>10) groupM.push_back(2);
+          else if (max>0) groupM.push_back(1);
         }
       }
     }

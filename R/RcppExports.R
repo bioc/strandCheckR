@@ -46,7 +46,7 @@ computeWin <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLength, e
 
 #' @title  Compute strand information of sliding window (plot version)
 #'
-#' @description Compute the positive proportion, sum of reads, max coverage and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+#' @description Compute the positive proportion, sum of reads, max coverage and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000"
 #' This method is used in the getPlot function when we only need the information to plot, and do not need to filter the reads afterward.
 #' 
 #' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
@@ -83,7 +83,7 @@ computeWinPlot <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLengt
 
 #' @title  Compute strand information of sliding window (verbose version)
 #'
-#' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+#' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000"
 #' This method is used in the method filterOne when we have to filter the input bam files together with plotting the window information.
 #' 
 #' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads

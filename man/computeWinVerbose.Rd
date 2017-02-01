@@ -35,7 +35,7 @@ A list of two data frames Plus and Minus which respectively contains information
 Each data frame contains the information of window number, proportion of postive reads, the normalized value calculated from the estimated proportion and error, the sum of reads, the max coverage and the group of max coverage.
 }
 \description{
-Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 8, which correspond to the max coverage respectively in the range "0-10","10-20","20-50","50-100","100-200","200-500","500-1000",">1000"
+Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000"
 This method is used in the method filterOne when we have to filter the input bam files together with plotting the window information.
 }
 \examples{
