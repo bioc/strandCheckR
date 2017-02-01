@@ -23,22 +23,30 @@ keepRead(posFragments, negFragments, keptPosWin, keptNegWin, win, step,
 \item{errorRate}{the probability that an RNA read takes the false strand}
 }
 \value{
-A list of two vectors containing the positive and negative reads to be kept
+A list of two vectors containing the positive and negative alignments to be kept.
 }
 \description{
-Calculate the reads to be kept based of the strand proportion of kept windows.
+Calculate the reads to be kept based of the strand proportion of kept windows. This function is called by the functions filterOne or filterMulti.
+If a kept window has more positive alignments than negative alignments, then 
+each postive alignment in that window is kept with a probability equal to (positive proportion -  negative proportion)/(positive proportion); and each negative alignment of that window is kept with a probability equal to the given errorRate (0.01 by default). Similarly for windows that have negative alignments more than positive alingments.
+Since each alignment can be belonged to several windows, then the final probability for keeping of each alignment is the maximum one from all windows containing it.
 }
 \examples{
 posFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) 
 posFragments <- posFragments[order(posFragments$start),] \%>\% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
 negFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) 
 negFragments <- negFragments[order(negFragments$start),] \%>\% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
-keptPosWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0, max=1))
-keptNegWin <- data.frame("win"=sample(1:10000,5000,replace=TRUE),"propor"=runif(5000, min=0, max=1))
+keptPosWin <- data.frame("win"=sample(1:10000,5000,replace=FALSE),"propor"=runif(5000, min=0.7, max=1))
+keptPosWin <- keptPosWin[order(keptPosWin$win),]
+keptNegWin <- data.frame("win"=sample(1:10000,5000,replace=FALSE),"propor"=runif(5000, min=0, max=0.3))
+keptNegWin <- keptNegWin[order(keptNegWin$win),]
 win <- 1000
 step <- 100
 errorRate <- 0.01
-keepRead(posFragments,negFragments,keptPosWin,keptNegWin,win,step,errorRate)
+reads <- rnaCleanR::keepRead(posFragments,negFragments,keptPosWin,keptNegWin,win,step,errorRate)
 
+}
+\seealso{
+getFragment, filterOne, filterMulti
 }
 

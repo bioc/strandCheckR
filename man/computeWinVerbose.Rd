@@ -51,7 +51,7 @@ step <- 100
 minCov <- 0
 maxCov <- 0
 logitThreshold <- binomial()$linkfun(0.7) 
-windows <- computeWinVerbose(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,maxCov,logitThreshold)
+windows <- rnaCleanR::computeWinVerbose(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,maxCov,logitThreshold)
 
 }
 

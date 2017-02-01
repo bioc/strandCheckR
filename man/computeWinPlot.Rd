@@ -45,7 +45,7 @@ readLength <- 100
 win <- 1000
 step <- 100
 minCov <- 0
-windows <- computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
+windows <- rnaCleanR::computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
 
 
 }
