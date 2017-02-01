@@ -8,6 +8,7 @@
 #' @param bamfilein the input bam files to be filterd
 #' @param bamfileout the output bam files
 #' @param chromosomes the list of chromosomes to be filtered
+#' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be kept.
 #' @param win the length of the sliding window
 #' @param step the step length to slide the window
 #' @param threshold the threshold upper which we keep the reads
@@ -22,10 +23,10 @@
 #' 
 #' @examples  
 #' bamfilein <- system.file("data",c("s1.chr1.bam","s2.chr1.bam"),package = "rnaCleanR")
-#' filterMulti(bamfilein,bamfileout=c("s1.filter.bam","s2.filter.bam"),statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
+#' filterMulti(bamfilein,bamfileout=c("s1.filter.bam","s2.filter.bam"),statfile = "out.stat", readLength = 100, threshold = 0.7)
 #' @export
 #' 
-filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes=NULL,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,threshold=0.7,errorRate=0.01){
+filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,threshold=0.7,errorRate=0.01){
   startTime <- proc.time()
   if (missing(win)){ 
     if (missing(readLength)){ 
@@ -53,7 +54,10 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes=NULL,readLengt
   covNeg <- alignment[strand(alignment)=="-"] %>% GenomicAlignments::coverage()
   idSeq <- levels(seqnames(alignment)) #get the chromosome list
   remove(alignment)
-  if (is.null(chromosomes)) chromosomes <- idSeq
+  if (missing(chromosomes)){
+    chromosomes <- idSeq
+  }  
+  
   lenSeq<-sapply(1:length(covPos),function(i) length(covPos[[i]])) #get the length of each chromosome as the number of bases
   if (length(bamfilein)>1){
     for (i in c(2:length(bamfilein))){
@@ -70,9 +74,18 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes=NULL,readLengt
     len <- lenSeq[chromosomeIndex]
     #compute the normalized value of each positive/negative window to be tested by pnorm
     windows <- computeWin(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
-    
-    windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter( pvalue <= pvalueThreshold) %>% dplyr::select(c(win,propor))
-    windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue <= pvalueThreshold) %>% dplyr::select(c(win,propor))
+    if (!missing(mustKeepRanges)){
+      mkr <- mustKeepRanges[seqnames(mustKeepRanges)==chr]
+      rg <- ranges(mkr)
+      pos <- which(strand(mkr)=="+")
+      mustKeepPosWin <- getWin(rg[pos,],win,step)  
+      mustKeepNegWin <- getWin(rg[-pos,],win,step)  
+      remove(mkr)
+      remove(rg)
+      remove(pos)
+    }
+    windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter( pvalue <= pvalueThreshold | win %in% mustKeepPosWin) %>% dplyr::select(c(win,propor))
+    windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue <= pvalueThreshold | win %in% mustKeepNegWin) %>% dplyr::select(c(win,propor))
     keepWinPos[[chromosomeIndex]] <- windows$Plus
     keepWinNeg[[chromosomeIndex]] <- windows$Minus
     remove(windows)
@@ -96,6 +109,7 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes=NULL,readLengt
     for (chr in chromosomes){
       keptReads <- c()
       nbOReadsChr <- 0
+      chromosomeIndex <- which(idSeq==chr)
       if (nrow(keepWinPos[[chromosomeIndex]])>0 || nrow(keepWinNeg[[chromosomeIndex]])>0){
         chromosomeIndex <- which(idSeq==chr)
         end <- lenSeq[chromosomeIndex]

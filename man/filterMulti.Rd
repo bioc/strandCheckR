@@ -4,8 +4,8 @@
 \alias{filterMulti}
 \title{Filter Several Bam Files}
 \usage{
-filterMulti(bamfilein, bamfileout, statfile, chromosomes = NULL, readLength,
-  win, step, pvalueThreshold = 0.05, minCov = 0, maxCov = 0,
+filterMulti(bamfilein, bamfileout, statfile, chromosomes, mustKeepRanges,
+  readLength, win, step, pvalueThreshold = 0.05, minCov = 0, maxCov = 0,
   threshold = 0.7, errorRate = 0.01)
 }
 \arguments{
@@ -14,6 +14,8 @@ filterMulti(bamfilein, bamfileout, statfile, chromosomes = NULL, readLength,
 \item{bamfileout}{the output bam files}
 
 \item{chromosomes}{the list of chromosomes to be filtered}
+
+\item{mustKeepRanges}{a GRanges object defines the ranges such that every read maps to those ranges must be kept.}
 
 \item{win}{the length of the sliding window}
 
@@ -40,7 +42,7 @@ Similar to the filterOne method, it uses a window sliding across the whole genom
 \examples{
  
 bamfilein <- system.file("data",c("s1.chr1.bam","s2.chr1.bam"),package = "rnaCleanR")
-filterMulti(bamfilein,bamfileout=c("s1.filter.bam","s2.filter.bam"),statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
+filterMulti(bamfilein,bamfileout=c("s1.filter.bam","s2.filter.bam"),statfile = "out.stat", readLength = 100, threshold = 0.7)
 }
 \seealso{
 filterOne, getPlot

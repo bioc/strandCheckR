@@ -6,12 +6,13 @@
 #' @param bamfilein the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param bamfileout the output filtered bam file
 #' @param statfile the file to write the summary of the results
+#' @param chromosomes the list of chromosomes to be filtered
+#' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be kept.
 #' @param histPlot if TRUE then a histogram of positive proportion over all window will be generated. It's FALSE by default.
 #' @param winPlot if TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.
 #' @param histPlotFile the file to write the histogram plot when histPlot is TRUE
 #' @param winPlotFile the file to write the window plot when winPlot is TRUE
 #' @param readLength the average length of the reads
-#' @param chromosomes the list of chromosomes to be filtered
 #' @param win the length of the sliding window
 #' @param step the step length to sliding the window
 #' @param threshold the threshold upper which we keep the reads. 0.7 by default
@@ -30,10 +31,10 @@
 #' 
 #' @examples  
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-#' filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
+#' filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histPlotFile = "hist.pdf", readLength = 100, threshold = 0.7)
 #' @export
 #' 
-filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,histPlot=FALSE,winPlot=FALSE,histPlotFile,winPlotFile,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,breaks=100,threshold=0.7,errorRate=0.01){
+filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,histPlot=FALSE,winPlot=FALSE,histPlotFile,winPlotFile,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,breaks=100,threshold=0.7,errorRate=0.01){
   startTime <- proc.time()
   logitThreshold <- binomial()$linkfun(threshold) 
   if (missing(win)){ 
@@ -69,12 +70,13 @@ filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,histPlot=FALSE,w
   
   append=FALSE 
   allWin <- data.frame("chr"=c(),"propor"=c(),"sum"=c(),"max"=c(),"group"=c()) #data frame contains information of all windows for plotting
-  
+  mustKeepPosWin <- c()
+  mustKeepNegWin <- c()
   for (chr in chromosomes){ #walk through each chromosome
     chromosomeIndex <- which(allChromosomes==chr)
     len <- lenSeq[chromosomeIndex]
     #compute strand information in each window
-    if (winPlot==TRUE){#get details of each window for the plots
+    if (winPlot==TRUE || histPlot==TRUE){#get details of each window for the plots
       windows <- computeWinVerbose(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
       windows$Plus <- dplyr::mutate(windows$Plus,"chr"=chr)
       windows$Minus <- dplyr::mutate(windows$Minus,"chr"=chr)
@@ -83,14 +85,19 @@ filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,histPlot=FALSE,w
     }
     else{
       windows <- computeWin(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
-      if (histPlot==TRUE){
-        dupWin <- duplicated(c(windows$Plus$win,windows$Minus$win))
-        allWin <- rbind(allWin,rbind(dplyr::select(windows$Plus,c(win,propor,max,group)),dplyr::select(windows$Minus,c(win,propor,max,group)))[!dupWin,])
-      }
     }
-    
-    windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue<=pvalueThreshold) %>% dplyr::select(c(win,propor))
-    windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue<=pvalueThreshold) %>% dplyr::select(c(win,propor))
+    if (!missing(mustKeepRanges)){
+      mkr <- mustKeepRanges[seqnames(mustKeepRanges)==chr]
+      rg <- ranges(mkr)
+      pos <- which(strand(mkr)=="+")
+      mustKeepPosWin <- getWin(rg[pos,],win,step)  
+      mustKeepNegWin <- getWin(rg[-pos,],win,step)  
+      remove(mkr)
+      remove(rg)
+      remove(pos)
+    }
+    windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue<=pvalueThreshold | win %in% mustKeepPosWin) %>% dplyr::select(c(win,propor))
+    windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue<=pvalueThreshold | win %in% mustKeepNegWin) %>% dplyr::select(c(win,propor))
     
     keptReads <- c()
     nbOReadsChr <- 0
@@ -106,6 +113,7 @@ filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,histPlot=FALSE,w
       remove(strand)
       fragments <- getFragment(alignmentInChr)
       remove(alignmentInChr)
+      
       keptReads <- keepRead(fragments$Pos,fragments$Neg,windows$Plus,windows$Minus,win,step,errorRate);   
       remove(windows)
       keptReads <- c(indexPos[unique(keptReads$Pos)],indexNeg[unique(keptReads$Neg)]) %>% sort() 

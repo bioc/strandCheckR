@@ -4,10 +4,10 @@
 \alias{filterOne}
 \title{Filter One Bam File}
 \usage{
-filterOne(bamfilein, bamfileout, statfile, chromosomes, histPlot = FALSE,
-  winPlot = FALSE, histPlotFile, winPlotFile, readLength, win, step,
-  pvalueThreshold = 0.05, minCov = 0, maxCov = 0, breaks = 100,
-  threshold = 0.7, errorRate = 0.01)
+filterOne(bamfilein, bamfileout, statfile, chromosomes, mustKeepRanges,
+  histPlot = FALSE, winPlot = FALSE, histPlotFile, winPlotFile, readLength,
+  win, step, pvalueThreshold = 0.05, minCov = 0, maxCov = 0,
+  breaks = 100, threshold = 0.7, errorRate = 0.01)
 }
 \arguments{
 \item{bamfilein}{the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
@@ -17,6 +17,8 @@ filterOne(bamfilein, bamfileout, statfile, chromosomes, histPlot = FALSE,
 \item{statfile}{the file to write the summary of the results}
 
 \item{chromosomes}{the list of chromosomes to be filtered}
+
+\item{mustKeepRanges}{a GRanges object defines the ranges such that every read maps to those ranges must be kept.}
 
 \item{histPlot}{if TRUE then a histogram of positive proportion over all window will be generated. It's FALSE by default.}
 
@@ -55,7 +57,7 @@ Each alignment will be kept with a probability depending on the positive/negativ
 \examples{
  
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
+filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histPlotFile = "hist.pdf", readLength = 100, threshold = 0.7)
 }
 \seealso{
 getPlot, filterMulti
