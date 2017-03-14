@@ -24,7 +24,7 @@ getPlot(bamfilein, histPlotFile, winPlotFile, chromosomes, readLength, win,
 
 \item{breaks}{the breaks of the histogram plot}
 
-\item{xlim}{xlim of the window plot}
+\item{xlim}{the max xlim of the window plot}
 
 \item{minCov}{the coverage of a window under which the window is ignored}
 }
@@ -33,6 +33,6 @@ Generate the histogram of the positive proportions, and the plot presenting numb
 }
 \examples{
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-getPlot(bamfilein,histPlotFile = "hist.pdf", winPlotFile = "win.pdf",readLength = 100)
+getPlot(bamfilein,histPlotFile = "hist.pdf", winPlotFile = "win.pdf",readLength = 100,xlim=10000)
 }
 

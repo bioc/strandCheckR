@@ -11,7 +11,7 @@ using namespace Rcpp;
 //' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
 //' @param covNegLen the run length of an Rle object which is the coverage comes from negative reads
 //' @param covNegVal the run value of an Rle object which is the coverage comes from negative reads
-//' @param end the last base on the reference chromosome that the sliding window atteint
+//' @param end the last base on the reference chromosome that the sliding window atteints
 //' @param readLength the average length of reads
 //' @param win the size of the sliding window
 //' @param step the step of the sliding window

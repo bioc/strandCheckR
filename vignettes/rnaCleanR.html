@@ -12,7 +12,7 @@
 
 <meta name="author" content="Thu Hien To &amp; Steve Pederson" />
 
-<meta name="date" content="2017-01-31" />
+<meta name="date" content="2017-03-13" />
 
 <title>Using rnaCleanR package</title>
 
@@ -70,15 +70,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Using rnaCleanR package</h1>
 <h4 class="author"><em>Thu Hien To &amp; Steve Pederson</em></h4>
-<h4 class="date"><em>2017-01-31</em></h4>
+<h4 class="date"><em>2017-03-13</em></h4>
 
 
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>rnaCleanR is a package used to quantify and remove double-strand DNA within a strand-specific RNA-seq. It takes as input one or several bam files and use a window slding across the whole genome to compute the amount of positive/negative reads in each window. Then the users can get some plots on those windows: 1) a histogram about the frequency of positive proportion over all windows, which give you an idea on how much double-strand DNA is contained in your sample; 2) a plot on sum of reads vs positive proportion, which give you an idea about which threshold to be used for filtering your sample. Then, the users can filter their RNA sample using an appropriate threshold.</p>
-<p>The input bam file must be sorted before and an index file must be given at the same folder. The average read length is required to calculate the size of sliding window and its step. The functions filterOne removes potential double strand DNA from one bam file, while filterMulti filters several bam files. The later method uses the merged alignments from all input bam files to decide which windows are kept; then each individual bam file is filtered based on the same set of kept windows. The function getPlot can be used to have an idea of how much the sample was contaminated and which threshold to be used. You can also have these plots at the same time as filtering the bam file by using function filterOne with options histPlot=TRUE or winPlot=TRUE.</p>
-<p>It uses a window sliding across each chromosome, and consider the proportion of positive/negative reads in each window comparing to a given threshold, to decide wheather a window is kept or removed. Then each read fragment is assigned to a probability of being kept or not, based on the proportion of positive/negative of the kept windows that contain the fragment. ## Get plots</p>
+<p>rnaCleanR is a package used to quantify and remove double-strand DNA within a strand-specific RNA-seq. It takes as input one or several bam files and uses a window sliding across each chromosome. For each window, it considers the proportion of positive/negative reads comparing to a given threshold, to suggest that windows contains single strand RNA or double strand DNA. Then each read fragment is assigned to a probability of being kept or not, based on the proportion of positive/negative of the windows that contain that fragment. The input bam file must be sorted and an index file must be given at the same folder. The average read length is required to calculate the size of sliding window and its step. The functions filterOne removes potential double strand DNA from one bam file, while filterMulti filters several bam files. The later method uses the merged alignments from all input bam files to decide which windows are kept; then each individual bam file is filtered based on the same set of kept windows. The function getPlot can be used to get some plots on the amount of positive/negative reads over all windows: 1) a histogram about the frequency of positive proportion over all windows, which give you an idea on how much double-strand DNA is contained in your sample; 2) a plot on the number of reads vs positive proportion within each window, which give you an idea about which threshold to be used for filtering DNA from your sample. You can also have these plots at the same time as filtering the bam file by using function filterOne with options histPlot=TRUE or winPlot=TRUE.</p>
+</div>
+<div id="get-plots" class="section level2">
+<h2>Get plots</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">file &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;data&quot;</span>,<span class="st">&quot;s1.chr1.bam&quot;</span>,<span class="dt">package =</span> <span class="st">&quot;rnaCleanR&quot;</span>)
 <span class="kw">getPlot</span>(<span class="dt">bamfilein =</span> file,<span class="dt">readLength =</span> <span class="dv">100</span>,<span class="dt">histPlotFile =</span> <span class="st">&quot;hist.pdf&quot;</span>,<span class="dt">winPlotFile =</span> <span class="st">&quot;win.pdf&quot;</span>)</code></pre></div>
 <p>Two figures <code>hist.pdf</code> and <code>win.pdf</code> will be created</p>
@@ -87,6 +88,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2>Filter one bam file</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">file &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;data&quot;</span>,<span class="st">&quot;s1.chr1.bam&quot;</span>,<span class="dt">package =</span> <span class="st">&quot;rnaCleanR&quot;</span>)
 <span class="kw">filterOne</span>(<span class="dt">bamfilein =</span> file,<span class="dt">bamfileout =</span> <span class="st">&quot;filter.bam&quot;</span>, <span class="dt">readLength =</span> <span class="dv">100</span>, <span class="dt">threshold =</span> <span class="fl">0.7</span>)</code></pre></div>
+<p>If you want to get plots at the same time as filtering, then:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filterOne</span>(<span class="dt">bamfilein =</span> file,<span class="dt">bamfileout =</span> <span class="st">&quot;filter.bam&quot;</span>, <span class="dt">readLength =</span> <span class="dv">100</span>, <span class="dt">threshold =</span> <span class="fl">0.7</span>,<span class="dt">histPlot =</span> <span class="ot">TRUE</span>,<span class="dt">histPlotFile =</span> <span class="st">&quot;hist.pdf&quot;</span>,<span class="dt">winPlot =</span> <span class="ot">TRUE</span>,<span class="dt">winPlotFile =</span> <span class="st">&quot;win.pdf&quot;</span>)</code></pre></div>
 </div>
 <div id="filter-multiple-bam-files" class="section level2">
 <h2>Filter multiple bam files</h2>

@@ -4,13 +4,13 @@
 #' @title  Compute strand information of sliding window 
 #'
 #' @description Compute the positive proportion and the value to be tested afterward to decide whether the window is kept or not (this value is calculated from the estimated proportion and error).
-#' This method is used in the functions filterOne and filterMulti when we don't need other information of the windows for plotting.
+#' This method is called by the functions filterOne and filterMulti in the case that we don't need other plotting information from the windows.
 #' 
 #' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
 #' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
 #' @param covNegLen the run length of an Rle object which is the coverage comes from negative reads
 #' @param covNegVal the run value of an Rle object which is the coverage comes from negative reads
-#' @param end the last base on the reference chromosome that the sliding window atteint
+#' @param end the last base on the reference chromosome that the sliding window atteints
 #' @param readLength the average length of reads
 #' @param win the size of the sliding window
 #' @param step the step of the sliding window
@@ -53,7 +53,7 @@ computeWin <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLength, e
 #' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
 #' @param covNegLen the run length of an Rle object which is the coverage comes from negative reads
 #' @param covNegVal the run value of an Rle object which is the coverage comes from negative reads
-#' @param end the last base on the reference chromosome that the sliding window atteint
+#' @param end the last base on the reference chromosome that the sliding window atteints
 #' @param readLength the average length of reads
 #' @param win the size of the sliding window
 #' @param step the step of the sliding window
@@ -83,14 +83,14 @@ computeWinPlot <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLengt
 
 #' @title  Compute strand information of sliding window (verbose version)
 #'
-#' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000"
+#' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000".
 #' This method is used in the method filterOne when we have to filter the input bam files together with plotting the window information.
 #' 
 #' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
 #' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
 #' @param covNegLen the run length of an Rle object which is the coverage comes from negative reads
 #' @param covNegVal the run value of an Rle object which is the coverage comes from negative reads
-#' @param end the last base on the reference chromosome that the sliding window atteint
+#' @param end the last base on the reference chromosome that the sliding window atteints
 #' @param readLength the average length of reads
 #' @param win the size of the sliding window
 #' @param step the step of the sliding window

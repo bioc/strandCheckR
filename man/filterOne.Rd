@@ -5,8 +5,8 @@
 \title{Filter One Bam File}
 \usage{
 filterOne(bamfilein, bamfileout, statfile, chromosomes, mustKeepRanges,
-  histPlot = FALSE, winPlot = FALSE, histPlotFile, winPlotFile, readLength,
-  win, step, pvalueThreshold = 0.05, minCov = 0, maxCov = 0,
+  histPlot = FALSE, winPlot = FALSE, xlim, histPlotFile, winPlotFile,
+  readLength, win, step, pvalueThreshold = 0.05, minCov = 0, maxCov = 0,
   breaks = 100, threshold = 0.7, errorRate = 0.01)
 }
 \arguments{
@@ -23,6 +23,8 @@ filterOne(bamfilein, bamfileout, statfile, chromosomes, mustKeepRanges,
 \item{histPlot}{if TRUE then a histogram of positive proportion over all window will be generated. It's FALSE by default.}
 
 \item{winPlot}{if TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.}
+
+\item{xlim}{the max xlim of the window plot when winPlot is TRUE}
 
 \item{histPlotFile}{the file to write the histogram plot when histPlot is TRUE}
 
@@ -52,7 +54,21 @@ Filter putative double strand DNA from a strand specific RNA-seq using a window 
 \details{
 filterOne reads a bam file containing strand specific RNA reads, and filter putative double strand DNA. 
 Using a window sliding across the genome, we calculate the positive/negative proportion of reads in that window.
-Each alignment will be kept with a probability depending on the positive/negative proportions of all windows containing that alignment.
+For each window, we use logistic regression to estimate the proportion of reads in the window derived from 
+stranded RNA (positive or negative). 
+
+\eqn{\pi}: proportion of reads in the window derived from stranded RNA (positive or negative)
+
+Null hypothesis: \eqn{\pi < {\pi}_{0}} where \eqn{{\pi}_{0}} is the given threshold.
+
+Only windows with p-value <= 0.05 are kept. Considering a positive window that is kept, let P be its number of positive reads, and let M
+be its number of negative reads. Since these M negative reads should come from double-strand DNA, then there should be also M postive reads among the
+P positive reads come from double-strand DNA. In other words, there are only (P-M) positive reads come from RNA. Hence, each positive read in this window is kept 
+with the probability equalling (P-M)/P. Each negative read is kept with the probability equalling the given errorRate which is the rate that
+an RNA read of your sample has wrong strand.
+
+Since each alignment can be belonged to several windows, then the probability of keeping an alignment is the maximum probability defined by
+all windows that contain it.
 }
 \examples{
  

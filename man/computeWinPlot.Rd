@@ -18,7 +18,7 @@ computeWinPlot(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win,
 
 \item{readLength}{the average length of reads}
 
-\item{end}{the last base on the reference chromosome that the sliding window atteint}
+\item{end}{the last base on the reference chromosome that the sliding window atteints}
 
 \item{win}{the size of the sliding window}
 

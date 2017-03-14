@@ -18,7 +18,7 @@ computeWin(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win,
 
 \item{readLength}{the average length of reads}
 
-\item{end}{the last base on the reference chromosome that the sliding window atteint}
+\item{end}{the last base on the reference chromosome that the sliding window atteints}
 
 \item{win}{the size of the sliding window}
 
@@ -36,7 +36,7 @@ Each data frame contains the information of window number, proportion of postive
 }
 \description{
 Compute the positive proportion and the value to be tested afterward to decide whether the window is kept or not (this value is calculated from the estimated proportion and error).
-This method is used in the functions filterOne and filterMulti when we don't need other information of the windows for plotting.
+This method is called by the functions filterOne and filterMulti in the case that we don't need other plotting information from the windows.
 }
 \examples{
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")

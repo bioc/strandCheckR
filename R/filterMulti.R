@@ -3,7 +3,6 @@
 #' @description Filter several bam files based on the strand specific of the merged files. 
 #' The strand of each sliding window is calculated based on coverage.
 #' 
-#' @details None
 #' 
 #' @param bamfilein the input bam files to be filterd
 #' @param bamfileout the output bam files
@@ -18,12 +17,13 @@
 #'
 #' @details filterMulti reads a set of bam files containing strand specific RNA reads, and filter the potential double strand contamination DNA from all these files. 
 #' Similar to the filterOne method, it uses a window sliding across the whole genome, but on the merged alignments from all input bam file.
+#' See filterOne for further information.
 #' 
 #' @seealso filterOne, getPlot
 #' 
 #' @examples  
-#' bamfilein <- system.file("data",c("s1.chr1.bam","s2.chr1.bam"),package = "rnaCleanR")
-#' filterMulti(bamfilein,bamfileout=c("s1.filter.bam","s2.filter.bam"),statfile = "out.stat", readLength = 100, threshold = 0.7)
+#' bamfileins <- system.file("data",c("s1.chr1.bam","s2.chr1.bam"),package = "rnaCleanR")
+#' filterMulti(bamfileins,bamfileout=c("s1.filter.bam","s2.filter.bam"),statfile = "out.stat", readLength = 100, threshold = 0.7)
 #' @export
 #' 
 filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,threshold=0.7,errorRate=0.01){

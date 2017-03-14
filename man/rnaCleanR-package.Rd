@@ -34,7 +34,11 @@ Maintainer: Hien To <hien.to@adelaide.edu.au>
 %  Optional links to other man pages
 %}
 \examples{
-bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-getPlot(bamfilein,readLength=100)
-filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histfile = "hist.pdf", readLength = 100, threshold = 0.7)
+file <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
+getPlot(bamfilein = file,readLength = 100,histPlotFile = "hist.pdf",winPlotFile = "win.pdf")
+
+filterOne(bamfilein = file,bamfileout = "filter.bam", readLength = 100, threshold = 0.7,histPlot = TRUE,histPlotFile = "hist.pdf",winPlot = TRUE,winPlotFile = "win.pdf")
+
+files <- system.file("data",c("s1.chr1.bam","s2.chr1.bam"),package = "rnaCleanR")
+filterMulti(bamfilein = files,bamfileout = c("filter1.bam","filter2.bam"), readLength = 100, threshold = 0.7)
 }

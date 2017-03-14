@@ -4,14 +4,14 @@ using namespace Rcpp;
 
 //' @title  Compute strand information of sliding window (verbose version)
 //'
-//' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000"
+//' @description Compute the positive proportion, the normalized value to be tested afterward to decide whether the window is kept or not, the sum of reads, the maximum coverage, and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000".
 //' This method is used in the method filterOne when we have to filter the input bam files together with plotting the window information.
 //' 
 //' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
 //' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
 //' @param covNegLen the run length of an Rle object which is the coverage comes from negative reads
 //' @param covNegVal the run value of an Rle object which is the coverage comes from negative reads
-//' @param end the last base on the reference chromosome that the sliding window atteint
+//' @param end the last base on the reference chromosome that the sliding window atteints
 //' @param readLength the average length of reads
 //' @param win the size of the sliding window
 //' @param step the step of the sliding window
@@ -64,22 +64,22 @@ List computeWinVerbose(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVe
   int maxCovP=0;
   int maxCovM=0;
   while (start<end){
-    int Plus=increaseVal(covPosLen,covPosVal,iP,start,win,preP,maxCovP);
-    int Minus=increaseVal(covNegLen,covNegVal,iM,start,win,preM,maxCovM);
-    increase(covPosLen,iP,start,end,step,preP);
-    increase(covNegLen,iM,start,end,step,preM);
+    int Plus=increaseVal(covPosLen,covPosVal,iP,start,win,preP,maxCovP);//get the number of '+' in the current window
+    int Minus=increaseVal(covNegLen,covNegVal,iM,start,win,preM,maxCovM);//get the number of '-' in the current window
+    increase(covPosLen,iP,start,end,step,preP);//go to the next window of positive coverage
+    increase(covNegLen,iM,start,end,step,preM);//go to the next window of negative coverage
     start+=step;
     if (Plus>0 || Minus>0){
       double estimate = (double)Plus/(Plus+Minus);
       double max = maxCovP;
       if (estimate<=0.5) max = maxCovM;
       if (max>minCov){
-        double error = sqrt(readLength/(Plus+Minus)/estimate/(1-estimate));
-        double lTestimate=log(estimate/(1-estimate));
+        double lTestimate=log(estimate/(1-estimate));//The estimated value of positive proportion upon logistic regression: logit(p), where p=Plus/(Plus+Minus)
+        double error = sqrt(readLength/(Plus+Minus)/estimate/(1-estimate));//The standard error of positive proportion upon logistic regression: 1/sqrt(n*p*(1-p)), here n = (Plus+Minus)/readLength
         double value=(lTestimate - logitThreshold)/error;
         if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
         if (Plus>Minus || (maxCovP>maxCov && maxCov>0)){
-          if (Minus==0 || (maxCovP>maxCov && maxCov>0)) valueP.push_back(1e10);
+          if (Minus==0 || (maxCovP>maxCov && maxCov>0)) valueP.push_back(1e10);//Just put a big value here so that it will always pass the test to be kept
           else valueP.push_back(value);
           windowP.push_back(c);
           proporP.push_back(estimate);

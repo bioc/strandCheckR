@@ -10,12 +10,12 @@
 #' @param win the length of the sliding window
 #' @param step the step length to slide the window
 #' @param breaks the breaks of the histogram plot
-#' @param xlim xlim of the window plot
+#' @param xlim the max xlim of the window plot
 #' @param minCov the coverage of a window under which the window is ignored
 #' 
 #' @examples 
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-#' getPlot(bamfilein,histPlotFile = "hist.pdf", winPlotFile = "win.pdf",readLength = 100)
+#' getPlot(bamfilein,histPlotFile = "hist.pdf", winPlotFile = "win.pdf",readLength = 100,xlim=10000)
 #' @export
 #' 
 getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes, readLength,win,step,breaks = 100,xlim,minCov=0){
