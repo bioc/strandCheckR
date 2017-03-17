@@ -7,7 +7,7 @@
 #' @param bamfileout the output filtered bam file
 #' @param statfile the file to write the summary of the results
 #' @param chromosomes the list of chromosomes to be filtered
-#' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be kept.
+#' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.
 #' @param histPlot if TRUE then a histogram of positive proportion over all window will be generated. It's FALSE by default.
 #' @param winPlot if TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.
 #' @param histPlotFile the file to write the histogram plot when histPlot is TRUE

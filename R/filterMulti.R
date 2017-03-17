@@ -7,7 +7,7 @@
 #' @param bamfilein the input bam files to be filterd
 #' @param bamfileout the output bam files
 #' @param chromosomes the list of chromosomes to be filtered
-#' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be kept.
+#' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.
 #' @param win the length of the sliding window
 #' @param step the step length to slide the window
 #' @param threshold the threshold upper which we keep the reads
