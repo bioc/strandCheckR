@@ -19,6 +19,7 @@ Windows can be get by calling the function getWin.}
 Plot the number of reads vs positive proportion of the input windows.
 }
 \examples{
+
 windows <- data.frame("Proportion"=runif(1000, min=0, max=1),"NbReads" = sample(1:5000,1000,replace=TRUE)) \%>\% mutate("MaxCoverage"=sample(NbReads, 1000, replace=TRUE))
 windows <- windows[order(windows$NbReads),]
 plotWin(windows,group=c(10,100,1000))

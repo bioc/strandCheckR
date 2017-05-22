@@ -1,15 +1,17 @@
-#' @title Get The Information of Every Window Generated From Input Bam File
+#' @title Get The Information of Every Window Generated From an Input Paired End Bam File
+#' @description Return a data frame containing the information of every window generated from the input bam file. The bam file should be paired end.
+#' 
 #' @param bamfilein the input bam file 
-#' @param histPlotFile the file name of the histogram plot
-#' @param winPlotFile the file name of the windows plot
 #' @param chromosomes the list of chromosomes to be considered
 #' @param readLength the average length of the reads in the input bam file
 #' @param win the length of the sliding window
 #' @param step the step length to slide the window
 #' 
+#' @seealso getWinPairs
+#' 
 #' @examples 
-#' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-#' allWin <- getWin(bamfilein,readLength = 100)
+#' bamfilein <- system.file("data","120.10.bam",package = "rnaCleanR")
+#' allWin <- getWinPairs(bamfilein,readLength = 100)
 #' @export
 #' 
 getWinPairs <- function(bamfilein,chromosomes, readLength,win,step){
