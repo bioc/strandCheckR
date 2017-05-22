@@ -8,11 +8,7 @@
 #' @param statfile the file to write the summary of the results
 #' @param chromosomes the list of chromosomes to be filtered
 #' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.
-#' @param histPlot if TRUE then a histogram of positive proportion over all window will be generated. It's FALSE by default.
-#' @param winPlot if TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.
-#' @param histPlotFile the file to write the histogram plot when histPlot is TRUE
-#' @param winPlotFile the file to write the window plot when winPlot is TRUE
-#' @param xlim the max xlim of the window plot when winPlot is TRUE
+#' @param getWin if TRUE, the function will return a data frame containing the information of all windows as will. It's FALSE by default.
 #' @param readLength the average length of the reads
 #' @param win the length of the sliding window
 #' @param step the step length to sliding the window
@@ -45,10 +41,10 @@
 #' 
 #' @examples  
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-#' filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histPlotFile = "hist.pdf", readLength = 100, threshold = 0.7)
+#' filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",readLength = 100, threshold = 0.7)
 #' @export
 #' 
-filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,getWin=FALSE,xlim,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,threshold=0.7,errorRate=0.01){
+filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,getWin=FALSE,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,threshold=0.7,errorRate=0.01){
   startTime <- proc.time() 
   
   # read the info of the input alignments and compute positive/negative coverge
