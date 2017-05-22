@@ -51,10 +51,10 @@ List computeWin(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector co
   int iM=0;
   std::vector<int> windowP;
   std::vector<int> windowM;
-  std::vector<double> valueP;
-  std::vector<double> valueM;
-  std::vector<double> proporPos;
-  std::vector<double> proporNeg;
+  std::vector<double> proporP;
+  std::vector<double> proporM;
+  std::vector<double> errorP;
+  std::vector<double> errorM;
   int c=1;
   int maxCovP=0;
   int maxCovN=0;
@@ -65,33 +65,28 @@ List computeWin(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector co
     increase(covNegLen,iM,start,end,step,preM);//go to the next window of negative coverage
     start+=step;
     if (Plus>0 || Minus>0){
-      double estimate = (double)Plus/(Plus+Minus);
+      double propor = (double)Plus/(Plus+Minus);
       double max = maxCovP;
-      if (estimate<=0.5) max = maxCovN;
+      if (propor<=0.5) max = maxCovN;
       if (max>minCov){
-        double lTestimate=log(estimate/(1-estimate));//The estimated value of positive proportion upon logistic regression: logit(p), where p=Plus/(Plus+Minus
-        double error = sqrt(readLength/(Plus+Minus)/estimate/(1-estimate));//The standard error of positive proportion upon logistic regression: 1/sqrt(n*p*(1-p)), here n = (Plus+Minus)/readLength
-        double value=(lTestimate - logitThreshold)/error;
-        if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
+        double error = sqrt(readLength/(Plus+Minus)/propor/(1-propor));//The standard error of positive proportion upon logistic regression: 1/sqrt(n*p*(1-p)), here n = (Plus+Minus)/readLength
         if (Plus>Minus || (maxCovP>maxCov && maxCov>0)){
-          if (Minus==0 || (maxCovP>maxCov && maxCov>0)) valueP.push_back(1e10);//Just put a big value here so that it will always pass the test to be kept
-          else valueP.push_back(value);
           windowP.push_back(c);
-          proporPos.push_back(estimate);
+          proporP.push_back(propor);
+          errorP.push_back(error);
         }
         if (Plus<=Minus || (maxCovN>maxCov & maxCov>0)){
-          if (Plus==0 || (maxCovN>maxCov & maxCov>0)) valueM.push_back(1e10);
-          else valueM.push_back(value);
           windowM.push_back(c);
-          proporNeg.push_back(estimate);
+          proporM.push_back(propor);
+          errorM.push_back(error);
         }
       }
     }
     c++;
   }
   return List::create(
-    _["Plus"] = DataFrame::create(_["win"]= windowP, _["value"]= valueP, _["propor"] = proporPos),
-      _["Minus"] = DataFrame::create(_["win"]= windowM, _["value"]= valueM, _["propor"] = proporNeg)
+    _["Plus"] = DataFrame::create(_["win"]= windowP, _["propor"]= proporP, _["error"] = errorP),
+      _["Minus"] = DataFrame::create(_["win"]= windowM, _["propor"]= proporM, _["error"] = errorM)
   );
 }
 

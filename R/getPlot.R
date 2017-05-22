@@ -9,7 +9,6 @@
 #' @param readLength the average length of the reads in the input bam file
 #' @param win the length of the sliding window
 #' @param step the step length to slide the window
-#' @param breaks the breaks of the histogram plot
 #' @param xlim the max xlim of the window plot
 #' @param minCov the coverage of a window under which the window is ignored
 #' 
@@ -18,7 +17,7 @@
 #' getPlot(bamfilein,histPlotFile = "hist.pdf", winPlotFile = "win.pdf",readLength = 100,xlim=10000)
 #' @export
 #' 
-getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes, readLength,win,step,breaks = 100,xlim,minCov=0){
+getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes, readLength,win,step,xlim,minCov=0){
   # read the input alignments and compute positive/negative coverge
   if (missing(win)){ 
     win <- ifelse(missing(readLength),1000,10*readLength)
@@ -52,7 +51,7 @@ getPlot <- function(bamfilein,histPlotFile,winPlotFile,chromosomes, readLength,w
   if (missing(histPlotFile)){
     histPlotFile <- paste0(bamfilein,"_hist.pdf")
   }
-  histPlot(windows,histPlotFile,breaks = breaks)
+  histPlot(windows,histPlotFile)
   if (missing(winPlotFile)){
     winPlotFile <- paste0(bamfilein,"_win.pdf")
   }

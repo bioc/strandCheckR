@@ -15,7 +15,7 @@ filterMulti(bamfilein, bamfileout, statfile, chromosomes, mustKeepRanges,
 
 \item{chromosomes}{the list of chromosomes to be filtered}
 
-\item{mustKeepRanges}{a GRanges object defines the ranges such that every read maps to those ranges must be kept.}
+\item{mustKeepRanges}{a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.}
 
 \item{win}{the length of the sliding window}
 

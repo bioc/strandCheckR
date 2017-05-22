@@ -49,17 +49,16 @@ List computeWinVerbose(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVe
   int iM=0;
   std::vector<int> windowP;
   std::vector<int> windowM;
-  std::vector<double> valueP;
-  std::vector<double> valueM;
-  
+  std::vector<double> errorP;
+  std::vector<double> errorM;
   std::vector<double> proporP;
   std::vector<double> proporM;
-  std::vector<double> sumP;
-  std::vector<double> sumM;
-  std::vector<int> maxCP;
-  std::vector<int> maxCM;
-  std::vector<int> groupP;
-  std::vector<int> groupM;
+  
+  std::vector<int> Start;
+  std::vector<double> Propor;
+  std::vector<int> NbReads;
+  std::vector<int> MaxCoverage;
+  
   int c=1;
   int maxCovP=0;
   int maxCovM=0;
@@ -68,51 +67,36 @@ List computeWinVerbose(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVe
     int Minus=increaseVal(covNegLen,covNegVal,iM,start,win,preM,maxCovM);//get the number of '-' in the current window
     increase(covPosLen,iP,start,end,step,preP);//go to the next window of positive coverage
     increase(covNegLen,iM,start,end,step,preM);//go to the next window of negative coverage
-    start+=step;
     if (Plus>0 || Minus>0){
       double estimate = (double)Plus/(Plus+Minus);
       double max = maxCovP;
       if (estimate<=0.5) max = maxCovM;
       if (max>minCov){
-        double lTestimate=log(estimate/(1-estimate));//The estimated value of positive proportion upon logistic regression: logit(p), where p=Plus/(Plus+Minus)
         double error = sqrt(readLength/(Plus+Minus)/estimate/(1-estimate));//The standard error of positive proportion upon logistic regression: 1/sqrt(n*p*(1-p)), here n = (Plus+Minus)/readLength
-        double value=(lTestimate - logitThreshold)/error;
-        if (lTestimate<=0) value=-(lTestimate+logitThreshold)/error;
         if (Plus>Minus || (maxCovP>maxCov && maxCov>0)){
-          if (Minus==0 || (maxCovP>maxCov && maxCov>0)) valueP.push_back(1e10);//Just put a big value here so that it will always pass the test to be kept
-          else valueP.push_back(value);
           windowP.push_back(c);
+          errorP.push_back(error);
           proporP.push_back(estimate);
-          sumP.push_back((Plus+Minus)/(double)readLength);
-          maxCP.push_back(maxCovP);
-          if (max>1000) groupP.push_back(4);
-          else if (max>100) groupP.push_back(3);
-          else if (max>10) groupP.push_back(2);
-          else if (max>0) groupP.push_back(1);
         }
         if (Plus<=Minus || (maxCovM>maxCov && maxCov>0)){
-          if (Plus==0 || (maxCovM>maxCov && maxCov>0)) valueM.push_back(1e10);
-          else valueM.push_back(value);
           windowM.push_back(c);
+          errorM.push_back(error);
           proporM.push_back(estimate);
-          sumM.push_back((Plus+Minus)/(double)readLength);
-          maxCM.push_back(maxCovM);
-          if (max>1000) groupM.push_back(4);
-          else if (max>100) groupM.push_back(3);
-          else if (max>10) groupM.push_back(2);
-          else if (max>0) groupM.push_back(1);
         }
       }
+      Start.push_back(start);
+      Propor.push_back(estimate);
+      NbReads.push_back(round((Plus+Minus)/(double)readLength));
+      MaxCoverage.push_back(max);
     }
+    start+=step;
     c++;
   }
   return List::create(
-    _["Plus"] = DataFrame::create(_["win"]= windowP, _["value"]= valueP, _["propor"] = proporP, _["sum"] = sumP, _["max"] = maxCP, _["group"] = groupP),
-      _["Minus"] = DataFrame::create(_["win"]= windowM, _["value"]= valueM, _["propor"] = proporM, _["sum"] = sumM, _["max"] = maxCM, _["group"] = groupM)
+    _["Plus"] = DataFrame::create(_["win"]= windowP, _["propor"]= proporP, _["error"] = errorP),
+    _["Minus"] = DataFrame::create(_["win"]= windowM, _["propor"]= proporM, _["error"] = errorM),
+    _["Win"] = DataFrame::create(_["Start"]=Start,_["Proportion"]=Propor, _["NbReads"]= NbReads, _ ["MaxCoverage"]= MaxCoverage)
   );
-  
-  
-  
 }
 
 

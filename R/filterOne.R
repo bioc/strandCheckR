@@ -18,7 +18,6 @@
 #' @param step the step length to sliding the window
 #' @param threshold the threshold upper which we keep the reads. 0.7 by default
 #' @param pvalueThreshold the threshold for the p-value. 0.05 by default
-#' @param breaks the breaks of histogram when histPlot is TRUE
 #' @param minCov if a window has the max coverage least than minCov, then it will be rejected regardless the strand proportion. 0 by default
 #' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.
 #' @param errorRate the probability that an RNA read takes the false strand. 0.01 by default
@@ -49,9 +48,24 @@
 #' filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histPlotFile = "hist.pdf", readLength = 100, threshold = 0.7)
 #' @export
 #' 
-filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,histPlot=FALSE,winPlot=FALSE,xlim,histPlotFile,winPlotFile,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,breaks=100,threshold=0.7,errorRate=0.01){
-  startTime <- proc.time()
-  logitThreshold <- binomial()$linkfun(threshold) 
+filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,getWin=FALSE,xlim,readLength,win,step,pvalueThreshold=0.05,minCov=0,maxCov=0,threshold=0.7,errorRate=0.01){
+  startTime <- proc.time() 
+  
+  # read the info of the input alignments and compute positive/negative coverge
+  alignment <- GenomicAlignments::readGAlignments(bamfilein) 
+  allChromosomes <-alignment@seqinfo@seqnames #get the name of each chromosome 
+  lenSeq <- alignment@seqinfo@seqlengths #get the length of each chromosome 
+  covPos<-alignment[strand(alignment)=="+"] %>% GenomicAlignments::coverage() #calculate coverage came from positive reads 
+  covNeg<-alignment[strand(alignment)=="-"] %>% GenomicAlignments::coverage() #calculate coverage came from negative reads
+  
+  # treat missing parameters
+  if (missing(chromosomes)){
+    chromosomes <- allChromosomes
+  }  
+  emptyPosChromosomes <- sapply(covPos,function(ch){length(runValue(ch))==1 && runValue(ch)[1]==0})
+  emptyNegChromosomes <- sapply(covNeg,function(ch){length(runValue(ch))==1 && runValue(ch)[1]==0})
+  notEmptyChromosomes <- allChromosomes[!(emptyPosChromosomes * emptyNegChromosomes)]
+  chromosomes <- intersect(chromosomes,notEmptyChromosomes)
   if (missing(win)){ 
     win <- ifelse(missing(readLength),1000,10*readLength)
   }
@@ -63,56 +77,49 @@ filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,h
     statfile <- "out.stat"
   }
   
-  # read the input alignments and compute positive/negative coverge
-  alignment <- GenomicAlignments::readGAlignments(bamfilein) 
-  allChromosomes <-seqlevels(alignment)
-  if (missing(chromosomes)){
-    chromosomes <- allChromosomes
-  }  
-  
-  covPos<-alignment[strand(alignment)=="+"] %>% GenomicAlignments::coverage() 
-  covNeg<-alignment[strand(alignment)=="-"] %>% GenomicAlignments::coverage() 
-  
-  #get the length of each chromosome 
-  lenSeq<-sapply(covPos,function(covChr) length(covChr)) 
-  
   reader <- rbamtools::bamReader(bamfilein,idx=TRUE) #open a reader of the input bamfile to extract read afterward
   header <- rbamtools::getHeader(reader) #get the header of the input bam file
   writer <- rbamtools::bamWriter(header,bamfileout) #prepare to write the output bamfile with the same header
-  
+  logitThresholdP <- binomial()$linkfun(threshold) 
+  logitThresholdM <- binomial()$linkfun(1-threshold) 
   nbOReads <- 0 #number of original reads
   nbKReads <- 0 #number of kept reads
-  
   append=FALSE 
-  allWin <- data.frame("chr"=c(),"propor"=c(),"sum"=c(),"max"=c(),"group"=c()) #data frame contains information of all windows for plotting
-  mustKeepPosWin <- c()
-  mustKeepNegWin <- c()
+  allWin <- data.frame("Chr"=c(), "Start" = c(), "NbReads"= c(),"MaxCoverage" = c()) #data frame contains information of all windows for plotting
+ 
   for (chr in chromosomes){ #walk through each chromosome
     chromosomeIndex <- which(allChromosomes==chr)
     len <- lenSeq[chromosomeIndex]
     #compute strand information in each window
-    if (winPlot==TRUE || histPlot==TRUE){#get details of each window for the plots
+    if (getWin){#get details of each window for filtering and plotting
       windows <- computeWinVerbose(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
-      windows$Plus <- dplyr::mutate(windows$Plus,"chr"=chr)
-      windows$Minus <- dplyr::mutate(windows$Minus,"chr"=chr)
-      dupWin <- duplicated(c(windows$Plus$win,windows$Minus$win))
-      allWin <- rbind(allWin,rbind(dplyr::select(windows$Plus,c(chr,propor,sum,max,group)),dplyr::select(windows$Minus,c(chr,propor,sum,max,group)))[!dupWin,])
+      allWin <- rbind(allWin,dplyr::mutate(windows$Win,"Chr"=chr))
+      windows$allWin <- c()
     }
-    else{
+    else{#get details of each window for filtering
       windows <- computeWin(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
     }
+    
+    pvalueP <- pnorm(logitThresholdP,mean=binomial()$linkfun(windows$Plus$propor),sd=windows$Plus$error)
+    windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pvalueP) %>% dplyr::filter(pvalueP<=pvalueThreshold) %>% 
+      dplyr::select(c(win,propor))
+    pvalueM <- pnorm(logitThresholdM,mean=binomial()$linkfun(windows$Minus$propor),sd=windows$Minus$error,lower.tail = FALSE)
+    windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pvalueM) %>% dplyr::filter(pvalueM<=pvalueThreshold) %>% 
+      dplyr::select(c(win,propor))
+    
     if (!missing(mustKeepRanges)){
       mkr <- mustKeepRanges[seqnames(mustKeepRanges)==chr]
       rg <- ranges(mkr)
       pos <- which(strand(mkr)=="+")
       mustKeepPosWin <- getWin(rg[pos,],win,step)  
       mustKeepNegWin <- getWin(rg[-pos,],win,step)  
+      windows$Plus <- dplyr::filter(win %in% mustKeepPosWin)
+      windows$Minus <- dplyr::filter(win %in% mustKeepNegWin) 
       remove(mkr)
       remove(rg)
       remove(pos)
     }
-    windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue<=pvalueThreshold | win %in% mustKeepPosWin) %>% dplyr::select(c(win,propor))
-    windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue<=pvalueThreshold | win %in% mustKeepNegWin) %>% dplyr::select(c(win,propor))
+   
     
     keptReads <- c()
     nbOReadsChr <- 0
@@ -153,17 +160,9 @@ filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,h
   
   cat("Summary:\n",file = statfile, append = append)
   cat(paste0("Number of original reads: ",nbOReads,", number of kept reads: ",nbKReads,", removal proportion: ",(nbOReads-nbKReads)/nbOReads),"\n",file = statfile,append=TRUE)
-  if (histPlot == TRUE){
-    if (missing(histPlotFile)){
-      histPlotFile <- paste0(bamfilein,"_hist.pdf")
-    }
-    histPlot(allWin,histPlotFile,breaks = breaks)
-  }
-  if (winPlot == TRUE){
-    if (missing(winPlotFile)){winPlotFile <- paste0(bamfilein,"_win.pdf")}
-    if (missing(xlim)) {winPlot(allWin,winPlotFile)}
-    else {winPlot(allWin,winPlotFile,xlim)}
-  }
   endTime2 <- proc.time()
   cat(paste0("Total elapsed time ",(endTime2-startTime)[[3]]/60," minutes\n"),file = statfile,append=TRUE)
+  if (getWin==TRUE){
+    return(allWin)
+  }
 }

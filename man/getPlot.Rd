@@ -5,7 +5,7 @@
 \title{Get The Plots Generated From Input Bam File}
 \usage{
 getPlot(bamfilein, histPlotFile, winPlotFile, chromosomes, readLength, win,
-  step, breaks = 100, xlim, minCov = 0)
+  step, xlim, minCov = 0)
 }
 \arguments{
 \item{bamfilein}{the input bam file}
@@ -21,8 +21,6 @@ getPlot(bamfilein, histPlotFile, winPlotFile, chromosomes, readLength, win,
 \item{win}{the length of the sliding window}
 
 \item{step}{the step length to slide the window}
-
-\item{breaks}{the breaks of the histogram plot}
 
 \item{xlim}{the max xlim of the window plot}
 
