@@ -2,7 +2,7 @@
 % Please edit documentation in R/getWinPairs.R
 \name{getWinPairs}
 \alias{getWinPairs}
-\title{Get The Information of Every Window Generated From Input Bam File}
+\title{Get The Information of Every Window Generated From an Input Paired End Bam File}
 \usage{
 getWinPairs(bamfilein, chromosomes, readLength, win, step)
 }
@@ -16,13 +16,15 @@ getWinPairs(bamfilein, chromosomes, readLength, win, step)
 \item{win}{the length of the sliding window}
 
 \item{step}{the step length to slide the window}
-
-\item{histPlotFile}{the file name of the histogram plot}
-
-\item{winPlotFile}{the file name of the windows plot}
+}
+\description{
+Return a data frame containing the information of every window generated from the input bam file. The bam file should be paired end.
 }
 \examples{
-bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-allWin <- getWin(bamfilein,readLength = 100)
+bamfilein <- system.file("data","120.10.bam",package = "rnaCleanR")
+allWin <- getWinPairs(bamfilein,readLength = 100)
+}
+\seealso{
+getWinPairs
 }
 

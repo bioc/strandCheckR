@@ -5,7 +5,7 @@
 \title{Compute strand information of sliding window}
 \usage{
 computeWin(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win,
-  step, minCov, maxCov, logitThreshold)
+  step, minCov, maxCov)
 }
 \arguments{
 \item{covPosLen}{the run length of an Rle object which is the coverage comes from positive reads}
@@ -27,8 +27,6 @@ computeWin(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win,
 \item{minCov}{if a window has the max coverage smaller than minCov, then it will be rejected regardless its strand proportion.}
 
 \item{maxCov}{if a window has the max coverage greater than maxCov, then it will be kept regardless its strand proportion. If maxCov=0 then it doesn't have any effect on selecting windows.}
-
-\item{logitThreshold}{the logit of the threshold}
 }
 \value{
 A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows. 
@@ -50,8 +48,7 @@ win <- 1000
 step <- 100
 minCov <- 0
 maxCov <- 0
-logitThreshold <- binomial()$linkfun(0.7) 
-windows <- rnaCleanR::computeWin(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,maxCov,logitThreshold)
+windows <- rnaCleanR::computeWin(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,maxCov)
 
 }
 \seealso{

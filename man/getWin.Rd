@@ -2,7 +2,7 @@
 % Please edit documentation in R/getWin.R
 \name{getWin}
 \alias{getWin}
-\title{Get The Information of Every Window Generated From Input Bam File}
+\title{Get The Information of Every Window Generated From an Input Single End Bam File}
 \usage{
 getWin(bamfilein, chromosomes, readLength, win, step)
 }
@@ -16,13 +16,15 @@ getWin(bamfilein, chromosomes, readLength, win, step)
 \item{win}{the length of the sliding window}
 
 \item{step}{the step length to slide the window}
-
-\item{histPlotFile}{the file name of the histogram plot}
-
-\item{winPlotFile}{the file name of the windows plot}
+}
+\description{
+Return a data frame containing the information of every window generated from the input bam file. The bam file should be single end.
 }
 \examples{
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-allWin <- getWin(bamfilein,readLength = 100)
+allWin <- getWin(bamfilein,readLength = 50)
+}
+\seealso{
+getWinPairs
 }
 

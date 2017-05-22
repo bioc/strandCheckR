@@ -20,9 +20,13 @@ Plot the number of reads vs positive proportion of the input windows.
 }
 \examples{
 
-windows <- data.frame("Proportion"=runif(1000, min=0, max=1),"NbReads" = sample(1:5000,1000,replace=TRUE)) \%>\% mutate("MaxCoverage"=sample(NbReads, 1000, replace=TRUE))
-windows <- windows[order(windows$NbReads),]
-plotWin(windows,group=c(10,100,1000))
+#for single end bam file
+windows <- getWin(bamfilein = "data/s1.chr1.bam",readLength=50)
+plotWin(windows)
+#for paired end bamfile
+windowsP <- getWinPairs(bamfilein = "data/120.10.bam",readLength=100)
+plotWin(windowsP)
+
 }
 \seealso{
 getWin, plotHist

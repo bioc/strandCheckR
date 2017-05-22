@@ -16,9 +16,12 @@ Windows can be get by calling the function getWin.}
 Plot the histogram of positive proportions of the input windows
 }
 \examples{
+#for single end bam file
 windows <- getWin(bamfilein = "data/s1.chr1.bam",readLength=50)
-windows <- data.frame("Proportion"=runif(1000, min=0, max=1),"NbReads" = sample(1:5000,1000,replace=TRUE)) \%>\% mutate("MaxCoverage"=sample(1:2000, 1000, replace=TRUE))
 plotHist(windows)
+#for paired end bamfile
+windowsP <- getWinPairs(bamfilein = "data/120.10.bam",readLength=100)
+plotHist(windowsP)
 }
 \seealso{
 getWin, plotWin

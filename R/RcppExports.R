@@ -16,7 +16,6 @@
 #' @param step the step of the sliding window
 #' @param minCov if a window has the max coverage smaller than minCov, then it will be rejected regardless its strand proportion.
 #' @param maxCov if a window has the max coverage greater than maxCov, then it will be kept regardless its strand proportion. If maxCov=0 then it doesn't have any effect on selecting windows.
-#' @param logitThreshold the logit of the threshold
 #'
 #' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows. 
 #' Each data frame contains the information of window number, proportion of postive reads, and the value to be tested afterward to decide whether the window is kept or not (this value is calculated from the estimated proportion and error).
@@ -35,13 +34,12 @@
 #' step <- 100
 #' minCov <- 0
 #' maxCov <- 0
-#' logitThreshold <- binomial()$linkfun(0.7) 
-#' windows <- rnaCleanR::computeWin(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,maxCov,logitThreshold)
+#' windows <- rnaCleanR::computeWin(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,maxCov)
 #' 
 #' @export
 #' 
-computeWin <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov, maxCov, logitThreshold) {
-    .Call('rnaCleanR_computeWin', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov, maxCov, logitThreshold)
+computeWin <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov, maxCov) {
+    .Call('rnaCleanR_computeWin', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov, maxCov)
 }
 
 #' @title  Compute strand information of sliding window (plot version)

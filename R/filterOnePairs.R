@@ -101,7 +101,8 @@ filterOnePairs <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRan
   reader <- rbamtools::bamReader(bamfilein,idx=TRUE) #open a reader of the input bamfile to extract read afterward
   header <- rbamtools::getHeader(reader) #get the header of the input bam file
   writer <- rbamtools::bamWriter(header,bamfileout) #prepare to write the output bamfile with the same header
-  logitThreshold <- binomial()$linkfun(threshold) 
+  logitThresholdP <- binomial()$linkfun(threshold)
+  logitThresholdM <- binomial()$linkfun(1-threshold)
   nbOFirstReads <- 0 #number of original reads
   nbKFirstReads <- 0 #number of kept reads
   nbOSecondReads <- 0 #number of original reads
@@ -139,9 +140,9 @@ filterOnePairs <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRan
     nbOSecondReadsChr <- length(unique(names(alignmentInChrSecond)))
     nbOSecondReads <- nbOSecondReads + nbOSecondReadsChr
     
-    first <- getKeptReadNames(alignmentInChrFirst,covPosFirst[[chromosomeIndex]],covNegFirst[[chromosomeIndex]],mustKeepPosWin,mustKeepNegWin,getWin,readLength,len,win,step,pvalueThreshold,minCov,maxCov,logitThreshold,errorRate)
+    first <- getKeptReadNames(alignmentInChrFirst,covPosFirst[[chromosomeIndex]],covNegFirst[[chromosomeIndex]],mustKeepPosWin,mustKeepNegWin,getWin,readLength,len,win,step,pvalueThreshold,minCov,maxCov,logitThresholdP,logitThresholdM,errorRate)
     
-    second <- getKeptReadNames(alignmentInChrSecond,covPosSecond[[chromosomeIndex]],covNegSecond[[chromosomeIndex]],mustKeepPosWin,mustKeepNegWin,getWin,readLength,len,win,step,pvalueThreshold,minCov,maxCov,logitThreshold,errorRate)
+    second <- getKeptReadNames(alignmentInChrSecond,covPosSecond[[chromosomeIndex]],covNegSecond[[chromosomeIndex]],mustKeepPosWin,mustKeepNegWin,getWin,readLength,len,win,step,pvalueThreshold,minCov,maxCov,logitThresholdP,logitThresholdM,errorRate)
   
     if (getWin){
       keptFirstReadNames <- first$nameReads
@@ -162,7 +163,7 @@ filterOnePairs <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRan
       keptFirstAlignments <- which(firstReadIndex==TRUE)[which(names(alignmentInChrFirst) %in% keptFirstReadNames)]
       keptSecondAlignments <- which(firstReadIndex==FALSE)[which(names(alignmentInChrSecond) %in% keptSecondReadNames)]
       nbKFirstReads <- nbKFirstReads + nbKFirstReadsChr
-      nbKSecondReads <- nbKFirstReads + nbKSecondReadsChr
+      nbKSecondReads <- nbKSecondReads + nbKSecondReadsChr
       keptReads <-  c(keptFirstAlignments,keptSecondAlignments) %>% sort()
     }
     else{
