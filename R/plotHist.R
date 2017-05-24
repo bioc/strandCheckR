@@ -38,7 +38,8 @@ plotHist <- function(windows,group=c(10,100,1000)){
   breaks <- 100
   if ("Type" %in% colnames(windows)){
     histoFirst <- lapply(leg,function(l){
-      a <- dplyr::filter(windows,MaxCoverage==l,Type=="First")$Proportion
+      a <- dplyr::filter(windows,MaxCoverage==l,Type=="First")
+      a <- a$NbPositiveReads/(a$NbPositiveReads+a$NbNegativeReads)
       if (length(a)>0){
         hist(a,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count 
       }}) 
@@ -47,11 +48,12 @@ plotHist <- function(windows,group=c(10,100,1000)){
       as.data.frame() %>%  
       set_colnames(leg[!null]) %>%
       dplyr::mutate("Type"="First","Proportion"=0:100) %>% 
-      melt(id.vars = c("Type","Proportion")) %>% 
+      reshape2::melt(id.vars = c("Type","Proportion")) %>% 
       set_colnames(c("Type","Proportion","MaxCoverage","Count"))
     
     histoSecond <- lapply(leg,function(l){
-      a <- dplyr::filter(windows,MaxCoverage==l,Type=="Second")$Proportion
+      a <- dplyr::filter(windows,MaxCoverage==l,Type=="Second")
+      a <- a$NbPositiveReads/(a$NbPositiveReads+a$NbNegativeReads)
       if (length(a)>0){
         hist(a,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count  
       }}) 
@@ -60,19 +62,20 @@ plotHist <- function(windows,group=c(10,100,1000)){
       as.data.frame() %>%  
       set_colnames(leg[!null]) %>%
       dplyr::mutate("Type"="Second","Proportion"=0:100) %>% 
-      melt(id.vars = c("Type","Proportion")) %>% 
+      reshape2::melt(id.vars = c("Type","Proportion")) %>% 
       set_colnames(c("Type","Proportion","MaxCoverage","Count"))
     
-    ggplot(rbind(histoFirst,histoSecond), aes(Proportion, Count, fill=MaxCoverage, width=1))+
-      facet_wrap(~Type) +
-      geom_bar(stat="identity", width=.3,position="stack") + 
-      ylab("Count") + 
-      xlab("Positive Proportion")+ 
-      theme_bw() 
+    ggplot2::ggplot(rbind(histoFirst,histoSecond), ggplot2::aes(Proportion, Count, fill=MaxCoverage, width=1))+
+      ggplot2::facet_wrap(~Type) +
+      ggplot2::geom_bar(stat="identity", width=.3,position="stack") + 
+      ggplot2::ylab("Count") + 
+      ggplot2::xlab("Positive Proportion")+ 
+      ggplot2::theme_bw() 
   }
   else{
     histo<- lapply(leg,function(l){
-      a <- dplyr::filter(windows,MaxCoverage==l)$Proportion
+      a <- dplyr::filter(windows,MaxCoverage==l)
+      a <- a$NbPositiveReads/(a$NbPositiveReads+a$NbNegativeReads)
       if (length(a)>0){
         hist(a,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
       }}) 
@@ -83,10 +86,10 @@ plotHist <- function(windows,group=c(10,100,1000)){
       dplyr::mutate("Proportion"=0:100) %>% 
       reshape2::melt(id.vars = c("Proportion")) %>% 
       set_colnames(c("Proportion","MaxCoverage","Count"))
-    ggplot(histo, aes(Proportion, Count, fill=MaxCoverage, width=1))+
-      geom_bar(stat="identity", width=.3,position="stack") + 
-      ylab("Count") + 
-      xlab("Positive Proportion")+ 
-      theme_bw() 
+    ggplot2::ggplot(histo, ggplot2::aes(Proportion, Count, fill=MaxCoverage, width=1))+
+      ggplot2::geom_bar(stat="identity", width=.3,position="stack") + 
+      ggplot2::ylab("Count") + 
+      ggplot2::xlab("Positive Proportion")+ 
+      ggplot2::theme_bw() 
   }
 }

@@ -5,7 +5,7 @@
 \title{Filter One Bam File}
 \usage{
 filterOne(bamfilein, bamfileout, statfile, chromosomes, mustKeepRanges,
-  getWin = FALSE, xlim, readLength, win, step, pvalueThreshold = 0.05,
+  getWin = FALSE, readLength, win, step, pvalueThreshold = 0.05,
   minCov = 0, maxCov = 0, threshold = 0.7, errorRate = 0.01)
 }
 \arguments{
@@ -19,7 +19,7 @@ filterOne(bamfilein, bamfileout, statfile, chromosomes, mustKeepRanges,
 
 \item{mustKeepRanges}{a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.}
 
-\item{xlim}{the max xlim of the window plot when winPlot is TRUE}
+\item{getWin}{if TRUE, the function will return a data frame containing the information of all windows as will. It's FALSE by default.}
 
 \item{readLength}{the average length of the reads}
 
@@ -36,14 +36,6 @@ filterOne(bamfilein, bamfileout, statfile, chromosomes, mustKeepRanges,
 \item{threshold}{the threshold upper which we keep the reads. 0.7 by default}
 
 \item{errorRate}{the probability that an RNA read takes the false strand. 0.01 by default}
-
-\item{histPlot}{if TRUE then a histogram of positive proportion over all window will be generated. It's FALSE by default.}
-
-\item{winPlot}{if TRUE then a plot of sum vs positive proportion over all window will be generated. It's FALSE by default.}
-
-\item{histPlotFile}{the file to write the histogram plot when histPlot is TRUE}
-
-\item{winPlotFile}{the file to write the window plot when winPlot is TRUE}
 }
 \description{
 Filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
@@ -70,7 +62,7 @@ all windows that contain it.
 \examples{
  
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",histPlot = TRUE,histPlotFile = "hist.pdf", readLength = 100, threshold = 0.7)
+filterOne(bamfilein,bamfileout="out.bam",statfile = "out.stat",readLength = 100, threshold = 0.7)
 }
 \seealso{
 getPlot, filterMulti

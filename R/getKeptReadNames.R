@@ -1,32 +1,36 @@
 
-getKeptReadNames <- function(alignment,covPos,covNeg,mustKeepPosWin,mustKeepNegWin,getWin,readLength,len,win,step,pvalueThreshold,minCov,maxCov,logitThresholdP,logitThresholdM,errorRate){
-  if (getWin){#get details of each window for filtering and plotting
-    windows <- computeWinVerbose(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,maxCov)
-  }
-  else{#get details of each window for filtering
-    windows <- computeWin(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov,maxCov)
-  }
+getKeptReadNames <- function(alignment,covPos,covNeg,mustKeepPos,mustKeepNeg,getWin,readLength,len,win,step,pvalueThreshold,minCov,maxCov,logitThresholdP,logitThresholdM,errorRate){
+  windows <- computeWinInfo(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
   
-  windows$Plus$pvalue <- pnorm(logitThresholdP,mean=binomial()$linkfun(windows$Plus$propor),sd=windows$Plus$error)
-  windows$Plus <- dplyr::filter(windows$Plus,pvalue<=pvalueThreshold | win %in% mustKeepPosWin) %>%
-    dplyr::select(c(win,propor)) 
-  windows$Minus$pvalue <- pnorm(logitThresholdM,mean=binomial()$linkfun(windows$Minus$propor),sd=windows$Minus$error,lower.tail = FALSE)
-  windows$Minus <- dplyr::filter(windows$Minus,pvalue<=pvalueThreshold | win %in% mustKeepNegWin) %>% 
-    dplyr::select(c(win,propor)) 
+  plus <- dplyr::filter(windows,NbPositiveReads>=NbNegativeReads) %>% 
+    dplyr::mutate("propor" = NbPositiveReads/(NbPositiveReads+NbNegativeReads),"nbReads"=NbPositiveReads+NbNegativeReads)
+  pvalueP <- pnorm(logitThresholdP,mean=binomial()$linkfun(plus$propor),sd=sqrt(1/(plus$nbReads)/plus$propor/(1-plus$propor)))
+  plus <- dplyr::mutate(plus,"pvalue"=pvalueP) %>% 
+    dplyr::filter(pvalueP<=pvalueThreshold | Start %in% mustKeepPos | MaxCoverage >= maxCov) %>% 
+    dplyr::mutate("Start" = floor(Start/step)+1) %>% 
+    dplyr::select(c(Start,propor))
+  
+  minus <- dplyr::filter(windows,NbPositiveReads<NbNegativeReads) %>% 
+    dplyr::mutate("propor" = NbPositiveReads/(NbPositiveReads+NbNegativeReads),"nbReads"=NbPositiveReads+NbNegativeReads)
+  pvalueM <- pnorm(logitThresholdM,mean=binomial()$linkfun(minus$propor),sd=sqrt(1/(minus$nbReads)/minus$propor/(1-minus$propor)),lower.tail = FALSE)
+  minus <- dplyr::mutate(minus,"pvalue"=pvalueM) %>% 
+    dplyr::filter(pvalueM<=pvalueThreshold | Start %in% mustKeepNeg | MaxCoverage >= maxCov) %>% 
+    dplyr::mutate("Start" = floor(Start/step)+1) %>% 
+    dplyr::select(c(Start,propor))
   
   nameReads <- c()  
-  if (nrow(windows$Plus)>0 || nrow(windows$Minus)>0){
+  if (nrow(plus)>0 || nrow(minus)>0){
     strand <- as.vector(strand(alignment))
     indexPos <- which(strand=="+")
     indexNeg <- which(strand=="-")
     remove(strand)
     fragments <- getFragment(alignment)
-    keptReads <- keepRead(fragments$Pos,fragments$Neg,windows$Plus,windows$Minus,win,step,errorRate);   
+    keptReads <- keepRead(fragments$Pos,fragments$Neg,plus,minus,win,step,errorRate);   
     keptReads <- c(indexPos[unique(keptReads$Pos)],indexNeg[unique(keptReads$Neg)]) %>% sort() 
     nameReads <- names(alignment)[keptReads] %>% unique()
   }
   if (getWin){
-    return(list("Win"=windows$Win,"nameReads"=nameReads))
+    return(list("Win"=windows,"nameReads"=nameReads))
   }
   else{return(nameReads)}
 }

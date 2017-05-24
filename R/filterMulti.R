@@ -48,24 +48,28 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges
     message("Summary is written into file out.stat")
     statfile <- "out.stat"
   }
-  logitThreshold <- binomial()$linkfun(threshold)
+  logitThresholdP <- binomial()$linkfun(threshold)
+  logitThresholdM <- binomial()$linkfun(1-threshold)
   alignment <- GenomicAlignments::readGAlignments(bamfilein[1]) # read the first input alignment
-  lenSeq <- alignment@seqinfo@seqlengths #get the length of each chromosome as the number of bases
-  allChromosomes <-alignment@seqinfo@seqnames #get the chromosome list
-  
   covPos <- alignment[strand(alignment)=="+"] %>% GenomicAlignments::coverage()
   covNeg <- alignment[strand(alignment)=="-"] %>% GenomicAlignments::coverage()
   
-  remove(alignment)
+  lenSeq <- alignment@seqinfo@seqlengths #get the length of each chromosome as the number of bases
+  allChromosomes <-alignment@seqinfo@seqnames #get the chromosome list
   if (missing(chromosomes)){
     chromosomes <- allChromosomes
-  }  
+  }
+  emptyPosChromosomes <- sapply(covPos,function(ch){length(runValue(ch))==1 && runValue(ch)[1]==0})
+  emptyNegChromosomes <- sapply(covNeg,function(ch){length(runValue(ch))==1 && runValue(ch)[1]==0})
+  notEmptyChromosomes <- allChromosomes[!(emptyPosChromosomes * emptyNegChromosomes)]
+  chromosomes <- intersect(chromosomes,notEmptyChromosomes)
   
+  remove(alignment)
   if (length(bamfilein)>1){
     for (i in c(2:length(bamfilein))){
-      alignment <- readGAlignments(bamfilein[i])
-      covPos <-covPos +alignment[strand(alignment)=="+"] %>% GenomicAlignments::coverage()
-      covNeg <-covNeg+alignment[strand(alignment)=="-"] %>% GenomicAlignments::coverage()
+      alignment <- GenomicAlignments::readGAlignments(bamfilein[i])
+      covPos <-covPos + alignment[strand(alignment)=="+"] %>% GenomicAlignments::coverage()
+      covNeg <-covNeg + alignment[strand(alignment)=="-"] %>% GenomicAlignments::coverage()
       remove(alignment)
     }
   }
@@ -74,24 +78,50 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges
   for (chr in chromosomes){
     chromosomeIndex <- which(allChromosomes==chr)
     len <- lenSeq[chromosomeIndex]
-    #compute the normalized value of each positive/negative window to be tested by pnorm
-    windows <- computeWin(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
+    
+    mustKeepPos <- c()
+    mustKeepNeg <- c()
     if (!missing(mustKeepRanges)){
       mkr <- mustKeepRanges[seqnames(mustKeepRanges)==chr]
       rg <- ranges(mkr)
       pos <- which(strand(mkr)=="+")
-      mustKeepPosWin <- getWin(rg[pos,],win,step)  
-      mustKeepNegWin <- getWin(rg[-pos,],win,step)  
-      windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter( pvalue <= pvalueThreshold | win %in% mustKeepPosWin) %>% dplyr::select(c(win,propor))
-      windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue <= pvalueThreshold | win %in% mustKeepNegWin) %>% dplyr::select(c(win,propor))
+      mustKeepPos <- getWin(rg[pos,],win,step)  
+      mustKeepNeg <- getWin(rg[-pos,],win,step)  
       remove(mkr)
       remove(rg)
       remove(pos)
     }
-    windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter( pvalue <= pvalueThreshold) %>% dplyr::select(c(win,propor))
-    windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pnorm(value,lower.tail = FALSE)) %>% dplyr::filter(pvalue <= pvalueThreshold) %>% dplyr::select(c(win,propor))
-    keepWinPos[[chromosomeIndex]] <- windows$Plus
-    keepWinNeg[[chromosomeIndex]] <- windows$Minus
+    #compute the normalized value of each positive/negative window to be tested by pnorm
+    windows <- computeWinInfo(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov)
+    
+    plus <- dplyr::filter(windows,NbPositiveReads>=NbNegativeReads) %>% dplyr::mutate("propor" = NbPositiveReads/(NbPositiveReads+NbNegativeReads),"nbReads"=NbPositiveReads+NbNegativeReads)
+    pvalueP <- pnorm(logitThresholdP,mean=binomial()$linkfun(plus$propor),sd=sqrt(1/(plus$nbReads)/plus$propor/(1-plus$propor)))
+    
+    minus <- dplyr::filter(windows,NbPositiveReads<NbNegativeReads) %>% dplyr::mutate("propor" = NbPositiveReads/(NbPositiveReads+NbNegativeReads),"nbReads"=NbPositiveReads+NbNegativeReads)
+    pvalueM <- pnorm(logitThresholdM,mean=binomial()$linkfun(minus$propor),sd=sqrt(1/(minus$nbReads)/minus$propor/(1-minus$propor)),lower.tail = FALSE)
+    
+    if (maxCov>0){
+      plus <- dplyr::mutate(plus,"pvalue"=pvalueP) %>% dplyr::filter(pvalueP<=pvalueThreshold | Start %in% mustKeepPos | MaxCoverage >= maxCov) %>% 
+        dplyr::mutate("Start" = floor(Start/step)+1) %>%
+        dplyr::select(c(Start,propor))
+      minus <- dplyr::mutate(minus,"pvalue"=pvalueM) %>% dplyr::filter(pvalueM<=pvalueThreshold | Start %in% mustKeepNeg | MaxCoverage >= maxCov) %>% 
+        dplyr::mutate("Start" = floor(Start/step)+1) %>%
+        dplyr::select(c(Start,propor))
+    }
+    else{
+      plus <- dplyr::mutate(plus,"pvalue"=pvalueP) %>% 
+        dplyr::filter(pvalueP<=pvalueThreshold | Start %in% mustKeepPos) %>% 
+        dplyr::mutate("Start" = floor(Start/step)+1) %>%
+        dplyr::select(c(Start,propor))
+      minus <- dplyr::mutate(minus,"pvalue"=pvalueM) %>% 
+        dplyr::filter(pvalueM<=pvalueThreshold | Start %in% mustKeepNeg) %>% 
+        dplyr::mutate("Start" = floor(Start/step)+1) %>%
+        dplyr::select(c(Start,propor))
+    }
+    
+    
+    keepWinPos[[chromosomeIndex]] <- plus
+    keepWinNeg[[chromosomeIndex]] <- minus
     remove(windows)
   }
   remove(covPos)
@@ -103,23 +133,19 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges
   append <- FALSE
   for (i in seq_along(bamfilein)){
     cat(paste0("File ",i," : ",bamfilein[i],"\n"),file = statfile,append = append)
-    alignment <- GenomicAlignments::readGAlignments(bamfilein[i])
-    reader <- bamReader(bamfilein[i],idx=TRUE)
-    header <- getHeader(reader)
-    writer <- bamWriter(header,bamfileout[i])
-    if (i>1){
-      append <- TRUE
-    }
+    alignment <- GenomicAlignments::readGAlignments(bamfilein[i],use.names = TRUE)
+    reader <- rbamtools::bamReader(bamfilein[i],idx=TRUE)
+    header <- rbamtools::getHeader(reader)
+    writer <- rbamtools::bamWriter(header,bamfileout[i])
     for (chr in chromosomes){
       keptReads <- c()
       nbOReadsChr <- 0
       chromosomeIndex <- which(allChromosomes==chr)
       if (nrow(keepWinPos[[chromosomeIndex]])>0 || nrow(keepWinNeg[[chromosomeIndex]])>0){
-        chromosomeIndex <- which(allChromosomes==chr)
         end <- lenSeq[chromosomeIndex]
         alignmentInChr <- alignment[seqnames(alignment)==chr]#get the reads in the considering chromosome
         alignment <- alignment[seqnames(alignment)!=chr]#reduce the size of alignment (for memory purpose)
-        nbOReadsChr <- length(alignmentInChr)
+        nbOReadsChr <- length(unique(names(alignmentInChr)))
         nbOReads[i] <- nbOReads[i] + nbOReadsChr
         
         strand <- as.vector(strand(alignmentInChr))
@@ -127,28 +153,29 @@ filterMulti <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges
         indexNeg <- which(strand=="-")
         remove(strand)
         fragments <- getFragment(alignmentInChr)
-        remove(alignmentInChr)
         keptReads <- keepRead(fragments$Pos,fragments$Neg,keepWinPos[[chromosomeIndex]],keepWinNeg[[chromosomeIndex]],win,step,errorRate);   
         keptReads <- c(indexPos[unique(keptReads$Pos)],indexNeg[unique(keptReads$Neg)]) %>% sort() 
-        
-        cat(paste0("Chromosome ",chr,", length: ",end,", number of original reads: ",nbOReadsChr,", number of kept reads: ",length(keptReads),"\n"),file=statfile,append=append)
+        keptReadNames <- names(alignmentInChr)[keptReads] %>% unique()
+        keptReads <- which(names(alignmentInChr) %in% keptReadNames)
+        remove(alignmentInChr)
+        cat(paste0("Chromosome ",chr,", length: ",end,", number of original reads: ",nbOReadsChr,", number of kept reads: ",length(keptReadNames),"\n"),file=statfile,append=append)
         if (append==FALSE) append <- TRUE
       }
       if (length(keptReads)>0){
-        nbKReads[i] <- nbKReads[i] + length(keptReads)
-        range <- bamRange(reader,c(chromosomeIndex-1,0,end))
-        bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
+        nbKReads[i] <- nbKReads[i] + length(keptReadNames)
+        range <- rbamtools::bamRange(reader,c(chromosomeIndex-1,0,end))
+        rbamtools::bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
         remove(range)
+        remove(keptReads)
       }
-      remove(keptReads)
       if (i==length(bamfilein)){
         keepWinPos[[chromosomeIndex]] <- c(1)
         keepWinNeg[[chromosomeIndex]] <- c(1)
       }
     }
     remove(alignment)
-    bamClose(reader)
-    bamClose(writer)
+    rbamtools::bamClose(reader)
+    rbamtools::bamClose(writer)
   }
   remove(keepWinPos)
   remove(keepWinNeg)

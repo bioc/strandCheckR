@@ -41,42 +41,67 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
   }
   windows$MaxCoverage = G
   
-  thresholdP <- data.frame("Proportion" = c(), "NbReads" = c(), "Threshold"=c())
-  
-  for (t in threshold){
-    pP = seq(0.5,1,0.005)
-    mP = log(pP/(1-pP))
-    tP = log(t/(1-t))
-    pN = seq(0,0.5,0.005)
-    mN = log(pN/(1-pN))
-    tN = log((1-t)/t)
-    NbReads = 50000
-    propor <- sapply(1:NbReads,function(N){
-      sdP = sqrt(1/(N*pP*(1-pP)))
-      xP <- pnorm(tP,mean=mP,sd=sdP)
-      aP <- which(xP<=0.05)[1]
-      return(pP[aP])
-    }) 
-    #p <- seq(t,1,0.0005)
-    #n = ((qnorm(1-pvalue)/sqrt(p*(1-p))/(log(p/(1-p))-log(t/(1-t))))^2)
-    thresholdP <- rbind(thresholdP,data.frame("Proportion" = c(propor,t), "NbReads" = c(1:NbReads,Inf), "Threshold" = paste0(t)))
-  }
-  thresholdN <- thresholdP
-  thresholdN$Proportion <- 1-thresholdN$Proportion
-  
   if ("Type" %in% colnames(windows)){
-    windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), Proportion = round(Proportion, 2)) %>% distinct(Proportion, NbReads, MaxCoverage,Type)  
-    gg <- ggplot()
-    gg <- gg + geom_point(data = windowsReduced, aes(x = NbReads, y = Proportion, colour = MaxCoverage)) + facet_wrap(~Type)
-    gg <- gg + geom_line(data = thresholdP, aes(x = NbReads, y = Proportion, linetype = Threshold)) 
-    gg + geom_line(data = thresholdN, aes(x = NbReads, y = Proportion, linetype = Threshold)) + xlim(min(windowsReduced$NbReads),max(windowsReduced$NbReads)) + ylim(0,1) + theme_bw()
+    windowsReduced <- windows %>% dplyr::mutate(NbPositiveReads = round(NbPositiveReads, -1), NbNegativeReads = round(NbNegativeReads, -1)) %>% 
+      dplyr::distinct(NbPositiveReads, NbNegativeReads, MaxCoverage,Type)  
   }
   else{
-    windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), Proportion = round(Proportion, 2)) %>% distinct(Proportion, NbReads, MaxCoverage)
-    gg <- ggplot()
-    gg <- gg + geom_point(data = windowsReduced, aes(x = NbReads, y = Proportion, colour = MaxCoverage))
-    gg <- gg + geom_path(data = thresholdP, aes(x = NbReads, y = Proportion, linetype = Threshold)) 
-    gg + geom_path(data = thresholdN, aes(x = NbReads, y = Proportion, linetype = Threshold)) + xlim(min(windowsReduced$NbReads),max(windowsReduced$NbReads)) + ylim(0,1) + theme_bw()
+    windowsReduced <- windows %>% dplyr::mutate(NbPositiveReads = round(NbPositiveReads, -1), NbNegativeReads = round(NbNegativeReads, -1)) %>% 
+      dplyr::distinct(NbPositiveReads, NbNegativeReads, MaxCoverage)  
   }
-  
+  windowsReduced <- dplyr::mutate(windowsReduced,"NbReads" = NbPositiveReads + NbNegativeReads,"PositiveProportion" = NbPositiveReads/(NbPositiveReads+NbNegativeReads))
+  # for (t in threshold){
+  #   pP = seq(0.5,1,0.005)
+  #   mP = log(pP/(1-pP))
+  #   tP = log(t/(1-t))
+  #   pN = seq(0,0.5,0.005)
+  #   mN = log(pN/(1-pN))
+  #   tN = log((1-t)/t)
+  #   NbReads = 50000
+  #   propor <- sapply(1:NbReads,function(N){
+  #     sdP = sqrt(1/(N*pP*(1-pP)))
+  #     xP <- pnorm(tP,mean=mP,sd=sdP)
+  #     aP <- which(xP<=0.05)[1]
+  #     return(pP[aP])
+  #   }) 
+  #   #p <- seq(t,1,0.0005)
+  #   #n = ((qnorm(1-pvalue)/sqrt(p*(1-p))/(log(p/(1-p))-log(t/(1-t))))^2)
+  #   thresholdP <- rbind(thresholdP,data.frame("Proportion" = c(propor,t), "NbReads" = c(1:NbReads,Inf), "Threshold" = paste0(t)))
+  # }
+  # thresholdN <- thresholdP
+  # thresholdN$Proportion <- 1-thresholdN$Proportion
+  ThresholdP <- data.frame("NbReads" = c(), "PositiveProportion" = c(), "Threshold"= c())
+  ThresholdN <- data.frame("NbReads" = c(), "PositiveProportion" = c(), "Threshold"= c())
+  for (t in threshold){
+    positiveReadsT <- sapply(1:10000,function(N){
+      tP = log(t/(1-t))
+      p = seq(round(N*t),N,1)
+      pP = p/N
+      mP = log(pP/(1-pP))
+      sdP = sqrt(1/(N*pP*(1-pP)))
+      
+      pNorm <- pnorm(tP,mean = mP, sd = sdP)
+      #pBinom <- pbinom(0.9*N,size = N, prob = pP)
+      aNorm <- which(pNorm <= 0.05)[1]
+      return(p[aNorm])
+    }) 
+    tP <- data.frame("NbReads" = 1:10000, "PositiveProportion" = positiveReadsT/(1:10000), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositiveReads"=max(windowsReduced$NbPositiveReads),"NbNegativeReads"=round(max(windowsReduced $NbPositiveReads)/t)-max(windowsReduced $NbPositiveReads),"Threshold"=paste0(t))) 
+    ThresholdP <- rbind(ThresholdP,tP)
+    tN <- data.frame("NbReads" = 1:10000, "PositiveProportion" = 1-positiveReadsT/(1:10000), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositiveReads"=round(max(windowsReduced $NbNegativeReads)/t)-max(windowsReduced $NbNegativeReads),"NbNegativeReads"=max(windowsReduced $NbNegativeReads),"Threshold"=paste0(t))) 
+    ThresholdN <- rbind(ThresholdN,tN)
+  }
+  ThresholdP <- rbind(ThresholdP,data.frame("NbReads" = max(windowsReduced$NbReads), "PositiveProportion" = threshold, "Threshold"=paste0(threshold)))
+  ThresholdN <- rbind(ThresholdN,data.frame("NbReads" = max(windowsReduced$NbReads), "PositiveProportion" = (1-threshold), "Threshold"=paste0(threshold)))
+  if ("Type" %in% colnames(windows)){
+    gg <- ggplot2::ggplot()
+    gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = MaxCoverage)) 
+    gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
+    gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold)) + ggplot2::theme_bw() + ggplot2::facet_wrap(~Type)
+  }
+  else{
+    gg <- ggplot2::ggplot()
+    gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = MaxCoverage)) 
+    gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
+    gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold)) + ggplot2::theme_bw()
+  }
 }

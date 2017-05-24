@@ -14,7 +14,7 @@
 #' allWin <- getWinPairs(bamfilein,readLength = 100)
 #' @export
 #' 
-getWinPairs <- function(bamfilein,chromosomes, readLength,win,step){
+getWinPairs <- function(bamfilein,chromosomes, readLength,win,step,minCov=0){
   
   alignment <- GenomicAlignments::readGAlignments(bamfilein,use.names = TRUE,param = ScanBamParam(what="flag"))
   firstReadIndex <- ((floor(alignment@elementMetadata$flag/64) %% 2) == 1) 
@@ -53,8 +53,8 @@ getWinPairs <- function(bamfilein,chromosomes, readLength,win,step){
     chromosomeIndex <- which(allChromosomes==chr)
     len <- lenSeq[chromosomeIndex]
     #compute information in each window
-    windowsFirst <- rbind(windowsFirst,data.frame("Type"="First","Chr"=chr,computeWinInfo(runLength(covPosFirst[[chromosomeIndex]]),runValue(covPosFirst[[chromosomeIndex]]),runLength(covNegFirst[[chromosomeIndex]]),runValue(covNegFirst[[chromosomeIndex]]),readLength,len,win,step)))
-    windowsSecond <- rbind(windowsSecond,data.frame("Type"="Second","Chr"=chr,computeWinInfo(runLength(covPosSecond[[chromosomeIndex]]),runValue(covPosSecond[[chromosomeIndex]]),runLength(covNegSecond[[chromosomeIndex]]),runValue(covNegSecond[[chromosomeIndex]]),readLength,len,win,step)))
+    windowsFirst <- rbind(windowsFirst,data.frame("Type"="First","Chr"=chr,computeWinInfo(runLength(covPosFirst[[chromosomeIndex]]),runValue(covPosFirst[[chromosomeIndex]]),runLength(covNegFirst[[chromosomeIndex]]),runValue(covNegFirst[[chromosomeIndex]]),readLength,len,win,step,minCov)))
+    windowsSecond <- rbind(windowsSecond,data.frame("Type"="Second","Chr"=chr,computeWinInfo(runLength(covPosSecond[[chromosomeIndex]]),runValue(covPosSecond[[chromosomeIndex]]),runLength(covNegSecond[[chromosomeIndex]]),runValue(covNegSecond[[chromosomeIndex]]),readLength,len,win,step,minCov)))
   }
   return(rbind(windowsFirst,windowsSecond))
 }

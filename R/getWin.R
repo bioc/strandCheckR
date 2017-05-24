@@ -14,7 +14,7 @@
 #' allWin <- getWin(bamfilein,readLength = 50)
 #' @export
 #' 
-getWin <- function(bamfilein,chromosomes, readLength,win,step){
+getWin <- function(bamfilein,chromosomes, readLength,win,step,minCov=0){
 
   # read the input alignments and compute positive/negative coverge
   alignment <- GenomicAlignments::readGAlignments(bamfilein) 
@@ -47,7 +47,7 @@ getWin <- function(bamfilein,chromosomes, readLength,win,step){
     chromosomeIndex <- which(allChromosomes==chr)
     len <- lenSeq[chromosomeIndex]
     #compute information in each window
-    windows <- rbind(windows,data.frame("Chr"=chr,computeWinInfo(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step)))
+    windows <- rbind(windows,data.frame("Chr"=chr,computeWinInfo(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov)))
   }
   return(windows)
 }

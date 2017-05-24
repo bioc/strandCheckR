@@ -142,8 +142,8 @@ filterOnePairs <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRan
     if (getWin){
       keptFirstReadNames <- first$nameReads
       keptSecondReadNames <- second$nameReads
-      allWinFirst <- rbind(allWinFirst,first$Win %>% mutate("Type"="First","Chr"=chr))
-      allWinSecond <- rbind(allWinSecond,second$Win %>% mutate("Type"="Second","Chr"=chr))
+      allWinFirst <- rbind(allWinFirst,first$Win %>% dplyr::mutate("Type"="First","Chr"=chr))
+      allWinSecond <- rbind(allWinSecond,second$Win %>% dplyr::mutate("Type"="Second","Chr"=chr))
     }
     else{
       keptFirstReadNames <- first

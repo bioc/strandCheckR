@@ -4,7 +4,7 @@
 \alias{getWinPairs}
 \title{Get The Information of Every Window Generated From an Input Paired End Bam File}
 \usage{
-getWinPairs(bamfilein, chromosomes, readLength, win, step)
+getWinPairs(bamfilein, chromosomes, readLength, win, step, minCov = 0)
 }
 \arguments{
 \item{bamfilein}{the input bam file}

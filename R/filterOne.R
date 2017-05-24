@@ -48,7 +48,7 @@ filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,g
   startTime <- proc.time() 
   
   # read the info of the input alignments and compute positive/negative coverge
-  alignment <- GenomicAlignments::readGAlignments(bamfilein) 
+  alignment <- GenomicAlignments::readGAlignments(bamfilein,use.names = TRUE) 
   allChromosomes <-alignment@seqinfo@seqnames #get the name of each chromosome 
   lenSeq <- alignment@seqinfo@seqlengths #get the length of each chromosome 
   covPos<-alignment[strand(alignment)=="+"] %>% GenomicAlignments::coverage() #calculate coverage came from positive reads 
@@ -81,72 +81,49 @@ filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,g
   nbOReads <- 0 #number of original reads
   nbKReads <- 0 #number of kept reads
   append=FALSE 
-  allWin <- data.frame("Chr"=c(), "Start" = c(), "NbReads"= c(),"MaxCoverage" = c()) #data frame contains information of all windows for plotting
+  allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c(),"MaxCoverage" = c()) #data frame contains information of all windows for plotting
  
   for (chr in chromosomes){ #walk through each chromosome
     chromosomeIndex <- which(allChromosomes==chr)
     len <- lenSeq[chromosomeIndex]
-    #compute strand information in each window
-    if (getWin){#get details of each window for filtering and plotting
-      windows <- computeWinVerbose(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
-      allWin <- rbind(allWin,dplyr::mutate(windows$Win,"Chr"=chr))
-      windows$allWin <- c()
-    }
-    else{#get details of each window for filtering
-      windows <- computeWin(runLength(covPos[[chromosomeIndex]]),runValue(covPos[[chromosomeIndex]]),runLength(covNeg[[chromosomeIndex]]),runValue(covNeg[[chromosomeIndex]]),readLength,len,win,step,minCov,maxCov,logitThreshold)
-    }
-    
-    pvalueP <- pnorm(logitThresholdP,mean=binomial()$linkfun(windows$Plus$propor),sd=windows$Plus$error)
-    windows$Plus <- dplyr::mutate(windows$Plus,"pvalue"=pvalueP) %>% dplyr::filter(pvalueP<=pvalueThreshold) %>% 
-      dplyr::select(c(win,propor))
-    pvalueM <- pnorm(logitThresholdM,mean=binomial()$linkfun(windows$Minus$propor),sd=windows$Minus$error,lower.tail = FALSE)
-    windows$Minus <- dplyr::mutate(windows$Minus,"pvalue"=pvalueM) %>% dplyr::filter(pvalueM<=pvalueThreshold) %>% 
-      dplyr::select(c(win,propor))
-    
+    mustKeepPos <- c()
+    mustKeepNeg <- c()
     if (!missing(mustKeepRanges)){
       mkr <- mustKeepRanges[seqnames(mustKeepRanges)==chr]
       rg <- ranges(mkr)
       pos <- which(strand(mkr)=="+")
-      mustKeepPosWin <- getWin(rg[pos,],win,step)  
-      mustKeepNegWin <- getWin(rg[-pos,],win,step)  
-      windows$Plus <- dplyr::filter(win %in% mustKeepPosWin)
-      windows$Minus <- dplyr::filter(win %in% mustKeepNegWin) 
+      mustKeepPos <- getStart(rg[pos,],win,step)  
+      mustKeepNeg <- getStart(rg[-pos,],win,step)  
       remove(mkr)
       remove(rg)
       remove(pos)
     }
-   
+    alignmentInChr <- alignment[seqnames(alignment)==chr] #get the reads in the considering chromosome
+    alignment <- alignment[seqnames(alignment)!=chr] #reduce the size of alignment, for memory purpose
+    nbOReadsChr <- length(unique(names(alignmentInChr)))
+    nbOReads <- nbOReads + nbOReadsChr
     
-    keptReads <- c()
-    nbOReadsChr <- 0
-    if (nrow(windows$Plus)>0 || nrow(windows$Minus)>0){
-      alignmentInChr <- alignment[seqnames(alignment)==chr] #get the reads in the considering chromosome
-      alignment <- alignment[seqnames(alignment)!=chr] #reduce the size of alignment, for memory purpose
-      nbOReadsChr <- length(alignmentInChr)
-      nbOReads <- nbOReads + nbOReadsChr
-      
-      strand <- as.vector(strand(alignmentInChr))
-      indexPos <- which(strand=="+")
-      indexNeg <- which(strand=="-")
-      remove(strand)
-      fragments <- getFragment(alignmentInChr)
-      remove(alignmentInChr)
-      
-      keptReads <- keepRead(fragments$Pos,fragments$Neg,windows$Plus,windows$Minus,win,step,errorRate);   
-      remove(windows)
-      keptReads <- c(indexPos[unique(keptReads$Pos)],indexNeg[unique(keptReads$Neg)]) %>% sort() 
-      cat(paste0("Sequence ",chr,", length: ",len,", number of reads: ",nbOReadsChr,", number of kept reads: ",length(keptReads),"\n"),file=statfile,append=append)
-      if (append==FALSE) append <- TRUE  
+    results <- getKeptReadNames(alignmentInChr,covPos[[chromosomeIndex]],covNeg[[chromosomeIndex]],mustKeepPos,mustKeepNeg,getWin,readLength,len,win,step,pvalueThreshold,minCov,maxCov,logitThresholdP,logitThresholdM,errorRate)
+    
+    if (getWin){
+      keptReadNames <- results$nameReads
+      allWin <- rbind(allWin,results$Win %>% dplyr::mutate("Chr"=chr))
     }
-    if (length(keptReads)>0){##write the kept reads into output file
+    else{
+      keptReadNames <- results
+    }
+    cat(paste0("Sequence ",chr,", length: ",len,", number of reads: ",nbOReadsChr,", number of kept reads: ",length(keptReadNames),"\n"),file=statfile,append=append)
+    if (append==FALSE) append <- TRUE  
+    if (length(keptReadNames)>0){##write the kept reads into output file
       #get the range of kept reads
-      nbKReads <- nbKReads + length(keptReads)
+      nbKReads <- nbKReads + length(keptReadNames)
+      keptReads <- which(names(alignmentInChr) %in% keptReadNames)
       range <- rbamtools::bamRange(reader,c(chromosomeIndex-1,0,len))
       #write the kept reads into output file
       rbamtools::bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
       remove(range)
     }
-    remove(keptReads)
+    remove(keptReadNames)
   }
   rbamtools::bamClose(writer)
   remove(alignment)

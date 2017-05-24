@@ -5,7 +5,7 @@
 \title{Compute strand information of sliding window (plot version)}
 \usage{
 computeWinInfo(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win,
-  step)
+  step, minCov)
 }
 \arguments{
 \item{covPosLen}{the run length of an Rle object which is the coverage comes from positive reads}
@@ -27,8 +27,7 @@ computeWinInfo(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win,
 \item{minCov}{if a window has the max coverage least than minCov, then it will not be counted}
 }
 \value{
-A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
-Each data frame contains contain the information of proportion of postive reads, the max coverage and the group of max coverage
+A data frame which contains the information of all windows: Starting positive, Number of Positive/Negative Reads, the Maximum Coverage.
 }
 \description{
 Compute the positive proportion, sum of reads, max coverage and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000"

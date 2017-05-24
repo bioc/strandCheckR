@@ -48,24 +48,25 @@ List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin
   IntegerVector startNegFragments = negFragments["start"];
   IntegerVector endNegFragments = negFragments["end"];
   IntegerVector groupNegFragments = negFragments["group"];
-  IntegerVector winPos = keptPosWin["win"];
+  IntegerVector startPos = keptPosWin["Start"];
   NumericVector proporPos = keptPosWin["propor"];
-  IntegerVector winNeg = keptNegWin["win"];
+  IntegerVector startNeg = keptNegWin["Start"];
   NumericVector proporNeg = keptNegWin["propor"];
+  
   int nbWin = 0; //number of considering windows
-  if (winPos.size()>0) nbWin = winPos[winPos.size()-1];
-  if (winNeg.size()>0) nbWin = std::max(nbWin,winNeg[winNeg.size()-1]);
+  if (startPos.size()>0) nbWin = startPos[startPos.size()-1];
+  if (startNeg.size()>0) nbWin = std::max(nbWin,startNeg[startNeg.size()-1]);
     
   int* keepWin = new int[nbWin];
   for (int i=0;i<nbWin;i++) keepWin[i]=0;
   for (int i=0;i<keptPosWin.nrows();i++){
-    keepWin[winPos[i]-1]=1;
+    keepWin[startPos[i]-1]=1;
   }
   for (int i=0;i<keptNegWin.nrows();i++){
-    if (keepWin[winNeg[i]-1]==1){
-      keepWin[winNeg[i]-1]=2;
+    if (keepWin[startNeg[i]-1]==1){
+      keepWin[startNeg[i]-1]=2;
     }
-    else keepWin[winNeg[i]-1]=-1;
+    else keepWin[startNeg[i]-1]=-1;
   }
   NumericVector probPosWin(nbWin);//probability of positive win
   NumericVector probNegWin(nbWin);//probability of negative win
@@ -74,7 +75,7 @@ List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin
     probNegWin[i] = 0;
   }
   for (int w=0;w<keptPosWin.nrows();w++){
-    int i = winPos[w];
+    int i = startPos[w];
     if (keepWin[i-1]==1){
       probPosWin[i-1]=(2-1/proporPos[w])-errorRate;
       probNegWin[i-1]=errorRate;
@@ -85,7 +86,7 @@ List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin
     }
   }
   for (int w=0;w<keptNegWin.nrows();w++){
-    int i = winNeg[w];
+    int i = startNeg[w];
     if (keepWin[i-1]==-1){
       probNegWin[i-1]=((1-2*proporNeg[w])/(1-proporNeg[w]))-errorRate;
       probPosWin[i-1]=errorRate;

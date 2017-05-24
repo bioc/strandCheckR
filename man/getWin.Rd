@@ -4,7 +4,7 @@
 \alias{getWin}
 \title{Get The Information of Every Window Generated From an Input Single End Bam File}
 \usage{
-getWin(bamfilein, chromosomes, readLength, win, step)
+getWin(bamfilein, chromosomes, readLength, win, step, minCov = 0)
 }
 \arguments{
 \item{bamfilein}{the input bam file}

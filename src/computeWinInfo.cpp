@@ -17,8 +17,7 @@ using namespace Rcpp;
 //' @param step the step of the sliding window
 //' @param minCov if a window has the max coverage least than minCov, then it will not be counted
 //'
-//' @return A list of two data frames Plus and Minus which respectively contains information of positive windows and negative windows: 'win' is the window number, and 'value' is the normalized estimated value to be tested
-//' Each data frame contains contain the information of proportion of postive reads, the max coverage and the group of max coverage
+//' @return A data frame which contains the information of all windows: Starting positive, Number of Positive/Negative Reads, the Maximum Coverage.
 //' @examples
 //' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
 //' alignment <- GenomicAlignments::readGAlignments(bamfilein) 
@@ -37,7 +36,7 @@ using namespace Rcpp;
 //' 
 // [[Rcpp::export]]
 
-List computeWinInfo(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector covNegLen,IntegerVector covNegVal,double readLength,int end,int win,int step){
+List computeWinInfo(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVector covNegLen,IntegerVector covNegVal,double readLength,int end,int win,int step,int minCov){
   int start=0;
   int preP=0;
   int preM=0;
@@ -45,28 +44,30 @@ List computeWinInfo(IntegerVector covPosLen,IntegerVector covPosVal,IntegerVecto
   int iM=0;
   
   std::vector<int> Start;
-  std::vector<double> Pro;
-  std::vector<double> NbReads;
+  std::vector<double> PositiveReads;
+  std::vector<double> NegativeReads;
   std::vector<int> MaxC;
   int maxCovP=0;
   int maxCovN=0;
   while (start<end){
     int Plus=increaseVal(covPosLen,covPosVal,iP,start,win,preP,maxCovP);
+    Plus = round(Plus/readLength);
     int Minus=increaseVal(covNegLen,covNegVal,iM,start,win,preM,maxCovN);
+    Minus = round(Minus/readLength);
     increase(covPosLen,iP,start,end,step,preP);
     increase(covNegLen,iM,start,end,step,preM);
     if (Plus>0 || Minus>0){
-      double estimate = (double)Plus/(Plus+Minus);
-      double max = maxCovP;
-      if (estimate<=0.5) max = maxCovN;
-      Start.push_back(start);
-      Pro.push_back(estimate);
-      NbReads.push_back((Plus+Minus)/(double)readLength);
-      MaxC.push_back(max);
+      double max = maxCovP+maxCovN;
+      if (max>minCov){
+        Start.push_back(start+1);
+        PositiveReads.push_back(Plus);
+        NegativeReads.push_back(Minus);
+        MaxC.push_back(max);
+      }
     }
     start+=step;
   }
-  return DataFrame::create(_["Start"]=Start,_["Proportion"]=Pro, _["NbReads"]= NbReads, _ ["MaxCoverage"]= MaxC);
+  return DataFrame::create(_["Start"]=Start,_["NbPositiveReads"]=PositiveReads, _["NbNegativeReads"]= NegativeReads, _ ["MaxCoverage"]= MaxC);
 }
 
 
