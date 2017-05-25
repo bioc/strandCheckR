@@ -18,7 +18,7 @@
 #' plotHist(windowsP)
 #' @export
 #'
-plotHist <- function(windows,group=c(10,100,1000)){
+plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf"){
   if (length(group)==0){
     leg <- "all"
   }
@@ -71,6 +71,9 @@ plotHist <- function(windows,group=c(10,100,1000)){
       ggplot2::ylab("Count") + 
       ggplot2::xlab("Positive Proportion")+ 
       ggplot2::theme_bw() 
+    if (save==TRUE){ 
+      ggplot2::ggsave(filename = file)
+    }
   }
   else{
     histo<- lapply(leg,function(l){
@@ -91,5 +94,8 @@ plotHist <- function(windows,group=c(10,100,1000)){
       ggplot2::ylab("Count") + 
       ggplot2::xlab("Positive Proportion")+ 
       ggplot2::theme_bw() 
+    if (save==TRUE){ 
+      ggplot2::ggsave(filename = file)
+    }
   }
 }

@@ -23,7 +23,7 @@
 #' @export
 #'
 
-plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05){
+plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05,save=FALSE,file="win.pdf"){
   if (length(group)==0){
     leg <- "all"
   }
@@ -97,11 +97,17 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
     gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = MaxCoverage)) 
     gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
     gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold)) + ggplot2::theme_bw() + ggplot2::facet_wrap(~Type)
+    if (save==TRUE) {
+      ggplot2::ggsave(filename = file)
+    }
   }
   else{
     gg <- ggplot2::ggplot()
     gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = MaxCoverage)) 
     gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
     gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold)) + ggplot2::theme_bw()
+    if (save==TRUE){ 
+      ggplot2::ggsave(filename = file)
+    }
   }
 }

@@ -128,17 +128,19 @@ filterOnePairs <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRan
     firstReadIndex <- ((floor(alignmentInChr@elementMetadata$flag/64) %% 2) == 1) 
     alignmentInChrFirst <- alignmentInChr[firstReadIndex]
     alignmentInChrSecond <- alignmentInChr[!firstReadIndex]  
+    names <- names(alignmentInChr)
+    rm(alignmentInChr)
     
-    nbOFirstReadsChr <- length(unique(names(alignmentInChrFirst)))
+    nbOFirstReadsChr <- length(unique(names[firstReadIndex]))
     nbOFirstReads <- nbOFirstReads + nbOFirstReadsChr
     
-    nbOSecondReadsChr <- length(unique(names(alignmentInChrSecond)))
+    nbOSecondReadsChr <- length(unique(names[!firstReadIndex]))
     nbOSecondReads <- nbOSecondReads + nbOSecondReadsChr
     
     first <- getKeptReadNames(alignmentInChrFirst,covPosFirst[[chromosomeIndex]],covNegFirst[[chromosomeIndex]],mustKeepPosWin,mustKeepNegWin,getWin,readLength,len,win,step,pvalueThreshold,minCov,maxCov,logitThresholdP,logitThresholdM,errorRate)
-    
+    rm(alignmentInChrFirst)
     second <- getKeptReadNames(alignmentInChrSecond,covPosSecond[[chromosomeIndex]],covNegSecond[[chromosomeIndex]],mustKeepPosWin,mustKeepNegWin,getWin,readLength,len,win,step,pvalueThreshold,minCov,maxCov,logitThresholdP,logitThresholdM,errorRate)
-  
+    rm(alignmentInChrSecond)
     if (getWin){
       keptFirstReadNames <- first$nameReads
       keptSecondReadNames <- second$nameReads
@@ -155,26 +157,30 @@ filterOnePairs <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRan
       nbKFirstReadsChr <- length(keptFirstReadNames)
       nbKSecondReadsChr <- length(keptSecondReadNames)
       cat(paste0("Sequence ",chr,", length: ",len,", number of first reads: ",nbOFirstReadsChr,", number of second reads: ",nbOSecondReadsChr,", number of kept first reads: ",nbKFirstReadsChr,", number of kept second reads: ",nbKSecondReadsChr,"\n"),file=statfile,append=append)    
-      keptFirstAlignments <- which(firstReadIndex==TRUE)[which(names(alignmentInChrFirst) %in% keptFirstReadNames)]
-      keptSecondAlignments <- which(firstReadIndex==FALSE)[which(names(alignmentInChrSecond) %in% keptSecondReadNames)]
+      keptFirstAlignments <- which(firstReadIndex==TRUE)[which(names[firstReadIndex] %in% keptFirstReadNames)]
+      keptSecondAlignments <- which(firstReadIndex==FALSE)[which(names[!firstReadIndex] %in% keptSecondReadNames)]
       nbKFirstReads <- nbKFirstReads + nbKFirstReadsChr
       nbKSecondReads <- nbKSecondReads + nbKSecondReadsChr
       keptReads <-  c(keptFirstAlignments,keptSecondAlignments) %>% sort()
+      rm(keptFirstAlignments)
+      rm(keptSecondAlignments)
     }
     else{
       if (pair=="intersect"){
         keptReadNames <- intersect(keptFirstReadNames,keptSecondReadNames)
       }
       if (pair=="union"){
-        commonNames <- intersect(names(alignmentInChrFirst),names(alignmentInChrSecond))
+        commonNames <- intersect(names[firstReadIndex],names[!firstReadIndex])
         keptReadNames <- intersect(commonNames,union(keptFirstReadNames,keptSecondReadNames))
       }
       nbKFirstReads <- nbKFirstReads + length(keptReadNames)
       nbKSecondReads <- nbKSecondReads + length(keptReadNames)
       cat(paste0("Sequence ",chr,", length: ",len,", number of first reads: ",nbOFirstReadsChr,", number of second reads: ",nbOSecondReadsChr,", number of kept paired reads: ",length(keptReadNames),"\n"),file=statfile,append=append)    
-      keptReads <- which(names(alignmentInChr) %in% keptReadNames)
+      keptReads <- which(names %in% keptReadNames)
+      rm(keptReadNames)
     } 
-    
+    rm(keptFirstReadNames)
+    rm(keptSecondReadNames)
     if (append==FALSE) append <- TRUE  
     if (length(keptReads)>0){##write the kept reads into output file
       #get the range of kept reads

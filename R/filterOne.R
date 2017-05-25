@@ -112,18 +112,20 @@ filterOne <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRanges,g
     else{
       keptReadNames <- results
     }
+    keptReads <- which(names(alignmentInChr) %in% keptReadNames)
+    rm(alignmentInChr)
     cat(paste0("Sequence ",chr,", length: ",len,", number of reads: ",nbOReadsChr,", number of kept reads: ",length(keptReadNames),"\n"),file=statfile,append=append)
+    nbKReads <- nbKReads + length(keptReadNames)
+    remove(keptReadNames)
     if (append==FALSE) append <- TRUE  
-    if (length(keptReadNames)>0){##write the kept reads into output file
+    if (length(keptReads)>0){##write the kept reads into output file
       #get the range of kept reads
-      nbKReads <- nbKReads + length(keptReadNames)
-      keptReads <- which(names(alignmentInChr) %in% keptReadNames)
       range <- rbamtools::bamRange(reader,c(chromosomeIndex-1,0,len))
       #write the kept reads into output file
       rbamtools::bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
       remove(range)
+      rm(keptReads)
     }
-    remove(keptReadNames)
   }
   rbamtools::bamClose(writer)
   remove(alignment)

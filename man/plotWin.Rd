@@ -5,7 +5,7 @@
 \title{Plot the number of reads vs positive proportion of the input windows.}
 \usage{
 plotWin(windows, group = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
-  0.9), pvalue = 0.05)
+  0.9), pvalue = 0.05, save = FALSE, file = "win.pdf")
 }
 \arguments{
 \item{windows}{data frame containing the positive proportion of each window, the number of reads of the window and the maximum coverage of that window.

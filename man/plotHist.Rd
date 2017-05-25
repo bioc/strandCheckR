@@ -4,7 +4,8 @@
 \alias{plotHist}
 \title{Plot the histogram of positive proportions of the input windows}
 \usage{
-plotHist(windows, group = c(10, 100, 1000))
+plotHist(windows, group = c(10, 100, 1000), save = FALSE,
+  file = "hist.pdf")
 }
 \arguments{
 \item{windows}{data frame containing the positive proportion of each window, the number of reads of the window and the maximum coverage of that window.
