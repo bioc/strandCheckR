@@ -41,7 +41,6 @@ using namespace Rcpp;
 List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin,DataFrame keptNegWin,int win,int step,double errorRate){
 //List keepFragment(IntegerVector startPosAl,IntegerVector endPosAl,IntegerVector groupPos,IntegerVector startNegAl,IntegerVector endNegAl,IntegerVector groupNeg,NumericVector proporWinPos,NumericVector proporWinNeg,IntegerVector keepWinPos,IntegerVector keepWinNeg,int nbWin,int win,int step,double errorRate){
   //Get columns of each data frame
-  
   IntegerVector startPosFragments = posFragments["start"];
   IntegerVector endPosFragments = posFragments["end"];
   IntegerVector groupPosFragments = posFragments["group"];
@@ -52,11 +51,9 @@ List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin
   NumericVector proporPos = keptPosWin["propor"];
   IntegerVector startNeg = keptNegWin["Start"];
   NumericVector proporNeg = keptNegWin["propor"];
-  
   int nbWin = 0; //number of considering windows
   if (startPos.size()>0) nbWin = startPos[startPos.size()-1];
   if (startNeg.size()>0) nbWin = std::max(nbWin,startNeg[startNeg.size()-1]);
-    
   int* keepWin = new int[nbWin];
   for (int i=0;i<nbWin;i++) keepWin[i]=0;
   for (int i=0;i<keptPosWin.nrows();i++){
