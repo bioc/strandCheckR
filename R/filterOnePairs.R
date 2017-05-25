@@ -51,7 +51,7 @@ filterOnePairs <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRan
   }
   
   # read the input alignments and compute positive/negative coverge
-  alignment <- GenomicAlignments::readGAlignments(bamfilein,use.names = TRUE,param = ScanBamParam(what="flag"))
+  alignment <- GenomicAlignments::readGAlignments(bamfilein,use.names = TRUE,param = Rsamtools::ScanBamParam(what="flag"))
   firstReadIndex <- ((floor(alignment@elementMetadata$flag/64) %% 2) == 1) 
   alignmentFirst <- alignment[firstReadIndex]
   alignmentSecond <- alignment[!firstReadIndex]  
