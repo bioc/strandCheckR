@@ -156,12 +156,12 @@ filterOnePairs <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRan
     if (pair=="free"){
       nbKFirstReadsChr <- length(keptFirstReadNames)
       nbKSecondReadsChr <- length(keptSecondReadNames)
+      nbKFirstReads <- nbKFirstReads + nbKFirstReadsChr
+      nbKSecondReads <- nbKSecondReads + nbKSecondReadsChr
       cat(paste0("Sequence ",chr,", length: ",len,", number of first reads: ",nbOFirstReadsChr,", number of second reads: ",nbOSecondReadsChr,", number of kept first reads: ",nbKFirstReadsChr,", number of kept second reads: ",nbKSecondReadsChr,"\n"),file=statfile,append=append)    
       keptFirstAlignments <- which(firstReadIndex==TRUE)[which(names[firstReadIndex] %in% keptFirstReadNames)]
       keptSecondAlignments <- which(firstReadIndex==FALSE)[which(names[!firstReadIndex] %in% keptSecondReadNames)]
-      nbKFirstReads <- nbKFirstReads + nbKFirstReadsChr
-      nbKSecondReads <- nbKSecondReads + nbKSecondReadsChr
-      keptReads <-  c(keptFirstAlignments,keptSecondAlignments) %>% sort()
+      keptAlignments <-  c(keptFirstAlignments,keptSecondAlignments) %>% sort()
       rm(keptFirstAlignments)
       rm(keptSecondAlignments)
     }
@@ -176,20 +176,20 @@ filterOnePairs <- function(bamfilein,bamfileout,statfile,chromosomes,mustKeepRan
       nbKFirstReads <- nbKFirstReads + length(keptReadNames)
       nbKSecondReads <- nbKSecondReads + length(keptReadNames)
       cat(paste0("Sequence ",chr,", length: ",len,", number of first reads: ",nbOFirstReadsChr,", number of second reads: ",nbOSecondReadsChr,", number of kept paired reads: ",length(keptReadNames),"\n"),file=statfile,append=append)    
-      keptReads <- which(names %in% keptReadNames)
+      kepAlignments <- which(names %in% keptReadNames)
       rm(keptReadNames)
     } 
     rm(keptFirstReadNames)
     rm(keptSecondReadNames)
     if (append==FALSE) append <- TRUE  
-    if (length(keptReads)>0){##write the kept reads into output file
+    if (length(keptAlignments)>0){##write the kept reads into output file
       #get the range of kept reads
       range <- rbamtools::bamRange(reader,c(chromosomeIndex-1,0,len))
       #write the kept reads into output file
-      rbamtools::bamSave(writer,range[keptReads,],refid=chromosomeIndex-1)
+      rbamtools::bamSave(writer,range[keptAlignments,],refid=chromosomeIndex-1)
       remove(range)
     }
-    remove(keptReads)
+    remove(keptAlignments)
   }
   rbamtools::bamClose(writer)
   rbamtools::bamClose(reader)
