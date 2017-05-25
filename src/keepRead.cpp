@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include "random"
 using namespace Rcpp;
 
 //' @title  Calculate the reads to be kept.
