@@ -66,8 +66,8 @@ List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin
     }
     else keepWin[startNeg[i]-1]=-1;
   }
-  NumericVector probPosWin(nbWin);//probability of positive win
-  NumericVector probNegWin(nbWin);//probability of negative win
+  double* probPosWin = new double[nbWin];//probability of positive win
+  double* probNegWin = new double[nbWin];//probability of negative win
   for (int i=0;i<nbWin;i++){
     probPosWin[i] = 0;
     probNegWin[i] = 0;
@@ -90,7 +90,7 @@ List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin
       probPosWin[i-1]=errorRate;
     }
   }
-  NumericVector probPosAl(posFragments.nrows()+1);  
+  double* probPosAl = new double[posFragments.nrows()+1];  
   for (int i=0;i<posFragments.nrows();i++) probPosAl[i]=0;
   for (int a=0;a<posFragments.nrows();a++){
     int s = startPosFragments[a];
@@ -105,7 +105,7 @@ List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin
     }
     probPosAl[groupPosFragments[a]]=std::max(probPosAl[groupPosFragments[a]],prob);
   }
-  NumericVector probNegAl(negFragments.nrows()+1); 
+  double* probNegAl = new double[negFragments.nrows()+1]; 
   for (int i=0;i<negFragments.nrows();i++) probNegAl[i]=0;
   for (int a=0;a<negFragments.nrows();a++){
     int s = startNegFragments[a];
@@ -136,6 +136,11 @@ List keepRead(DataFrame posFragments,DataFrame negFragments,DataFrame keptPosWin
       listKeepNegReads.push_back(groupNegFragments[i]);
     }
   }
+  delete[] keepWin;
+  delete[] probPosWin;
+  delete[] probNegWin;
+  delete[] probPosAl;
+  delete[] probNegAl;
   return List::create(
     _["Pos"] = listKeepPosReads,
     _["Neg"] = listKeepNegReads);
