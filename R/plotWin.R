@@ -12,6 +12,7 @@
 #' @param pvalue 0.05 by default, any window has pvalue below it in the test comparing with a threshold will be kept
 #' @param save if TRUE, then the plot will be save into the file given by file parameter
 #' @param file the file name to save to plot
+#' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
 #' @seealso getWin, getWinPairs, plotHist
 #'
 #' @examples

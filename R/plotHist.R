@@ -8,6 +8,7 @@
 #' @param group an integer vector that specifies how you want to partition the windows based on the maximum coverage. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have maximum coverage < 10, from 10 to 100, from 100 to 1000, and > 1000
 #' @param save if TRUE, then the plot will be save into the file given by file parameter
 #' @param file the file name to save to plot
+#' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
 #' @seealso getWin, getWinPairs, plotWin
 #'
 #' @examples

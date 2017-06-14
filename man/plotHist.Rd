@@ -16,6 +16,8 @@ Windows can be get by calling the function getWin.}
 \item{save}{if TRUE, then the plot will be save into the file given by file parameter}
 
 \item{file}{the file name to save to plot}
+
+\item{facet_wrap_chromosomes}{if TRUE, then the plots will be splitted by chromosomes. FALSE by default}
 }
 \description{
 Plot the histogram of positive proportions of the input windows
