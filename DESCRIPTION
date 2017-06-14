@@ -1,16 +1,13 @@
 Package: rnaCleanR
 Type: Package
-Title: Quantify and Filter putative double strand DNA from strand-specific RNA bam file
-Version: 1.0
-Date: 2016-10-11
-Author: Thu Hien To & Steve Pederson
+Title: Calculate strandness information of a bam file
+Version: 0.1.0
+Author: Hien To & Steve Pederson
 Maintainer: Hien To <hien.to@adelaide.edu.au>
-Description: This package aims to quantify and remove putative double strand DNA from a strand-specific RNA sample. There are also options and methods to plot the positive/negative proportions of all sliding windows, which allow users to have an idea of how much the sample was contaminated and the appropriate threshold to be used for filtering.
+Description: More about what it does (maybe more than one line)
 License: GPL (>= 2)
+LazyData: TRUE
+RoxygenNote: 5.0.1
 Imports:
     Rcpp (>= 0.12.7)
 LinkingTo: Rcpp
-RoxygenNote: 5.0.1
-Suggests: knitr,
-    rmarkdown
-VignetteBuilder: knitr

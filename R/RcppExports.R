@@ -5,9 +5,9 @@
 #'
 #' @description Compute the positive proportion, sum of reads, max coverage and the group of each window. Windows are grouped based on their maximum coverage: by default definition, groups spead from 1 to 4, which correspond to the max coverage respectively in the range "0-10","10-100","100-1000",">1000"
 #' This method is used in the getPlot function when we only need the information to plot, and do not need to filter the reads afterward.
-#' 
-#' @param covPosLen the run length of an Rle object which is the coverage comes from positive reads
-#' @param covPosVal the run value of an Rle object which is the coverage comes from positive reads
+#'
+#' @param covLen the run length of an Rle object which is the coverage comes from positive reads
+#' @param covVal the run value of an Rle object which is the coverage comes from positive reads
 #' @param covNegLen the run length of an Rle object which is the coverage comes from negative reads
 #' @param covNegVal the run value of an Rle object which is the coverage comes from negative reads
 #' @param end the last base on the reference chromosome that the sliding window atteints
@@ -19,59 +19,21 @@
 #' @return A data frame which contains the information of all windows: Starting positive, Number of Positive/Negative Reads, the Maximum Coverage.
 #' @examples
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-#' alignment <- GenomicAlignments::readGAlignments(bamfilein) 
-#' alignmentInChr1 <- alignment[seqnames(alignment)=="1"] 
-#' covPos <- alignmentInChr1[strand(alignment)=="+"] %>% GenomicAlignments::coverage() 
-#' covNeg <- alignmentInChr1[strand(alignment)=="-"] %>% GenomicAlignments::coverage() 
+#' alignment <- GenomicAlignments::readGAlignments(bamfilein)
+#' alignmentInChr1 <- alignment[seqnames(alignment)=="1"]
+#' covPos <- alignmentInChr1[strand(alignment)=="+"] %>% GenomicAlignments::coverage()
+#' covNeg <- alignmentInChr1[strand(alignment)=="-"] %>% GenomicAlignments::coverage()
 #' len <- length(covChr)
 #' readLength <- 100
 #' win <- 1000
 #' step <- 100
 #' minCov <- 0
-#' windows <- rnaCleanR::computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
-#' 
-#' 
-#' @export
-#' 
-computeWinInfo <- function(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov) {
-    .Call('rnaCleanR_computeWinInfo', PACKAGE = 'rnaCleanR', covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win, step, minCov)
-}
-
-#' @title  Calculate the reads to be kept.
+#' windows <- rnaCleanR::computeWinInfo(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
 #'
-#' @description Calculate the reads to be kept based of the strand proportion of kept windows. This function is called by the functions filterOne or filterMulti.
-#' If a kept window has more positive alignments than negative alignments, then 
-#' each postive alignment in that window is kept with a probability equal to (positive proportion -  negative proportion)/(positive proportion); and each negative alignment of that window is kept with a probability equal to the given errorRate (0.01 by default). Similarly for windows that have negative alignments more than positive alingments.
-#' Since each alignment can be belonged to several windows, then the final probability for keeping of each alignment is the maximum one from all windows containing it.
-#' @param posFragments the data frame contains the information of positive fragments (generated from the function getFragment)
-#' @param negFragments the data frame contains the information of negative fragments (generated from the function getFragment)
-#' @param keptPosWin the data frame contains the information of positive kept windows 
-#' @param keptNegWin the data frame contains the information of negative kept windows 
-#' @param win the size of the sliding windows
-#' @param step the size of the step of sliding windows
-#' @param errorRate the probability that an RNA read takes the false strand
 #'
-#' @return A list of two vectors containing the positive and negative alignments to be kept.
-#' 
-#' @seealso getFragment, filterOne, filterMulti
-#' 
-#' @examples
-#' posFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) 
-#' posFragments <- posFragments[order(posFragments$start),] %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
-#' negFragments <- data.frame("group"=sample(1:800,1000,replace=TRUE),"start"=sample(1:1000000,1000,replace=TRUE)) 
-#' negFragments <- negFragments[order(negFragments$start),] %>% dplyr::mutate(end=start+sample(50:100,1000,replace=TRUE))
-#' keptPosWin <- data.frame("win"=sample(1:10000,5000,replace=FALSE),"propor"=runif(5000, min=0.7, max=1))
-#' keptPosWin <- keptPosWin[order(keptPosWin$win),]
-#' keptNegWin <- data.frame("win"=sample(1:10000,5000,replace=FALSE),"propor"=runif(5000, min=0, max=0.3))
-#' keptNegWin <- keptNegWin[order(keptNegWin$win),]
-#' win <- 1000
-#' step <- 100
-#' errorRate <- 0.01
-#' reads <- rnaCleanR::keepRead(posFragments,negFragments,keptPosWin,keptNegWin,win,step,errorRate)
-#' 
 #' @export
-#' 
-keepRead <- function(posFragments, negFragments, keptPosWin, keptNegWin, win, step, errorRate) {
-    .Call('rnaCleanR_keepRead', PACKAGE = 'rnaCleanR', posFragments, negFragments, keptPosWin, keptNegWin, win, step, errorRate)
+#'
+computeWinInfo <- function(covLen, covVal, end, win, step) {
+    .Call('rnaCleanR_computeWinInfo', PACKAGE = 'rnaCleanR', covLen, covVal, end, win, step)
 }
 

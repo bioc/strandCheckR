@@ -5,26 +5,30 @@
 \title{Plot the histogram of positive proportions of the input windows}
 \usage{
 plotHist(windows, group = c(10, 100, 1000), save = FALSE,
-  file = "hist.pdf")
+  file = "hist.pdf", facet_wrap_chromosomes = FALSE)
 }
 \arguments{
 \item{windows}{data frame containing the positive proportion of each window, the number of reads of the window and the maximum coverage of that window.
 Windows can be get by calling the function getWin.}
 
 \item{group}{an integer vector that specifies how you want to partition the windows based on the maximum coverage. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have maximum coverage < 10, from 10 to 100, from 100 to 1000, and > 1000}
+
+\item{save}{if TRUE, then the plot will be save into the file given by file parameter}
+
+\item{file}{the file name to save to plot}
 }
 \description{
 Plot the histogram of positive proportions of the input windows
 }
 \examples{
 #for single end bam file
-windows <- getWin(bamfilein = "data/s1.chr1.bam",readLength=50)
+windows <- getWin(bamfilein = "data/s1.chr1.bam")
 plotHist(windows)
 #for paired end bamfile
-windowsP <- getWinPairs(bamfilein = "data/120.10.bam",readLength=100)
+windowsP <- getWinPairs(bamfilein = "data/120.10.bam")
 plotHist(windowsP)
 }
 \seealso{
-getWin, plotWin
+getWin, getWinPairs, plotWin
 }
 

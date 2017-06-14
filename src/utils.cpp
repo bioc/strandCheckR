@@ -60,3 +60,40 @@ int getMaxCov(IntegerVector start,IntegerVector end,std::vector<int> fragsInWin,
   for (int i=0;i<win;i++) if (cov(i)>max) max=cov(i);
   return max;
 }
+
+void increaseR(IntegerVector len,int& ind,int start, int end, int& pre){
+  int next = start;
+  while (ind<len.size() && next <= end){
+    int s = next;
+    next = s+len[ind]-pre;
+    if (next>end){
+      pre+=(end)-s;
+      next=end;
+    }
+    else{
+      pre=0;
+      ind++;
+    }
+  }
+  start=next;
+}
+
+double increaseValR(IntegerVector len,DoubleVector val,int ind,int start, int end, int pre){
+  int next = start;
+  double maxCov = 0;
+  while (ind<len.size() && next <= end){
+    int s = next;
+    next = s+len[ind]-pre;
+    int v = val[ind];
+    if (v>maxCov) maxCov=v;
+    if (next>end){
+      pre+=(end)-s;
+      next=end;
+    }
+    else{
+      pre=0;
+      ind++;
+    }
+  }
+  return maxCov;
+}

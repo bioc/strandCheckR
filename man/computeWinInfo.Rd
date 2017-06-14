@@ -4,25 +4,24 @@
 \alias{computeWinInfo}
 \title{Compute strand information of sliding window (plot version)}
 \usage{
-computeWinInfo(covPosLen, covPosVal, covNegLen, covNegVal, readLength, end, win,
-  step, minCov)
+computeWinInfo(covLen, covVal, end, win, step)
 }
 \arguments{
-\item{covPosLen}{the run length of an Rle object which is the coverage comes from positive reads}
+\item{covLen}{the run length of an Rle object which is the coverage comes from positive reads}
 
-\item{covPosVal}{the run value of an Rle object which is the coverage comes from positive reads}
-
-\item{covNegLen}{the run length of an Rle object which is the coverage comes from negative reads}
-
-\item{covNegVal}{the run value of an Rle object which is the coverage comes from negative reads}
-
-\item{readLength}{the average length of reads}
+\item{covVal}{the run value of an Rle object which is the coverage comes from positive reads}
 
 \item{end}{the last base on the reference chromosome that the sliding window atteints}
 
 \item{win}{the size of the sliding window}
 
 \item{step}{the step of the sliding window}
+
+\item{covNegLen}{the run length of an Rle object which is the coverage comes from negative reads}
+
+\item{covNegVal}{the run value of an Rle object which is the coverage comes from negative reads}
+
+\item{readLength}{the average length of reads}
 
 \item{minCov}{if a window has the max coverage least than minCov, then it will not be counted}
 }
@@ -35,16 +34,16 @@ This method is used in the getPlot function when we only need the information to
 }
 \examples{
 bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-alignment <- GenomicAlignments::readGAlignments(bamfilein) 
-alignmentInChr1 <- alignment[seqnames(alignment)=="1"] 
-covPos <- alignmentInChr1[strand(alignment)=="+"] \%>\% GenomicAlignments::coverage() 
-covNeg <- alignmentInChr1[strand(alignment)=="-"] \%>\% GenomicAlignments::coverage() 
+alignment <- GenomicAlignments::readGAlignments(bamfilein)
+alignmentInChr1 <- alignment[seqnames(alignment)=="1"]
+covPos <- alignmentInChr1[strand(alignment)=="+"] \%>\% GenomicAlignments::coverage()
+covNeg <- alignmentInChr1[strand(alignment)=="-"] \%>\% GenomicAlignments::coverage()
 len <- length(covChr)
 readLength <- 100
 win <- 1000
 step <- 100
 minCov <- 0
-windows <- rnaCleanR::computeWinPlot(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
+windows <- rnaCleanR::computeWinInfo(runLength(covPos),runValue(covPos),runLength(covNeg),runValue(covNeg),readLength,len,win,step,minCov)
 
 
 }

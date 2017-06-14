@@ -4,16 +4,22 @@
 \alias{plotWin}
 \title{Plot the number of reads vs positive proportion of the input windows.}
 \usage{
-plotWin(windows, group = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
-  0.9), pvalue = 0.05, save = FALSE, file = "win.pdf")
+plotWin(windows, threshold = c(0.6, 0.7, 0.8, 0.9), pvalue = 0.05,
+  save = FALSE, file = "win.pdf", facet_wrap_chromosomes = FALSE)
 }
 \arguments{
 \item{windows}{data frame containing the positive proportion of each window, the number of reads of the window and the maximum coverage of that window.
 Windows can be get by calling the function getWin.}
 
-\item{group}{an integer vector that specifies how you want to partition the windows based on the maximum coverage. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have maximum coverage < 10, from 10 to 100, from 100 to 1000, and > 1000}
-
 \item{threshold}{a real vector that specifies which threshold lines you want to draw on the plot. The positive window above the threshold line (or negative window below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.}
+
+\item{pvalue}{0.05 by default, any window has pvalue below it in the test comparing with a threshold will be kept}
+
+\item{save}{if TRUE, then the plot will be save into the file given by file parameter}
+
+\item{file}{the file name to save to plot}
+
+\item{group}{an integer vector that specifies how you want to partition the windows based on the maximum coverage. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have maximum coverage < 10, from 10 to 100, from 100 to 1000, and > 1000}
 }
 \description{
 Plot the number of reads vs positive proportion of the input windows.
@@ -21,14 +27,14 @@ Plot the number of reads vs positive proportion of the input windows.
 \examples{
 
 #for single end bam file
-windows <- getWin(bamfilein = "data/s1.chr1.bam",readLength=50)
+windows <- getWin(bamfilein = "data/s1.chr1.bam")
 plotWin(windows)
 #for paired end bamfile
-windowsP <- getWinPairs(bamfilein = "data/120.10.bam",readLength=100)
+windowsP <- getWinPairs(bamfilein = "data/120.10.bam")
 plotWin(windowsP)
 
 }
 \seealso{
-getWin, plotHist
+getWin, getWinPairs, plotHist
 }
 

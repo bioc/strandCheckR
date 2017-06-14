@@ -2,29 +2,27 @@
 % Please edit documentation in R/getWinPairs.R
 \name{getWinPairs}
 \alias{getWinPairs}
-\title{Get The Information of Every Window Generated From an Input Paired End Bam File}
+\title{get the information of all windows from a paired end bam file}
 \usage{
-getWinPairs(bamfilein, chromosomes, readLength, win, step, minCov = 0)
+getWinPairs(bamfilein, chromosomes, yieldSize = 1e+08, win = 1000,
+  step = 100, limit = 0.75, coverage = FALSE)
 }
 \arguments{
-\item{bamfilein}{the input bam file}
+\item{bamfilein}{the input bam file\. Your bamfile should be sorted and have an index file located at the same path as well.}
 
-\item{chromosomes}{the list of chromosomes to be considered}
+\item{chromosomes}{the list of chromosomes to be read}
 
-\item{readLength}{the average length of the reads in the input bam file}
+\item{yieldSize}{by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8}
 
-\item{win}{the length of the sliding window}
+\item{win}{the length of the sliding window, 1000 by default.}
 
-\item{step}{the step length to slide the window}
-}
-\description{
-Return a data frame containing the information of every window generated from the input bam file. The bam file should be paired end.
-}
-\examples{
-bamfilein <- system.file("data","120.10.bam",package = "rnaCleanR")
-allWin <- getWinPairs(bamfilein,readLength = 100)
+\item{step}{the step length to sliding the window, 100 by default.}
+
+\item{limit}{a read is considered to be included in a window if and only if at least limit percent of it is in the window. 0.75 by default}
+
+\item{coverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
 }
 \seealso{
-getWinPairs
+filterDNA, filterDNAPairs, getWinPairs, plotHist, plotWin
 }
 
