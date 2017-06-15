@@ -4,7 +4,14 @@
 \alias{concatenateAlignments}
 \title{concatenate a list of alignments into one}
 \usage{
-concatenateAlignments(bam, nbOriginalReadsInPart, lengthSeqInPart, nbAlignments,
-  flag = FALSE, qname = FALSE)
+concatenateAlignments(bam, statinfo, flag = FALSE, qname = FALSE)
+}
+\arguments{
+\item{bam}{a list returned by \code{scanBam} function, each element correspond to a chromosome, containing the information of strand, starting position, cigar string, and eventually flag, qname}
+
+\item{qname}{}
+}
+\description{
+concatenate a list of alignments into one
 }
 

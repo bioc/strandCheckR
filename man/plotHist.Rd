@@ -2,31 +2,33 @@
 % Please edit documentation in R/plotHist.R
 \name{plotHist}
 \alias{plotHist}
-\title{Plot the histogram of positive proportions of the input windows}
+\title{Plot the histogram of positive proportions of the input windows data frame}
 \usage{
 plotHist(windows, group = c(10, 100, 1000), save = FALSE,
   file = "hist.pdf", facet_wrap_chromosomes = FALSE)
 }
 \arguments{
-\item{windows}{data frame containing the positive proportion of each window, the number of reads of the window and the maximum coverage of that window.
-Windows can be get by calling the function getWin.}
+\item{windows}{data frame containing the number of positive/negative reads for each window
+Windows can be get by calling the function \code{getWin} (for single end bam file) or \code{getWinPairs} (for paired end bam file).}
 
-\item{group}{an integer vector that specifies how you want to partition the windows based on the maximum coverage. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have maximum coverage < 10, from 10 to 100, from 100 to 1000, and > 1000}
+\item{group}{an integer vector that specifies how you want to partition the windows based on the number of reads. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000}
 
-\item{save}{if TRUE, then the plot will be save into the file given by file parameter}
+\item{save}{if TRUE, then the plot will be save into the file given by \code{file} parameter}
 
 \item{file}{the file name to save to plot}
 
 \item{facet_wrap_chromosomes}{if TRUE, then the plots will be splitted by chromosomes. FALSE by default}
 }
 \description{
-Plot the histogram of positive proportions of the input windows
+Plot the histogram of positive proportions of the input windows data frame
 }
 \examples{
 #for single end bam file
-windows <- getWin(bamfilein = "data/s1.chr1.bam")
+bamfilein = system.file("data/s1.chr1.bam",package = "rnaCleanR")
+windows <- getWin(bamfilein)
 plotHist(windows)
 #for paired end bamfile
+bamfilepair = system.file("data/120.10.bam",package = "rnaCleanR")
 windowsP <- getWinPairs(bamfilein = "data/120.10.bam")
 plotHist(windowsP)
 }

@@ -4,6 +4,18 @@
 \alias{getWinFromGranges}
 \title{get the ranges of windows from a GRanges}
 \usage{
-getWinFromGranges(mustKeepRanges, chromosomes, win, step)
+getWinFromGranges(gr, chromosomes, statinfo, win, step)
+}
+\arguments{
+\item{gr}{a GRanges object}
+
+\item{chromosomes}{a list of chromosome names}
+
+\item{win}{the length of sliding window}
+
+\item{step}{the step length to sliding the window}
+}
+\description{
+get the lists of positive/negative windows that overlap a GRanges objects
 }
 

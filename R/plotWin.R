@@ -1,16 +1,16 @@
-#' @title Plot the number of reads vs positive proportion of the input windows.
+#' @title Plot the number of reads vs positive proportion of the input windows data frame.
 #'
-#' @description Plot the number of reads vs positive proportion of the input windows.
+#' @description Plot the number of reads vs positive proportion of the input windows data frame.
 
-#' @param windows data frame containing the positive proportion of each window, the number of reads of the window and the maximum coverage of that window.
-#' Windows can be get by calling the function getWin.
+#' @param windows data frame containing the number of positive/negative reads for each window
+#' Windows can be get by calling the function \code{getWin} (for single end bam file) or \code{getWinPairs} (for paired end bam file).
 #'
-#' @param group an integer vector that specifies how you want to partition the windows based on the maximum coverage. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have maximum coverage < 10, from 10 to 100, from 100 to 1000, and > 1000
+#' @param group an integer vector that specifies how you want to partition the windows based on the number of reads. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000
 #'
 #' @param threshold a real vector that specifies which threshold lines you want to draw on the plot. The positive window above the threshold line (or negative window below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.
 #'
-#' @param pvalue 0.05 by default, any window has pvalue below it in the test comparing with a threshold will be kept
-#' @param save if TRUE, then the plot will be save into the file given by file parameter
+#' @param pvalue 0.05 by default, any window has pvalue below it in the test comparing with a threshold will be kept.
+#' @param save if TRUE, then the plot will be save into the file given by \code{file} parameter
 #' @param file the file name to save to plot
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
 #' @seealso getWin, getWinPairs, plotHist
@@ -18,9 +18,11 @@
 #' @examples
 #'
 #' #for single end bam file
-#' windows <- getWin(bamfilein = "data/s1.chr1.bam")
+#' bamfilein = system.file("data/s1.chr1.bam",package = "rnaCleanR")
+#' windows <- getWin(bamfilein)
 #' plotWin(windows)
 #' #for paired end bamfile
+#' bamfilepair = system.file("data/120.10.bam",package = "rnaCleanR")
 #' windowsP <- getWinPairs(bamfilein = "data/120.10.bam")
 #' plotWin(windowsP)
 #'

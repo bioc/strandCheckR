@@ -5,6 +5,6 @@
 \title{get the probability of keeping each window}
 \usage{
 keptProbaWin(winPositiveAlignments, winNegativeAlignments, logitThreshold,
-  errorRate, mustKeepWin, min, max, getWin, coverage = FALSE)
+  pvalueThreshold, errorRate, mustKeepWin, min, max, getWin, coverage = FALSE)
 }
 

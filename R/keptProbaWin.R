@@ -3,7 +3,7 @@
 #' @export
 #' @importFrom IRanges coverage
 #'
-keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,logitThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=FALSE){
+keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=FALSE){
   if (coverage){
     positiveCoverage <- computeWinInfo(runLength(winPositiveAlignments$Coverage),runValue(winPositiveAlignments$Coverage),length(winPositiveAlignments$Coverage),win,step)
     negativeCoverage <- computeWinInfo(runLength(winNegativeAlignments$Coverage),runValue(winNegativeAlignments$Coverage),length(winNegativeAlignments$Coverage),win,step)
@@ -41,34 +41,20 @@ keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,logitThresh
     }
   }
   keptWin <- rep(TRUE,length(runValue(pvalue)))
-  keptWin[runValue(pvalue)>0.05] <- FALSE
+  keptWin[runValue(pvalue)>pvalueThreshold] <- FALSE
   keptWin <- Rle(keptWin,runLength(pvalue))
 
   keptProbaPosWin <- keptWin*((nbPositiveReads>nbNegativeReads)*((nbPositiveReads-nbNegativeReads)/nbPositiveReads)+(nbPositiveReads<nbNegativeReads)*errorRate)
   keptProbaNegWin <- keptWin*((nbPositiveReads<nbNegativeReads)*((nbNegativeReads-nbPositiveReads)/nbNegativeReads)+(nbPositiveReads>nbNegativeReads)*errorRate)
-  # if (length(mustKeepWin)>0){
-  #   id <- which(names(positiveFragments) %in% names(mustKeepWin))
-  #   keptProbaPosWin[id] <- lapply(id,function(i){
-  #     chr <- names(positiveFragments)
-  #     if (length(mustKeepWin[[chr]]$Positive) < length(keptProbaPosWin)){
-  #       mustKeepWin[[chr]]$Positive <- c(mustKeepWin[[chr]]$Positive,rep(FALSE,length(keptProbaPosWin)-length(mustKeepWin[[chr]]$Positive)))
-  #     }
-  #     else{
-  #       mustKeepWin[[chr]]$Positive <- mustKeepWin[[chr]]$Positive[1:length(keptProbaPosWin)]
-  #     }
-  #     return(mustKeepWin[[chr]]$Positive+(!mustKeepWin[[chr]]$Positive)*keptProbaPosWin)
-  #   })
-  #   keptProbaNegWin[id] <- lapply(id,function(i){
-  #     chr <- names(positiveFragments)
-  #     if (length(mustKeepWin[[chr]]$Negative) < length(keptProbaPosWin)){
-  #       mustKeepWin[[chr]]$Negative <- c(mustKeepWin[[chr]]$Negative,rep(FALSE,length(keptProbaNegWin)-length(mustKeepWin[[chr]]$Negative)))
-  #     }
-  #     else{
-  #       mustKeepWin[[chr]]$Negative <- mustKeepWin[[chr]]$Negative[1:length(keptProbaNegWin)]
-  #     }
-  #     return(mustKeepWin[[chr]]$Negative+(!mustKeepWin[[chr]]$Negative)*keptProbaNegWin)
-  #   })
-  # }
+  
+  if (length(mustKeepWin)>0){
+    if (length(mustKeepWin$Positive)>length(keptProbaPosWin)) mustKeepWin$Positive <- mustKeepWin$Positive[length(keptProbaPosWin)]
+    else mustKeepWin$Positive <- c(mustKeepWin$Positive,rep(0,length(keptProbaPosWin)-length(mustKeepWin$Positive)))
+    keptProbaPosWin <- mustKeepWin$Positive + (!mustKeepWin$Positive)*keptProbaPosWin
+    if (length(mustKeepWin$Negative)>length(keptProbaNegWin)) mustKeepWin$Negative <- mustKeepWin$Negative[length(keptProbaNegWin)]
+    else mustKeepWin$Negative <- c(mustKeepWin$Negative,rep(0,length(keptProbaNegWin)-length(mustKeepWin$Negative)))
+    keptProbaNegWin <- mustKeepWin$Negative + (!mustKeepWin$Negative)*keptProbaNegWin
+  }
   if (max>0){
     if (coverage){
       keepMorePos <- (nbPositiveReads>nbNegativeReads)*(maxPositiveCoverage>=max)
