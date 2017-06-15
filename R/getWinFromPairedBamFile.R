@@ -8,10 +8,10 @@
 #' @param limit a read is considered to be included in a window if and only if at least limit percent of it is in the window. 0.75 by default
 #' @param coverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
 #'
-#' @seealso filterDNA, filterDNAPairs, getWinPairs, plotHist, plotWin
+#' @seealso filterDNA, filterDNAPairs, getWinFromBamFile, plotHist, plotWin
 #' @export
 #'
-getWinPairs <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=100,limit=0.75,coverage=FALSE){
+getWinFromPairedBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=100,limit=0.75,coverage=FALSE){
   bf <- BamFile(bamfilein)
   seqinfo <- seqinfo(bf)
   allChromosomes <- seqnames(seqinfo)
@@ -41,7 +41,7 @@ getWinPairs <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=100,li
       winSecondPositiveAlignments <- getWinOfAlignments(bam,"+",win,step,limit,secondReadIndex,coverage=coverage)
       winFirstNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,firstReadIndex,coverage=coverage)
       winSecondNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,secondReadIndex,coverage=coverage)
-
+      
       if (coverage){
         positiveFirstCoverage <- computeWinInfo(runLength(winFirstPositiveAlignments$Coverage),runValue(winFirstPositiveAlignments$Coverage),length(winFirstPositiveAlignments$Coverage),win,step)
         negativeFirstCoverage <- computeWinInfo(runLength(winFirstNegativeAlignments$Coverage),runValue(winFirstNegativeAlignments$Coverage),length(winFirstNegativeAlignments$Coverage),win,step)
@@ -50,7 +50,7 @@ getWinPairs <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=100,li
         nbFirstPositiveReads[positiveFirstCoverage$Start] <- positiveFirstCoverage$SumCoverage
         nbFirstNegativeReads <- Rle(0,nbWin)
         nbFirstNegativeReads[negativeFirstCoverage$Start] <- negativeFirstCoverage$SumCoverage
-
+        
         positiveSecondCoverage <- computeWinInfo(runLength(winSecondPositiveAlignments$Coverage),runValue(winSecondPositiveAlignments$Coverage),length(winSecondPositiveAlignments$Coverage),win,step)
         negativeSecondCoverage <- computeWinInfo(runLength(winSecondNegativeAlignments$Coverage),runValue(winSecondNegativeAlignments$Coverage),length(winSecondNegativeAlignments$Coverage),win,step)
         nbWinSecond <- max(max(positiveSecondCoverage$Start),max(negativeSecondCoverage$Start))
@@ -75,7 +75,7 @@ getWinPairs <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=100,li
       }
       presentFirstWin <- which(as.vector((nbFirstPositiveReads>0) | (nbFirstNegativeReads>0))==TRUE)
       presentSecondWin <- which(as.vector((nbSecondPositiveReads>0) | (nbSecondNegativeReads>0))==TRUE)
-
+      
       firstWin <- data.frame("Type"="First","Start" = presentFirstWin, "NbPositiveReads" = nbFirstPositiveReads[presentFirstWin], "NbNegativeReads" = nbFirstNegativeReads[presentFirstWin])
       secondWin <- data.frame("Type"="Second","Start" = presentSecondWin, "NbPositiveReads" = nbSecondPositiveReads[presentSecondWin], "NbNegativeReads" = nbSecondNegativeReads[presentSecondWin])
       ChromosomeFirst <- rep("",nrow(firstWin))
@@ -83,18 +83,18 @@ getWinPairs <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=100,li
       for (i in seq_along(part)){
         mi <- ceiling((lengthSeqInPart[i]+1)/step)
         ma <- ceiling((lengthSeqInPart[i+1]-win+1)/step)
-
+        
         j <- which(firstWin$Start >=mi & firstWin$Start <=ma)
         ChromosomeFirst[j] <- part[i]
         firstWin$Start[j] <- firstWin$Start[j] - mi +1
-
+        
         j <- which(secondWin$Start >=mi & secondWin$Start <=ma)
         ChromosomeSecond[j] <- part[i]
         secondWin$Start[j] <- secondWin$Start[j] - mi +1
       }
       firstWin[["Chr"]] <- ChromosomeFirst
       secondWin[["Chr"]] <- ChromosomeSecond
-
+      
       allWin <- rbind(allWin,firstWin)
       allWin <- rbind(allWin,secondWin)
     }
