@@ -1,9 +1,9 @@
 #' @title Filter Paired End Bam File
 #'
-#' @description Filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
+#' @description Filter putative double strand DNA from a strand specific paried-end RNA-seq using a window sliding across the genome.
 
 #'
-#' @param bamfilein the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.
+#' @param bamfilein the input paired-end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param bamfileout the output filtered bam file
 #' @param statfile the file to write the summary of the results
 #' @param chromosomes the list of chromosomes to be filtered
@@ -14,18 +14,18 @@
 #' @param step the step length to sliding the window, 100 by default.
 #' @param threshold the threshold upper which we keep the reads. 0.7 by default
 #' @param pvalueThreshold the threshold for the p-value. 0.05 by default
-#' @param minReads if a window has least than minReads reads, then it will be rejected regardless the strand proportion. 0 by default
-#' @param maxReads if a window has more than maxReads reads, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.
+#' @param min if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 0 by default
+#' @param max if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.
 #' @param errorRate the probability that an RNA read takes the false strand. 0.01 by default
-#' @param limit a read is considered to be included in a window if and only if at least limit percent of it is in the window. 0.75 by default
+#' @param limit a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default
 #' @param pair if "free" than the any pair of reads do not need to be both kept in the filtered file, i.e. first reads and second reads are filtered independently. Otherwise, if pair = "intersection" then a pair of reads is kept if and only if both first and second reads are kept; if pair = "union" then a pair of reads is kept if either the first or the second read is kept.
 #' @param coverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
 #'
-#' @details filterDNA reads a bam file containing strand specific RNA reads, and filter putative double strand DNA.
+#' @details filterDNAPairs reads a paired-end bam file containing strand specific paired-end RNA reads, and filter putative double strand DNA.
 #' Using a window sliding across the genome, we calculate the positive/negative proportion of reads in that window.
 #' For each window, we use logistic regression to estimate the proportion of reads in the window derived from
 #' stranded RNA (positive or negative).
-#' @seealso filterDNA, getWin, getWinPairs, plotHist, plotWin
+#' @seealso filterDNA, getWinFromBamFile, getWinFromPairedBamFile, plotHist, plotWin
 #'
 #' @examples
 #' bamfilein <- system.file("data","120.10.bam",package = "rnaCleanR")
@@ -39,7 +39,7 @@
 #' @importFrom magrittr %>%
 #' @import S4Vectors
 #'
-filterDNAPairs <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize = 1e8,mustKeepRanges,getWin=FALSE,win=1000,step=100,threshold=0.7,pvalueThreshold=0.05,minReads=0,maxReads=0,errorRate=0.01,limit=0.75,pair="free",coverage=FALSE){
+filterDNAPairs <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize = 1e8,mustKeepRanges,getWin=FALSE,win=1000,step=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,limit=0.75,pair="free",coverage=FALSE){
   stopifnot(pair=="free" | pair=="intersection" | pair=="union")
   startTime <- proc.time()
   bf <- BamFile(bamfilein)
@@ -114,8 +114,8 @@ filterDNAPairs <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize =
       winFirstNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,firstReadIndex,coverage=coverage)
       winSecondNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,secondReadIndex,coverage=coverage)
 
-      probaWinFirst <- keptProbaWin(winFirstPositiveAlignments,winFirstNegativeAlignments,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,minReads,maxReads,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
-      probaWinSecond <- keptProbaWin(winSecondPositiveAlignments,winSecondNegativeAlignments,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,minReads,maxReads,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
+      probaWinFirst <- keptProbaWin(winFirstPositiveAlignments,winFirstNegativeAlignments,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
+      probaWinSecond <- keptProbaWin(winSecondPositiveAlignments,winSecondNegativeAlignments,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
       if (getWin){ 
         allWin <- rbind(allWin,data.frame("Type"="First",getWinInChromosome(probaWinFirst$Win,part,statInfo,win,step)),
                         data.frame("Type"="Second",getWinInChromosome(probaWinSecond$Win,part,statInfo,win,step)))

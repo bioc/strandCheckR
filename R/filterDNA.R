@@ -1,9 +1,9 @@
 #' @title Filter Single End Bam File
 #'
-#' @description Filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
+#' @description Filter putative double strand DNA from a strand specific single-end RNA-seq using a window sliding across the genome.
 
 #'
-#' @param bamfilein the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.
+#' @param bamfilein the input single end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param bamfileout the output filtered bam file
 #' @param statfile the file to write the summary of the results
 #' @param chromosomes the list of chromosomes to be filtered
@@ -12,34 +12,34 @@
 #' @param getWin if TRUE, the function will return a data frame containing the information of all windows. It's FALSE by default.
 #' @param win the length of the sliding window, 1000 by default.
 #' @param step the step length to sliding the window, 100 by default.
-#' @param threshold the threshold upper which we keep the reads. 0.7 by default
+#' @param threshold the threshold upper which we keep the windows. 0.7 by default
 #' @param pvalueThreshold the threshold for the p-value. 0.05 by default
-#' @param min if a window has least than min reads, then it will be rejected regardless the strand proportion. 0 by default
-#' @param max if a window has more than max reads, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.
+#' @param min if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 0 by default
+#' @param max if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.
 #' @param errorRate the probability that an RNA read takes the false strand. 0.01 by default
-#' @param limit a read is considered to be included in a window if and only if at least limit percent of it is in the window. 0.75 by default
+#' @param limit a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default
 #' @param coverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
 #'
 #'
-#' @details filterDNA reads a bam file containing strand specific RNA reads, and filter putative double strand DNA.
+#' @details filterDNA reads a single end bam file containing strand specific RNA reads, and filter putative double strand DNA.
 #' Using a window sliding across the genome, we calculate the positive/negative proportion of reads in that window.
 #' For each window, we use logistic regression to estimate the proportion of reads in the window derived from
 #' stranded RNA (positive or negative).
 #'
-#' \eqn{\pi}: proportion of reads in the window derived from stranded RNA (positive or negative)
+#' Let \eqn{\pi} be the proportion of reads in the window derived from stranded RNA (positive or negative)
 #'
 #' Null hypothesis: \eqn{\pi < {\pi}_{0}} where \eqn{{\pi}_{0}} is the given threshold.
 #'
-#' Only windows with p-value <= 0.05 are kept. Considering a positive window that is kept, let P be its number of positive reads, and let M
+#' Only windows with p-value <= 0.05 are kept. For a positive window that is kept, let P be its number of positive reads, and let M
 #' be its number of negative reads. Since these M negative reads should come from double-strand DNA, then there should be also M postive reads among the
 #' P positive reads come from double-strand DNA. In other words, there are only (P-M) positive reads come from RNA. Hence, each positive read in this window is kept
-#' with the probability equalling (P-M)/P. Each negative read is kept with the probability equalling the given errorRate which is the rate that
+#' with the probability equalling (P-M)/P. Each negative read is kept with the probability equalling the given \code{errorRate} which is the rate that
 #' an RNA read of your sample has wrong strand.
 #'
 #' Since each alignment can be belonged to several windows, then the probability of keeping an alignment is the maximum probability defined by
 #' all windows that contain it.
 #'
-#' @seealso filterDNAPairs, getWin, getWinPairs, plotHist, plotWin
+#' @seealso filterDNAPairs, getWinFromBamFile, getWinFromPairedBamFile, plotHist, plotWin
 #'
 #' @examples
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")

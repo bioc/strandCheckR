@@ -9,9 +9,9 @@ plotHist(windows, group = c(10, 100, 1000), save = FALSE,
 }
 \arguments{
 \item{windows}{data frame containing the number of positive/negative reads for each window
-Windows can be get by calling the function \code{getWin} (for single end bam file) or \code{getWinPairs} (for paired end bam file).}
+Windows can be get by the function \code{getWinFromBamFile} (for single end bam file) or \code{getWinFromPairedBamFile} (for paired end bam file).}
 
-\item{group}{an integer vector that specifies how you want to partition the windows based on the number of reads. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000}
+\item{group}{an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{group} = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000}
 
 \item{save}{if TRUE, then the plot will be save into the file given by \code{file} parameter}
 
@@ -25,14 +25,14 @@ Plot the histogram of positive proportions of the input windows data frame
 \examples{
 #for single end bam file
 bamfilein = system.file("data/s1.chr1.bam",package = "rnaCleanR")
-windows <- getWin(bamfilein)
+windows <- getWinFromBamFile(bamfilein)
 plotHist(windows)
 #for paired end bamfile
 bamfilepair = system.file("data/120.10.bam",package = "rnaCleanR")
-windowsP <- getWinPairs(bamfilein = "data/120.10.bam")
+windowsP <- getWinFromPariedBamFile(bamfilein = "data/120.10.bam")
 plotHist(windowsP)
 }
 \seealso{
-getWin, getWinPairs, plotWin
+getWinFromBamFile, getWinFromPairedBamFile, plotWin
 }
 

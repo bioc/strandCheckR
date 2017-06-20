@@ -6,12 +6,12 @@
 \usage{
 filterDNAPairs(bamfilein, bamfileout, statfile, chromosomes,
   yieldSize = 1e+08, mustKeepRanges, getWin = FALSE, win = 1000,
-  step = 100, threshold = 0.7, pvalueThreshold = 0.05, minReads = 0,
-  maxReads = 0, errorRate = 0.01, limit = 0.75, pair = "free",
+  step = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
+  max = 0, errorRate = 0.01, limit = 0.75, pair = "free",
   coverage = FALSE)
 }
 \arguments{
-\item{bamfilein}{the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
+\item{bamfilein}{the input paired-end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
 
 \item{bamfileout}{the output filtered bam file}
 
@@ -33,23 +33,23 @@ filterDNAPairs(bamfilein, bamfileout, statfile, chromosomes,
 
 \item{pvalueThreshold}{the threshold for the p-value. 0.05 by default}
 
-\item{minReads}{if a window has least than minReads reads, then it will be rejected regardless the strand proportion. 0 by default}
+\item{min}{if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 0 by default}
 
-\item{maxReads}{if a window has more than maxReads reads, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.}
+\item{max}{if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.}
 
 \item{errorRate}{the probability that an RNA read takes the false strand. 0.01 by default}
 
-\item{limit}{a read is considered to be included in a window if and only if at least limit percent of it is in the window. 0.75 by default}
+\item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default}
 
 \item{pair}{if "free" than the any pair of reads do not need to be both kept in the filtered file, i.e. first reads and second reads are filtered independently. Otherwise, if pair = "intersection" then a pair of reads is kept if and only if both first and second reads are kept; if pair = "union" then a pair of reads is kept if either the first or the second read is kept.}
 
 \item{coverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
 }
 \description{
-Filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
+Filter putative double strand DNA from a strand specific paried-end RNA-seq using a window sliding across the genome.
 }
 \details{
-filterDNA reads a bam file containing strand specific RNA reads, and filter putative double strand DNA.
+filterDNAPairs reads a paired-end bam file containing strand specific paired-end RNA reads, and filter putative double strand DNA.
 Using a window sliding across the genome, we calculate the positive/negative proportion of reads in that window.
 For each window, we use logistic regression to estimate the proportion of reads in the window derived from
 stranded RNA (positive or negative).
@@ -59,6 +59,6 @@ bamfilein <- system.file("data","120.10.bam",package = "rnaCleanR")
 filterDNAPairs(bamfilein,bamfileout="out.bam",statfile = "out.stat")
 }
 \seealso{
-filterDNA, getWin, getWinPairs, plotHist, plotWin
+filterDNA, getWinFromBamFile, getWinFromPairedBamFile, plotHist, plotWin
 }
 

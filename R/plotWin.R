@@ -2,10 +2,10 @@
 #'
 #' @description Plot the number of reads vs positive proportion of the input windows data frame.
 
-#' @param windows data frame containing the number of positive/negative reads for each window
-#' Windows can be get by calling the function \code{getWin} (for single end bam file) or \code{getWinPairs} (for paired end bam file).
+#' @param windows data frame containing the number of positive/negative reads for each window.
+#' Windows can be get by the function \code{getWinFromBamFile} (for single end bam file) or \code{getWinFromPairedBamFile} (for paired end bam file).
 #'
-#' @param group an integer vector that specifies how you want to partition the windows based on the number of reads. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000
+#' @param group an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{group} = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000
 #'
 #' @param threshold a real vector that specifies which threshold lines you want to draw on the plot. The positive window above the threshold line (or negative window below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.
 #'
@@ -13,17 +13,17 @@
 #' @param save if TRUE, then the plot will be save into the file given by \code{file} parameter
 #' @param file the file name to save to plot
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
-#' @seealso getWin, getWinPairs, plotHist
+#' @seealso getWinFromBamFile, getWinFromPairedBamFile, plotHist
 #'
 #' @examples
 #'
 #' #for single end bam file
 #' bamfilein = system.file("data/s1.chr1.bam",package = "rnaCleanR")
-#' windows <- getWin(bamfilein)
+#' windows <- getWinFromBamFile(bamfilein)
 #' plotWin(windows)
 #' #for paired end bamfile
 #' bamfilepair = system.file("data/120.10.bam",package = "rnaCleanR")
-#' windowsP <- getWinPairs(bamfilein = "data/120.10.bam")
+#' windowsP <- getWinFromPairedBamFile(bamfilein = "data/120.10.bam")
 #' plotWin(windowsP)
 #'
 #' @export
@@ -90,7 +90,7 @@ plotWin <- function(windows,threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05,save=FALSE,
         ggplot2::facet_wrap(~Type)
     }
     gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = Threshold))
-    gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = Threshold)) + ggplot2::theme_bw()
+    gg <- gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = Threshold))+ ggplot2::theme_bw()
     if (save==TRUE) {
       message("The plot will be saved to the file ",file)
       ggplot2::ggsave(filename = file)

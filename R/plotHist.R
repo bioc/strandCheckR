@@ -3,25 +3,24 @@
 #' @description Plot the histogram of positive proportions of the input windows data frame
 #'
 #' @param windows data frame containing the number of positive/negative reads for each window
-#' Windows can be get by calling the function \code{getWin} (for single end bam file) or \code{getWinPairs} (for paired end bam file).
+#' Windows can be get by the function \code{getWinFromBamFile} (for single end bam file) or \code{getWinFromPairedBamFile} (for paired end bam file).
 #'
-#' @param group an integer vector that specifies how you want to partition the windows based on the number of reads. By default group = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000
+#' @param group an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{group} = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000
 #' @param save if TRUE, then the plot will be save into the file given by \code{file} parameter
 #' @param file the file name to save to plot
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
-#' @seealso getWin, getWinPairs, plotWin
+#' @seealso getWinFromBamFile, getWinFromPairedBamFile, plotWin
 #'
 #' @examples
 #' #for single end bam file
 #' bamfilein = system.file("data/s1.chr1.bam",package = "rnaCleanR")
-#' windows <- getWin(bamfilein)
+#' windows <- getWinFromBamFile(bamfilein)
 #' plotHist(windows)
 #' #for paired end bamfile
 #' bamfilepair = system.file("data/120.10.bam",package = "rnaCleanR")
-#' windowsP <- getWinPairs(bamfilein = "data/120.10.bam")
+#' windowsP <- getWinFromPariedBamFile(bamfilein = "data/120.10.bam")
 #' plotHist(windowsP)
 #' @export
-#' 
 #' @importFrom magrittr set_colnames
 #'
 plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",facet_wrap_chromosomes=FALSE){
@@ -29,8 +28,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
   if (!facet_wrap_chromosomes) windows <- dplyr::select(windows,-Chr)
   if (length(group)==0){
     leg <- "all"
-  }
-  else{
+  } else{
     leg <- paste0("<",group[1])
     for (i in seq_along(group[-1])){
       leg <- c(leg,paste0(group[i],"-",group[i+1]))
@@ -53,17 +51,16 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
           sapply(chromosomes,function(chr){
             ac <- dplyr::filter(a,Chr==chr)
             hist(ac$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
-          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% dplyr::mutate("NbReads"=l)
-        }
-        else{
+          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% dplyr::mutate("NbReads"=l,"Type"="First")
+        } else{
           data.frame("Count"=hist(a$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
                      "Proportion" = 0:100,
-                     "NbReads" = l)
+                     "NbReads" = l,"Type"="First")
         }
       }})
     null <- sapply(histoFirst,is.null)
     histoFirst <- histoFirst[!null]
-    histoFirst <- do.call(rbind,histoFirst) %>% dplyr::mutate("Type"="First")
+    histoFirst <- do.call(rbind,histoFirst)
 
     histoSecond <- lapply(leg,function(l){
       a <- dplyr::filter(windows,NbReads==l,Type=="Second") %>% dplyr::mutate("Proportion"=NbPositiveReads/(NbPositiveReads+NbNegativeReads))
@@ -73,27 +70,26 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
           sapply(chromosomes,function(chr){
             ac <- dplyr::filter(a,Chr==chr)
             hist(ac$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
-          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% dplyr::mutate("NbReads"=l)
-        }
-        else{
+          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% dplyr::mutate("NbReads"=l,"Type"="Second")
+        } else{
           data.frame("Count"=hist(a$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
                      "Proportion" = 0:100,
-                     "NbReads" = l)
+                     "NbReads" = l,"Type"="Second")
         }
       }})
     null <- sapply(histoSecond,is.null)
     histoSecond <- histoSecond[!null]
-    histoSecond <- do.call(rbind,histoSecond) %>% dplyr::mutate("Type"="Second")
+    histoSecond <- do.call(rbind,histoSecond) 
     histo <- rbind(histoFirst,histoSecond)
     if (facet_wrap_chromosomes){
       g <- ggplot2::ggplot(histo, ggplot2::aes(Proportion, Count, fill=NbReads, width=1))+
-        scale_fill_discrete(breaks=leg)+
+        ggplot2::scale_fill_discrete(breaks=leg)+
         ggplot2::geom_bar(stat="identity", width=.3,position="stack") +
         ggplot2::facet_wrap(~Type+Chr)
     }
     else{
       g <- ggplot2::ggplot(histo, ggplot2::aes(Proportion, Count, fill=NbReads, width=1))+
-        scale_fill_discrete(breaks=leg)+
+        ggplot2::scale_fill_discrete(breaks=leg)+
         ggplot2::geom_bar(stat="identity", width=.3,position="stack")+
         ggplot2::facet_wrap(~Type)
     }
@@ -131,12 +127,12 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     histo <- do.call(rbind,histo)
     if (facet_wrap_chromosomes){
       g <- ggplot2::ggplot(histo, ggplot2::aes(Proportion, Count, fill=NbReads, width=1))+
-        scale_fill_discrete(breaks=leg)+
+        ggplot2::scale_fill_discrete(breaks=leg)+
         ggplot2::facet_wrap(~Chr)
     }
     else{
       g <- ggplot2::ggplot(histo, ggplot2::aes(Proportion, Count, fill=NbReads, width=1))+
-        scale_fill_discrete(breaks=leg)
+        ggplot2::scale_fill_discrete(breaks=leg)
     }
     g <- g + ggplot2::geom_bar(stat="identity", width=.3,position="stack") +
       ggplot2::ylab("Count") +

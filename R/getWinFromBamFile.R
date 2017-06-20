@@ -1,14 +1,17 @@
-#' @title get the information of all windows from a single end bam file
+#' @title get the number of positive/negative reads of all windows from a single end bam file
 #'
-#' @param bamfilein the input bam file\. Your bamfile should be sorted and have an index file located at the same path as well.
+#' @param bamfilein the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param chromosomes the list of chromosomes to be read
 #' @param yieldSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
 #' @param win the length of the sliding window, 1000 by default.
 #' @param step the step length to sliding the window, 100 by default.
-#' @param limit a read is considered to be included in a window if and only if at least limit percent of it is in the window. 0.75 by default
+#' @param limit a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default
 #' @param coverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
 #' @seealso filterDNA, filterDNAPairs, getWinFromPairedBamFile, plotHist, plotWin
 #' @export
+#' @examples
+#' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
+#' win <- getWin(bamfilein)
 #'
 getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=100,limit=0.75,coverage=FALSE){
   bf <- BamFile(bamfilein)
@@ -20,22 +23,26 @@ getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=
   }
   partition <- partitionChromosomes(chromosomes,lengthSeq[allChromosomes %in% chromosomes],yieldSize = yieldSize)
   allWin <- data.frame("Chr"=c(),"Start"=c(),"NbPositiveReads"=c(),"NbNegativeReads"=c())
+  statInfo <- data.frame("Sequence"="chr","Length"=rep(0,length(chromosomes)),
+                         "NbOriginalReads" = rep(0,length(chromosomes)), 
+                         "NbKeptReads" = rep(0,length(chromosomes)),
+                         "FirstBaseInPartition" = rep(NA,length(chromosomes)),
+                         "LastBaseInPartition" = rep(NA,length(chromosomes)),
+                         "FirstReadInPartition" = rep(NA,length(chromosomes)),
+                         "LastReadInPartition" = rep(NA,length(chromosomes)),
+                         stringsAsFactors = FALSE)
+  
   for (part in partition){
-    lengthSeqInChr <- lengthSeq[allChromosomes %in% part]
-    lengthSeqInPart <- c(0,cumsum(as.numeric(lengthSeqInChr)))
-    lengthSeqInPart <- step*ceiling(lengthSeqInPart/step)
+    idPart <- which(chromosomes %in% part)
+    statInfo$Sequence[idPart] <- part
+    statInfo$Length[idPart] <- lengthSeq[allChromosomes %in% part]
     
     bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand"),
-                                                which=GRanges(seqnames = part,ranges = IRanges(start=1,end=lengthSeqInChr))))
-    
-    nbOriginalReadsInChr <- sapply(1:length(bam),function(i){length(bam[[i]]$strand)})
-    if (sum(nbOriginalReadsInChr)>0){
-      nil <- which(nbOriginalReadsInChr!=0)
-      nbOriginalReadsInChr <- nbOriginalReadsInChr[nil]
-      part <- part[nil]
-      nbOriginalReadsInPart <- c(0,cumsum(nbOriginalReadsInChr))
-      lengthSeqInPart <- lengthSeqInPart[c(1,nil+1)]
-      bam <- bamPart(bam[nil],nbOriginalReadsInPart,lengthSeqInPart,sum(nbOriginalReadsInChr))
+                                                which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart]))))
+    statInfo$NbOriginalReads[idPart] <- sapply(seq_along(bam),function(i){length(bam[[i]]$strand)})
+    if (sum(statInfo$NbOriginalReads[idPart])>0){
+      statInfo[idPart,] <- statInfoInPartition(statInfo[idPart,],step)
+      bam <- concatenateAlignments(bam,statInfo[idPart,])
       winPositiveAlignments <- getWinOfAlignments(bam,"+",win,step,limit,coverage=coverage)
       winNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,coverage=coverage)
       rm(bam)
@@ -62,8 +69,9 @@ getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=
       Win <- data.frame("Start" = presentWin, "NbPositiveReads" = nbPositiveReads[presentWin], "NbNegativeReads" = nbNegativeReads[presentWin])
       Chromosome <- rep("",nrow(Win))
       for (i in seq_along(part)){
-        mi <- ceiling((lengthSeqInPart[i]+1)/step)
-        ma <- ceiling((lengthSeqInPart[i+1]-win+1)/step)
+        id <- which(chromosomes == part[i])
+        mi <- ceiling(statInfo$FirstBaseInPartition[id]/step)
+        ma <- ceiling((statInfo$LastBaseInPartition[id]-win+1)/step)
         j <- which(Win$Start >=mi & Win$Start <=ma)
         Chromosome[j] <- part[i]
         Win$Start[j] <- Win$Start[j] - mi +1

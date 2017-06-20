@@ -2,13 +2,13 @@
 % Please edit documentation in R/getWinFromPairedBamFile.R
 \name{getWinFromPairedBamFile}
 \alias{getWinFromPairedBamFile}
-\title{get the information of all windows from a paired end bam file}
+\title{get the number of positive/negatives of all windows from a paired end bam file}
 \usage{
 getWinFromPairedBamFile(bamfilein, chromosomes, yieldSize = 1e+08,
   win = 1000, step = 100, limit = 0.75, coverage = FALSE)
 }
 \arguments{
-\item{bamfilein}{the input bam file\. Your bamfile should be sorted and have an index file located at the same path as well.}
+\item{bamfilein}{the input paired-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
 
 \item{chromosomes}{the list of chromosomes to be read}
 
@@ -18,9 +18,14 @@ getWinFromPairedBamFile(bamfilein, chromosomes, yieldSize = 1e+08,
 
 \item{step}{the step length to sliding the window, 100 by default.}
 
-\item{limit}{a read is considered to be included in a window if and only if at least limit percent of it is in the window. 0.75 by default}
+\item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default}
 
 \item{coverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
+}
+\examples{
+bamfilein <- system.file("data","120.10.bam",package = "rnaCleanR")
+win <- getWinFromPairedBamFile(bamfilein)
+
 }
 \seealso{
 filterDNA, filterDNAPairs, getWinFromBamFile, plotHist, plotWin
