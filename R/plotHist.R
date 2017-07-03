@@ -29,7 +29,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     windows <- dplyr::mutate(windows,"NbReads" = MaxCoverage) %>% dplyr::select(-c(Start,MaxCoverage))
   }
   else{
-    windows <- dplyr::mutate(windows,"NbReads" = windows$NbPositiveReads+windows$NbNegativeReads) %>% dplyr::select(-Start)  
+    windows <- dplyr::mutate(windows,"NbReads" = windows$NbPositive+windows$NbNegative) %>% dplyr::select(-Start)  
   }
   if (!facet_wrap_chromosomes) windows <- dplyr::select(windows,-Chr)
   if (length(group)==0){
@@ -50,7 +50,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
   breaks <- 100
   if ("Type" %in% colnames(windows)){
     histoFirst <- lapply(leg,function(l){
-      a <- dplyr::filter(windows,NbReads==l,Type=="First") %>% dplyr::mutate("Proportion"=NbPositiveReads/(NbPositiveReads+NbNegativeReads))
+      a <- dplyr::filter(windows,NbReads==l,Type=="First") %>% dplyr::mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
@@ -69,7 +69,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     histoFirst <- do.call(rbind,histoFirst)
 
     histoSecond <- lapply(leg,function(l){
-      a <- dplyr::filter(windows,NbReads==l,Type=="Second") %>% dplyr::mutate("Proportion"=NbPositiveReads/(NbPositiveReads+NbNegativeReads))
+      a <- dplyr::filter(windows,NbReads==l,Type=="Second") %>% dplyr::mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
@@ -115,7 +115,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
   }
   else{
     histo<- lapply(leg,function(l){
-      a <- dplyr::filter(windows,NbReads==l) %>% dplyr::mutate("Proportion"=NbPositiveReads/(NbPositiveReads+NbNegativeReads))
+      a <- dplyr::filter(windows,NbReads==l) %>% dplyr::mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)

@@ -33,8 +33,8 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
   coverage <- "MaxCoverage" %in% colnames(windows)
   if (!facet_wrap_chromosomes) windows <- dplyr::select(windows,-Chr)
   windows <- dplyr::select(windows,-Start) 
-  windows <- dplyr::mutate(windows,"NbReads"=NbPositiveReads+NbNegativeReads,"PositiveProportion" = NbPositiveReads/(NbPositiveReads+NbNegativeReads)) %>%
-      dplyr::select(-c(NbPositiveReads,NbNegativeReads))
+  windows <- dplyr::mutate(windows,"NbReads"=NbPositive+NbNegative,"PositiveProportion" = NbPositive/(NbPositive+NbNegative)) %>%
+      dplyr::select(-c(NbPositive,NbNegative))
   
   if (coverage){
     if (length(group)==0){
@@ -109,9 +109,9 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
       aNorm <- which(pNorm <= 0.05)[1]
       return(p[aNorm])
     })
-    tP <- data.frame("NbReads" = 1:10000, "PositiveProportion" = positiveReadsT/(1:10000), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositiveReads"=max(windowsReduced$NbPositiveReads),"NbNegativeReads"=round(max(windowsReduced $NbPositiveReads)/t)-max(windowsReduced $NbPositiveReads),"Threshold"=paste0(t)))
+    tP <- data.frame("NbReads" = 1:10000, "PositiveProportion" = positiveReadsT/(1:10000), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositive"=max(windowsReduced$NbPositive),"NbNegative"=round(max(windowsReduced $NbPositive)/t)-max(windowsReduced $NbPositive),"Threshold"=paste0(t)))
     ThresholdP <- rbind(ThresholdP,tP)
-    tN <- data.frame("NbReads" = 1:10000, "PositiveProportion" = 1-positiveReadsT/(1:10000), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositiveReads"=round(max(windowsReduced $NbNegativeReads)/t)-max(windowsReduced $NbNegativeReads),"NbNegativeReads"=max(windowsReduced $NbNegativeReads),"Threshold"=paste0(t)))
+    tN <- data.frame("NbReads" = 1:10000, "PositiveProportion" = 1-positiveReadsT/(1:10000), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositive"=round(max(windowsReduced $NbNegative)/t)-max(windowsReduced $NbNegative),"NbNegative"=max(windowsReduced $NbNegative),"Threshold"=paste0(t)))
     ThresholdN <- rbind(ThresholdN,tN)
   }
   ThresholdP <- rbind(ThresholdP,data.frame("NbReads" = max(windowsReduced$NbReads), "PositiveProportion" = threshold, "Threshold"=paste0(threshold)))
