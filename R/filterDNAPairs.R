@@ -73,7 +73,7 @@ filterDNAPairs <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize =
                          "FirstReadInPartition" = rep(NA,length(chromosomes)),
                          "LastReadInPartition" = rep(NA,length(chromosomes)),
                          stringsAsFactors = FALSE)
- if (coverate){
+ if (coverage){
    allWin <- data.frame("Type"=c(),"Chr"=c(), "Start" = c(), "NbPositive"= c(), "NbNegative"= c(), "MaxCoverage" = c())
  } else{
    allWin <- data.frame("Type"=c(),"Chr"=c(), "Start" = c(), "NbPositive"= c(), "NbNegative"= c())

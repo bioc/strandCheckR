@@ -57,36 +57,36 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
   if ("Type" %in% colnames(windows)){
     if (facet_wrap_chromosomes==TRUE){
       if (coverage){
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 3)) %>%
+        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
           dplyr::distinct(Chr,Type,NbReads,MaxCoverage,PositiveProportion) 
       } else{
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 3)) %>%
+        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
           dplyr::distinct(Chr,Type,NbReads, PositiveProportion)  
       }
     } else{
       if (coverage){
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 3)) %>%
+        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
           dplyr::distinct(Type,NbReads,MaxCoverage,PositiveProportion)
       } else{
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 3)) %>%
+        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
           dplyr::distinct(Type,NbReads, PositiveProportion)  
       }
     }
   } else{
     if (facet_wrap_chromosomes==TRUE){
       if (coverage){
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 3)) %>%
+        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
           dplyr::distinct(Chr,NbReads,MaxCoverage,PositiveProportion)  
       } else{
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 3)) %>%
+        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
           dplyr::distinct(Chr,NbReads, PositiveProportion)
       }
     } else{
       if (coverage){
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 3)) %>%
+        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
           dplyr::distinct(NbReads,MaxCoverage,PositiveProportion)  
       } else{
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 3)) %>%
+        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
           dplyr::distinct(NbReads, PositiveProportion)
       }
       
