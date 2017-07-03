@@ -86,7 +86,12 @@ filterDNA <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize = 1e8,
                          "LastReadInPartition" = rep(NA,length(chromosomes)),
                          stringsAsFactors = FALSE)
 
-  allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c())
+  if (coverage==TRUE){
+    allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c(),"MaxCoverage" = c()) 
+  }
+  else{
+    allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c())  
+  }
   append <- FALSE
   for (part in partition){
     idPart <- which(chromosomes %in% part)
@@ -111,7 +116,7 @@ filterDNA <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize = 1e8,
       winNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,coverage=coverage)
       rm(bam)
 
-      probaWin <- keptProbaWin(winPositiveAlignments,winNegativeAlignments,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
+      probaWin <- keptProbaWin(winPositiveAlignments,winNegativeAlignments,win,step,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
       keptPositiveAlignment <- keptAlignment(winPositiveAlignments$Win,probaWin$Positive,errorRate) # the positive alignments to be kept
       keptNegativeAlignment <- keptAlignment(winNegativeAlignments$Win,probaWin$Negative,errorRate) # the negative alignments to be kept
 

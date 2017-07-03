@@ -114,8 +114,8 @@ filterDNAPairs <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize =
       winFirstNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,firstReadIndex,coverage=coverage)
       winSecondNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,secondReadIndex,coverage=coverage)
 
-      probaWinFirst <- keptProbaWin(winFirstPositiveAlignments,winFirstNegativeAlignments,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
-      probaWinSecond <- keptProbaWin(winSecondPositiveAlignments,winSecondNegativeAlignments,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
+      probaWinFirst <- keptProbaWin(winFirstPositiveAlignments,winFirstNegativeAlignments,win,step,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
+      probaWinSecond <- keptProbaWin(winSecondPositiveAlignments,winSecondNegativeAlignments,win,step,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=coverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
       if (getWin){ 
         allWin <- rbind(allWin,data.frame("Type"="First",getWinInChromosome(probaWinFirst$Win,part,statInfo,win,step)),
                         data.frame("Type"="Second",getWinInChromosome(probaWinSecond$Win,part,statInfo,win,step)))

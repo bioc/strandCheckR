@@ -22,7 +22,12 @@ getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=
     chromosomes <- allChromosomes
   }
   partition <- partitionChromosomes(chromosomes,lengthSeq[allChromosomes %in% chromosomes],yieldSize = yieldSize)
-  allWin <- data.frame("Chr"=c(),"Start"=c(),"NbPositiveReads"=c(),"NbNegativeReads"=c())
+  if (coverage==TRUE){
+    allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c(),"MaxCoverage" = c()) 
+  }
+  else{
+    allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c())  
+  }
   statInfo <- data.frame("Sequence"="chr","Length"=rep(0,length(chromosomes)),
                          "NbOriginalReads" = rep(0,length(chromosomes)), 
                          "NbKeptReads" = rep(0,length(chromosomes)),
@@ -46,27 +51,36 @@ getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=
       winPositiveAlignments <- getWinOfAlignments(bam,"+",win,step,limit,coverage=coverage)
       winNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,coverage=coverage)
       rm(bam)
-      
       if (coverage){
-        positiveCoverage <- computeWinInfo(runLength(winPositiveAlignments$Coverage),runValue(winPositiveAlignments$Coverage),length(winPositiveAlignments$Coverage),win,step)
-        negativeCoverage <- computeWinInfo(runLength(winNegativeAlignments$Coverage),runValue(winNegativeAlignments$Coverage),length(winNegativeAlignments$Coverage),win,step)
-        nbWin <- max(max(positiveCoverage$Start),max(negativeCoverage$Start))
-        nbPositiveReads <- Rle(0,nbWin)
-        nbPositiveReads[positiveCoverage$Start] <- positiveCoverage$SumCoverage
-        nbNegativeReads <- Rle(0,nbWin)
-        nbNegativeReads[negativeCoverage$Start] <- negativeCoverage$SumCoverage
+        lenPC <- length(winPositiveAlignments$Coverage)
+        lenNC <- length(winNegativeAlignments$Coverage)
+        if (lenPC>lenNC) {winNegativeAlignments$Coverage <- c(winNegativeAlignments$Coverage,rep(0,lenPC-lenNC))} else {winPositiveAlignments$Coverage <- c(winPositiveAlignments$Coverage,rep(0,lenNC-lenPC))}
+        nbWin <- ceiling((length(winPositiveAlignments$Coverage)-win)/step)+1
+        nbPositiveReads <- Views(winPositiveAlignments$Coverage,
+                                 start = seq(1,(nbWin-1)*step+1,step),
+                                 end=seq(win,(nbWin-1)*step+win,step)) %>%
+          sum() %>% Rle()
+        nbNegativeReads <- Views(winNegativeAlignments$Coverage,
+                                 start = seq(1,(nbWin-1)*step+1,step),
+                                 end=seq(win,(nbWin-1)*step+win,step)) %>%
+          sum() %>% Rle()
+        maxCoverage <- Views(winPositiveAlignments$Coverage+winNegativeAlignments$Coverage,
+                             start = seq(1,(nbWin-1)*step+1,step),
+                             end=seq(win,(nbWin-1)*step+win,step)) %>% 
+          max() %>% Rle()
       }
       else{
         nbPositiveReads <- coverage(winPositiveAlignments$Win)
         nbNegativeReads <- coverage(winNegativeAlignments$Win)
         lenP <- length(nbPositiveReads)
         lenN <- length(nbNegativeReads)
-        if (lenP>lenN) {nbNegativeReads <- c(nbNegativeReads,rep(0,lenP-lenN))}
-        else {nbPositiveReads <- c(nbPositiveReads,rep(0,lenN-lenP))}
+        if (lenP>lenN) {nbNegativeReads <- c(nbNegativeReads,rep(0,lenP-lenN))} else {nbPositiveReads <- c(nbPositiveReads,rep(0,lenN-lenP))}
       }
-      
       presentWin <- which(as.vector((nbPositiveReads>0) | (nbNegativeReads>0))==TRUE)
       Win <- data.frame("Start" = presentWin, "NbPositiveReads" = nbPositiveReads[presentWin], "NbNegativeReads" = nbNegativeReads[presentWin])
+      if (coverage){
+        Win <- dplyr::mutate(Win,"MaxCoverage" = maxCoverage)  
+      }
       Chromosome <- rep("",nrow(Win))
       for (i in seq_along(part)){
         id <- which(chromosomes == part[i])

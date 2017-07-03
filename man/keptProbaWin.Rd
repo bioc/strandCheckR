@@ -4,7 +4,8 @@
 \alias{keptProbaWin}
 \title{get the probability of keeping each window}
 \usage{
-keptProbaWin(winPositiveAlignments, winNegativeAlignments, logitThreshold,
-  pvalueThreshold, errorRate, mustKeepWin, min, max, getWin, coverage = FALSE)
+keptProbaWin(winPositiveAlignments, winNegativeAlignments, win, step,
+  logitThreshold, pvalueThreshold, errorRate, mustKeepWin, min, max, getWin,
+  coverage = FALSE)
 }
 

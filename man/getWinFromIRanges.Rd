@@ -4,7 +4,7 @@
 \alias{getWinFromIRanges}
 \title{get the ranges of windows from on IRanges}
 \usage{
-getWinFromIRanges(gr, win, step, limit)
+getWinFromIRanges(gr, win, step, limit, maxWin)
 }
 \arguments{
 \item{gr}{an Iranges object}
