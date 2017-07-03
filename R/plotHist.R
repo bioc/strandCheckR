@@ -24,7 +24,13 @@
 #' @importFrom magrittr set_colnames
 #'
 plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",facet_wrap_chromosomes=FALSE){
-  windows <- dplyr::mutate(windows,"NbReads" = windows$NbPositiveReads+windows$NbNegativeReads) %>% dplyr::select(-Start)
+  coverage <- "MaxCoverage" %in% colnames(windows)
+  if (coverage){
+    windows <- dplyr::mutate(windows,"NbReads" = MaxCoverage) %>% dplyr::select(-c(Start,MaxCoverage))
+  }
+  else{
+    windows <- dplyr::mutate(windows,"NbReads" = windows$NbPositiveReads+windows$NbNegativeReads) %>% dplyr::select(-Start)  
+  }
   if (!facet_wrap_chromosomes) windows <- dplyr::select(windows,-Chr)
   if (length(group)==0){
     leg <- "all"
@@ -96,6 +102,9 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
      g <- g +  ggplot2::ylab("Count") +
       ggplot2::xlab("Positive Proportion")+
       ggplot2::theme_bw()
+    if (coverage){
+      g <- g + ggplot2::labs(fill = "Max Coverage")
+    }
     if (save==TRUE){
       message("The plot will be saved to the file ",file)
       ggplot2::ggsave(filename = file)
@@ -138,6 +147,9 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
       ggplot2::ylab("Count") +
       ggplot2::xlab("Positive Proportion")+
       ggplot2::theme_bw()
+    if (coverage){
+      g <- g + ggplot2::labs(fill = "Max Coverage")
+    }
     if (save==TRUE){
       message("The plot will be saved to the file ",file)
        ggplot2::ggsave(filename = file,plot = g)
