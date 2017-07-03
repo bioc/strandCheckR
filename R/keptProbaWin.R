@@ -1,7 +1,7 @@
 #' @title get the probability of keeping each window
 #'
 #' @export
-#' @importFrom IRanges coverage
+#' @importFrom IRanges coverage Views
 #'
 keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,win,step,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,coverage=FALSE){
   if (coverage){

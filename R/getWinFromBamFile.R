@@ -9,7 +9,8 @@
 #' @param coverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
 #' @seealso filterDNA, filterDNAPairs, getWinFromPairedBamFile, plotHist, plotWin
 #' @export
-#' @examples
+#' @importFrom IRanges Views
+#' @examples 
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
 #' win <- getWin(bamfilein)
 #'
@@ -79,7 +80,7 @@ getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=
       presentWin <- which(as.vector((nbPositiveReads>0) | (nbNegativeReads>0))==TRUE)
       Win <- data.frame("Start" = presentWin, "NbPositiveReads" = nbPositiveReads[presentWin], "NbNegativeReads" = nbNegativeReads[presentWin])
       if (coverage){
-        Win <- dplyr::mutate(Win,"MaxCoverage" = maxCoverage)  
+        Win <- dplyr::mutate(Win,"MaxCoverage" = maxCoverage[presentWin])  
       }
       Chromosome <- rep("",nrow(Win))
       for (i in seq_along(part)){

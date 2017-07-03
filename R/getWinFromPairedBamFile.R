@@ -10,7 +10,8 @@
 #'
 #' @seealso filterDNA, filterDNAPairs, getWinFromBamFile, plotHist, plotWin
 #' @export
-#' @examples
+#' @importFrom IRanges Views
+#' @examples#' 
 #' bamfilein <- system.file("data","120.10.bam",package = "rnaCleanR")
 #' win <- getWinFromPairedBamFile(bamfilein)
 #'
@@ -127,8 +128,8 @@ getWinFromPairedBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000
                               NbPositiveReads" = nbSecondPositiveReads[presentSecondWin], 
                               "NbNegativeReads" = nbSecondNegativeReads[presentSecondWin])
       if (coverage){
-        firstWin <- dplyr::mutate(firstWin,"MaxCoverage" = maxFirstCoverage)
-        secondWin <- dplyr::mutate(secondWin,"MaxCoverage" = maxSecondCoverage)
+        firstWin <- dplyr::mutate(firstWin,"MaxCoverage" = maxFirstCoverage[presentFirstWin])
+        secondWin <- dplyr::mutate(secondWin,"MaxCoverage" = maxSecondCoverage[presentSecondWin])
       }
       ChromosomeFirst <- rep("",nrow(firstWin))
       ChromosomeSecond <- rep("",nrow(secondWin))
