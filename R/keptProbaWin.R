@@ -74,10 +74,10 @@ keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,win,step,lo
       presentWin <- which(as.vector((nbPositiveReads>0) | (nbNegativeReads>0)) == TRUE)
       if (length(presentWin)>0){
         if (coverage){
-          Win <- (data.frame("Start" = presentWin, "NbPositiveReads" = nbPositiveReads[presentWin], "NbNegativeReads" = nbNegativeReads[presentWin],"MaxCoverage" = maxCoverage[presentWin])) 
+          Win <- (data.frame("Start" = presentWin, "NbPositive" = nbPositiveReads[presentWin], "NbNegative" = nbNegativeReads[presentWin],"MaxCoverage" = maxCoverage[presentWin])) 
         }
         else{
-          Win <- (data.frame("Start" = presentWin, "NbPositiveReads" = nbPositiveReads[presentWin], "NbNegativeReads" = nbNegativeReads[presentWin]))  
+          Win <- (data.frame("Start" = presentWin, "NbPositive" = nbPositiveReads[presentWin], "NbNegative" = nbNegativeReads[presentWin]))  
         }
       }
     return(list("Positive"=keptProbaPosWin,"Negative"=keptProbaNegWin,"Win"=Win))

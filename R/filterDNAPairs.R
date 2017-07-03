@@ -73,8 +73,11 @@ filterDNAPairs <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize =
                          "FirstReadInPartition" = rep(NA,length(chromosomes)),
                          "LastReadInPartition" = rep(NA,length(chromosomes)),
                          stringsAsFactors = FALSE)
- 
-  allWin <- data.frame("Type"=c(),"Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c())
+ if (coverate){
+   allWin <- data.frame("Type"=c(),"Chr"=c(), "Start" = c(), "NbPositive"= c(), "NbNegative"= c(), "MaxCoverage" = c())
+ } else{
+   allWin <- data.frame("Type"=c(),"Chr"=c(), "Start" = c(), "NbPositive"= c(), "NbNegative"= c())
+ }
   append <- FALSE
   for (part in partition){
     idPart <- which(chromosomes %in% part)

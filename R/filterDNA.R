@@ -87,10 +87,10 @@ filterDNA <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize = 1e8,
                          stringsAsFactors = FALSE)
 
   if (coverage==TRUE){
-    allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c(),"MaxCoverage" = c()) 
+    allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositive"= c(), "NbNegative"= c(),"MaxCoverage" = c()) 
   }
   else{
-    allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c())  
+    allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositive"= c(), "NbNegative"= c())  
   }
   append <- FALSE
   for (part in partition){
