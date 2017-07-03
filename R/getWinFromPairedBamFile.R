@@ -118,18 +118,27 @@ getWinFromPairedBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000
       }
       presentFirstWin <- which(as.vector((nbFirstPositiveReads>0) | (nbFirstNegativeReads>0))==TRUE)
       presentSecondWin <- which(as.vector((nbSecondPositiveReads>0) | (nbSecondNegativeReads>0))==TRUE)
-      
-      firstWin <- data.frame("Type"=rep("First",length(presentFirstWin)),
-                             "Start" = presentFirstWin, 
-                             "NbPositiveReads" = nbFirstPositiveReads[presentFirstWin], 
-                             "NbNegativeReads" = nbFirstNegativeReads[presentFirstWin])
-      secondWin <- data.frame("Type"=rep("Second",length(presentSecondWin)),
-                              "Start" = presentSecondWin, "
-                              NbPositiveReads" = nbSecondPositiveReads[presentSecondWin], 
-                              "NbNegativeReads" = nbSecondNegativeReads[presentSecondWin])
       if (coverage){
-        firstWin <- dplyr::mutate(firstWin,"MaxCoverage" = maxFirstCoverage[presentFirstWin])
-        secondWin <- dplyr::mutate(secondWin,"MaxCoverage" = maxSecondCoverage[presentSecondWin])
+        firstWin <- data.frame("Type"=rep("First",length(presentFirstWin)),
+                               "Start" = presentFirstWin, 
+                               "NbPositiveReads" = nbFirstPositiveReads[presentFirstWin], 
+                               "NbNegativeReads" = nbFirstNegativeReads[presentFirstWin],
+                               "MaxCoverage" = maxFirstCoverage[presentFirstWin])
+        secondWin <- data.frame("Type"=rep("Second",length(presentSecondWin)),
+                                "Start" = presentSecondWin, "
+                                NbPositiveReads" = nbSecondPositiveReads[presentSecondWin], 
+                                "NbNegativeReads" = nbSecondNegativeReads[presentSecondWin],
+                                "MaxCoverage" = maxSecondCoverage[presentSecondWin])  
+      }
+      else{
+        firstWin <- data.frame("Type"=rep("First",length(presentFirstWin)),
+                               "Start" = presentFirstWin, 
+                               "NbPositiveReads" = nbFirstPositiveReads[presentFirstWin], 
+                               "NbNegativeReads" = nbFirstNegativeReads[presentFirstWin])
+        secondWin <- data.frame("Type"=rep("Second",length(presentSecondWin)),
+                                "Start" = presentSecondWin, "
+                                NbPositiveReads" = nbSecondPositiveReads[presentSecondWin], 
+                                "NbNegativeReads" = nbSecondNegativeReads[presentSecondWin])  
       }
       ChromosomeFirst <- rep("",nrow(firstWin))
       ChromosomeSecond <- rep("",nrow(secondWin))

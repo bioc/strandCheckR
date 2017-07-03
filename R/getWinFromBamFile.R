@@ -25,8 +25,7 @@ getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=
   partition <- partitionChromosomes(chromosomes,lengthSeq[allChromosomes %in% chromosomes],yieldSize = yieldSize)
   if (coverage==TRUE){
     allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c(),"MaxCoverage" = c()) 
-  }
-  else{
+  } else{
     allWin <- data.frame("Chr"=c(), "Start" = c(), "NbPositiveReads"= c(), "NbNegativeReads"= c())  
   }
   statInfo <- data.frame("Sequence"="chr","Length"=rep(0,length(chromosomes)),
@@ -78,9 +77,11 @@ getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=
         if (lenP>lenN) {nbNegativeReads <- c(nbNegativeReads,rep(0,lenP-lenN))} else {nbPositiveReads <- c(nbPositiveReads,rep(0,lenN-lenP))}
       }
       presentWin <- which(as.vector((nbPositiveReads>0) | (nbNegativeReads>0))==TRUE)
-      Win <- data.frame("Start" = presentWin, "NbPositiveReads" = nbPositiveReads[presentWin], "NbNegativeReads" = nbNegativeReads[presentWin])
       if (coverage){
-        Win <- dplyr::mutate(Win,"MaxCoverage" = maxCoverage[presentWin])  
+        Win <- data.frame("Start" = presentWin, "NbPositiveReads" = nbPositiveReads[presentWin], "NbNegativeReads" = nbNegativeReads[presentWin],"MaxCoverage" = maxCoverage[presentWin])  
+      }
+      else{
+        Win <- data.frame("Start" = presentWin, "NbPositiveReads" = nbPositiveReads[presentWin], "NbNegativeReads" = nbNegativeReads[presentWin])  
       }
       Chromosome <- rep("",nrow(Win))
       for (i in seq_along(part)){
