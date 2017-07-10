@@ -6,4 +6,3 @@
 \usage{
 getWinOfAlignments(bam, str, win, step, limit, subset, coverage = FALSE)
 }
-

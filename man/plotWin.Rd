@@ -42,4 +42,3 @@ plotWin(windowsP)
 \seealso{
 getWinFromBamFile, getWinFromPairedBamFile, plotHist
 }
-

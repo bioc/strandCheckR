@@ -30,4 +30,3 @@ win <- getWin(bamfilein)
 \seealso{
 filterDNA, filterDNAPairs, getWinFromPairedBamFile, plotHist, plotWin
 }
-

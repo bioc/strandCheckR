@@ -15,6 +15,7 @@
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
 #' @seealso getWinFromBamFile, getWinFromPairedBamFile, plotHist
 #'
+#' @importFrom dplyr select mutate distinct
 #' @examples
 #'
 #' #for single end bam file
@@ -31,10 +32,10 @@
 
 plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05,save=FALSE,file="win.pdf",facet_wrap_chromosomes=FALSE){
   coverage <- "MaxCoverage" %in% colnames(windows)
-  if (!facet_wrap_chromosomes) windows <- dplyr::select(windows,-Chr)
-  windows <- dplyr::select(windows,-Start) 
-  windows <- dplyr::mutate(windows,"NbReads"=NbPositive+NbNegative,"PositiveProportion" = NbPositive/(NbPositive+NbNegative)) %>%
-      dplyr::select(-c(NbPositive,NbNegative))
+  if (!facet_wrap_chromosomes) windows <- select(windows,-Chr)
+  windows <- select(windows,-Start) 
+  windows <- mutate(windows,"NbReads"=NbPositive+NbNegative,"PositiveProportion" = NbPositive/(NbPositive+NbNegative)) %>%
+      select(-c(NbPositive,NbNegative))
   
   if (coverage){
     if (length(group)==0){
@@ -57,37 +58,37 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
   if ("Type" %in% colnames(windows)){
     if (facet_wrap_chromosomes==TRUE){
       if (coverage){
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          dplyr::distinct(Chr,Type,NbReads,MaxCoverage,PositiveProportion) 
+        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+          distinct(Chr,Type,NbReads,MaxCoverage,PositiveProportion) 
       } else{
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          dplyr::distinct(Chr,Type,NbReads, PositiveProportion)  
+        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+          distinct(Chr,Type,NbReads, PositiveProportion)  
       }
     } else{
       if (coverage){
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          dplyr::distinct(Type,NbReads,MaxCoverage,PositiveProportion)
+        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+          distinct(Type,NbReads,MaxCoverage,PositiveProportion)
       } else{
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          dplyr::distinct(Type,NbReads, PositiveProportion)  
+        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+          distinct(Type,NbReads, PositiveProportion)  
       }
     }
   } else{
     if (facet_wrap_chromosomes==TRUE){
       if (coverage){
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          dplyr::distinct(Chr,NbReads,MaxCoverage,PositiveProportion)  
+        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+          distinct(Chr,NbReads,MaxCoverage,PositiveProportion)  
       } else{
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          dplyr::distinct(Chr,NbReads, PositiveProportion)
+        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+          distinct(Chr,NbReads, PositiveProportion)
       }
     } else{
       if (coverage){
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          dplyr::distinct(NbReads,MaxCoverage,PositiveProportion)  
+        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+          distinct(NbReads,MaxCoverage,PositiveProportion)  
       } else{
-        windowsReduced <- windows %>% dplyr::mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          dplyr::distinct(NbReads, PositiveProportion)
+        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+          distinct(NbReads, PositiveProportion)
       }
       
     }

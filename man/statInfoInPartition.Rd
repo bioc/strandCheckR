@@ -9,4 +9,3 @@ statInfoInPartition(statinfo, step)
 \arguments{
 \item{step}{the step of sliding windows}
 }
-

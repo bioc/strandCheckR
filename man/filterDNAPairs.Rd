@@ -61,4 +61,3 @@ filterDNAPairs(bamfilein,bamfileout="out.bam",statfile = "out.stat")
 \seealso{
 filterDNA, getWinFromBamFile, getWinFromPairedBamFile, plotHist, plotWin
 }
-

@@ -8,4 +8,3 @@ keptProbaWin(winPositiveAlignments, winNegativeAlignments, win, step,
   logitThreshold, pvalueThreshold, errorRate, mustKeepWin, min, max, getWin,
   coverage = FALSE)
 }
-

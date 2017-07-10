@@ -3,11 +3,12 @@
 #' @export
 #' @importFrom GenomicAlignments extractAlignmentRangesOnReference
 #' @import S4Vectors
+#' @importFrom dplyr select
 #'
 getWinOfAlignments <- function(bam,str,win,step,limit,subset,coverage=FALSE){
   if (missing(subset)){
     index <- which(bam$strand==str)
-    position <- extractAlignmentRangesOnReference(bam$cigar[index],pos=bam$pos[index]) %>% data.frame() %>% dplyr::select(-c(group_name))
+    position <- extractAlignmentRangesOnReference(bam$cigar[index],pos=bam$pos[index]) %>% data.frame() %>% select(-c(group_name))
     maxWin <- ceiling((max(position$end)-win)/step)+1
     range <- IRanges(position$start,position$end,position$width)
     winrange <- getWinFromIRanges(range,win,step,limit,maxWin)
@@ -15,7 +16,7 @@ getWinOfAlignments <- function(bam,str,win,step,limit,subset,coverage=FALSE){
   }
   else{
     index <- which(bam$strand[subset]==str)
-    position <- extractAlignmentRangesOnReference(bam$cigar[subset][index],pos=bam$pos[subset][index]) %>% data.frame() %>% dplyr::select(-c(group_name))
+    position <- extractAlignmentRangesOnReference(bam$cigar[subset][index],pos=bam$pos[subset][index]) %>% data.frame() %>% select(-c(group_name))
     maxWin <- ceiling((max(position$end)-win)/step)+1
     range <- IRanges(position$start,position$end,position$width)
     winrange <- getWinFromIRanges(range,win,step,limit,maxWin)

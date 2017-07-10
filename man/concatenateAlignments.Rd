@@ -14,4 +14,3 @@ concatenateAlignments(bam, statinfo, flag = FALSE, qname = FALSE)
 \description{
 concatenate a list of alignments into one
 }
-

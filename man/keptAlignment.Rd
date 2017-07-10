@@ -6,4 +6,3 @@
 \usage{
 keptAlignment(fragments, keptProbaW, errorRate)
 }
-

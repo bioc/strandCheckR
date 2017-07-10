@@ -18,4 +18,3 @@ getWinFromIRanges(gr, win, step, limit, maxWin)
 \description{
 get the list of windows that overlaps an Iranges object
 }
-

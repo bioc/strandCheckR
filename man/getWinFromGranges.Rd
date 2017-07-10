@@ -18,4 +18,3 @@ getWinFromGranges(gr, chromosomes, statinfo, win, step)
 \description{
 get the lists of positive/negative windows that overlap a GRanges objects
 }
-

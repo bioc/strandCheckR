@@ -47,4 +47,3 @@ windows <- rnaCleanR::computeWinInfo(runLength(covPos),runValue(covPos),runLengt
 
 
 }
-

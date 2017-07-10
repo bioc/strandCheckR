@@ -10,6 +10,7 @@
 #' @seealso filterDNA, filterDNAPairs, getWinFromPairedBamFile, plotHist, plotWin
 #' @export
 #' @importFrom IRanges Views
+#' @importFrom dplyr mutate
 #' @examples 
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
 #' win <- getWin(bamfilein)
@@ -96,5 +97,5 @@ getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=
       allWin <- rbind(allWin,Win)
     }
   }
-  return(allWin %>% dplyr::mutate("Start" = (Start-1)*step+1))
+  return(allWin %>% mutate("Start" = (Start-1)*step+1))
 }

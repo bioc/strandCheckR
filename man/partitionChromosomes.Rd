@@ -6,4 +6,3 @@
 \usage{
 partitionChromosomes(chromosomes, lengthSeq, yieldSize)
 }
-

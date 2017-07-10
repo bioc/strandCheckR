@@ -51,6 +51,7 @@
 #' @importFrom GenomeInfoDb seqinfo seqnames seqlengths
 #' @importFrom IRanges IRanges
 #' @importFrom magrittr %>%
+#' @importFrom dplyr mutate
 #' @import S4Vectors
 #'
 filterDNA <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize = 1e8, mustKeepRanges,getWin=FALSE,win=1000,step=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,limit=0.75,coverage=FALSE){
@@ -155,7 +156,7 @@ filterDNA <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize = 1e8,
   endTime <- proc.time()
   cat(paste0("Total elapsed time ",(endTime-startTime)[[3]]/60," minutes\n"),file = statfile,append=TRUE)
   if (getWin){
-    return(allWin %>% dplyr::mutate("Start" = (Start-1)*step+1))
+    return(allWin %>% mutate("Start" = (Start-1)*step+1))
   }
 }
 

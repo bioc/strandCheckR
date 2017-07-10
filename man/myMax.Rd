@@ -6,4 +6,3 @@
 \usage{
 myMax(..., na.rm = FALSE)
 }
-

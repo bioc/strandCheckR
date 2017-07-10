@@ -18,4 +18,3 @@ getWinInChromosome(Win, chromosomes, statInfo, win, step)
 \description{
 get the correct chromsome name and position for each window
 }
-

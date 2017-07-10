@@ -35,4 +35,3 @@ plotHist(windowsP)
 \seealso{
 getWinFromBamFile, getWinFromPairedBamFile, plotWin
 }
-

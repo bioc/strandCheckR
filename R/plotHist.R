@@ -22,16 +22,17 @@
 #' plotHist(windowsP)
 #' @export
 #' @importFrom magrittr set_colnames
+#' @importFrom dplyr mutate select filter
 #'
 plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",facet_wrap_chromosomes=FALSE){
   coverage <- "MaxCoverage" %in% colnames(windows)
   if (coverage){
-    windows <- dplyr::mutate(windows,"NbReads" = MaxCoverage) %>% dplyr::select(-c(Start,MaxCoverage))
+    windows <- mutate(windows,"NbReads" = MaxCoverage) %>% select(-c(Start,MaxCoverage))
   }
   else{
-    windows <- dplyr::mutate(windows,"NbReads" = windows$NbPositive+windows$NbNegative) %>% dplyr::select(-Start)  
+    windows <- mutate(windows,"NbReads" = windows$NbPositive+windows$NbNegative) %>% select(-Start)  
   }
-  if (!facet_wrap_chromosomes) windows <- dplyr::select(windows,-Chr)
+  if (!facet_wrap_chromosomes) windows <- select(windows,-Chr)
   if (length(group)==0){
     leg <- "all"
   } else{
@@ -50,14 +51,14 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
   breaks <- 100
   if ("Type" %in% colnames(windows)){
     histoFirst <- lapply(leg,function(l){
-      a <- dplyr::filter(windows,NbReads==l,Type=="First") %>% dplyr::mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
+      a <- filter(windows,NbReads==l,Type=="First") %>% mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
           sapply(chromosomes,function(chr){
-            ac <- dplyr::filter(a,Chr==chr)
+            ac <- filter(a,Chr==chr)
             hist(ac$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
-          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% dplyr::mutate("NbReads"=l,"Type"="First")
+          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% mutate("NbReads"=l,"Type"="First")
         } else{
           data.frame("Count"=hist(a$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
                      "Proportion" = 0:100,
@@ -69,14 +70,14 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     histoFirst <- do.call(rbind,histoFirst)
 
     histoSecond <- lapply(leg,function(l){
-      a <- dplyr::filter(windows,NbReads==l,Type=="Second") %>% dplyr::mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
+      a <- filter(windows,NbReads==l,Type=="Second") %>% mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
           sapply(chromosomes,function(chr){
-            ac <- dplyr::filter(a,Chr==chr)
+            ac <- filter(a,Chr==chr)
             hist(ac$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
-          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% dplyr::mutate("NbReads"=l,"Type"="Second")
+          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% mutate("NbReads"=l,"Type"="Second")
         } else{
           data.frame("Count"=hist(a$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
                      "Proportion" = 0:100,
@@ -115,14 +116,14 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
   }
   else{
     histo<- lapply(leg,function(l){
-      a <- dplyr::filter(windows,NbReads==l) %>% dplyr::mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
+      a <- filter(windows,NbReads==l) %>% mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
           sapply(chromosomes,function(chr){
-            ac <- dplyr::filter(a,Chr==chr)
+            ac <- filter(a,Chr==chr)
             hist(ac$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
-          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% dplyr::mutate("NbReads"=l)
+          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% mutate("NbReads"=l)
         }
         else{
           data.frame("Count"=hist(a$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
