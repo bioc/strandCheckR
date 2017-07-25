@@ -4,7 +4,7 @@
 \alias{filterDNAPairs}
 \title{Filter Paired End Bam File}
 \usage{
-filterDNAPairs(bamfilein, bamfileout, statfile, chromosomes,
+filterDNAPairs(bamfilein, bamfileout, mq = 0, statfile, chromosomes,
   yieldSize = 1e+08, mustKeepRanges, getWin = FALSE, win = 1000,
   step = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
   max = 0, errorRate = 0.01, limit = 0.75, pair = "free",
@@ -14,6 +14,8 @@ filterDNAPairs(bamfilein, bamfileout, statfile, chromosomes,
 \item{bamfilein}{the input paired-end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
 
 \item{bamfileout}{the output filtered bam file}
+
+\item{mq}{every read that has mapping quality below \code{mq} will be removed before any analysis}
 
 \item{statfile}{the file to write the summary of the results}
 

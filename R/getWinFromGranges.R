@@ -2,7 +2,7 @@
 #' @description get the lists of positive/negative windows that overlap a GRanges objects
 #' @param gr a GRanges object
 #' @param chromosomes a list of chromosome names
-#' @param statinfo
+#' @param statinfo a data frame that contains some information of the alignments
 #' @param win the length of sliding window
 #' @param step the step length to sliding the window
 #' @export

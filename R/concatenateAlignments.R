@@ -1,10 +1,13 @@
-#' @title concatenate a list of alignments into one
-#' @description concatenate a list of alignments into one
-#' @param bam a list returned by \code{scanBam} function, each element correspond to a chromosome, containing the information of strand, starting position, cigar string, and eventually flag, qname
-#' @param statinfo
-#' @param flag
-#' @param qname
+#' @title Concatenate a list of Alignments into One
 #' 
+#' @description This method take a list of alignments and concatenate them into one.
+#' 
+#' @param bam a list returned by \code{scanBam} function, each element correspond to a chromosome, containing the information of strand, starting position, cigar string, and eventually flag, qname
+#' @param statinfo a data frame that contains some information of the alignments
+#' @param flag either the alignments contain the \code{flag} field
+#' @param qname either the alignmetns contain the \code{qname} field
+#' 
+#' @return the concatenated alignments of the input list
 #' @export
 #'
 concatenateAlignments <- function(bam,statinfo,flag=FALSE,qname=FALSE){

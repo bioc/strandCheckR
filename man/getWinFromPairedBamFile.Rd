@@ -4,11 +4,13 @@
 \alias{getWinFromPairedBamFile}
 \title{get the number of positive/negatives of all windows from a paired end bam file}
 \usage{
-getWinFromPairedBamFile(bamfilein, chromosomes, yieldSize = 1e+08,
+getWinFromPairedBamFile(bamfilein, mq = 0, chromosomes, yieldSize = 1e+08,
   win = 1000, step = 100, limit = 0.75, coverage = FALSE)
 }
 \arguments{
 \item{bamfilein}{the input paired-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
+
+\item{mq}{every read that has mapping quality below \code{mq} will be removed before any analysis}
 
 \item{chromosomes}{the list of chromosomes to be read}
 

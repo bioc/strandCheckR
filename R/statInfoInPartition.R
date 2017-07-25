@@ -1,6 +1,6 @@
 #' @title calculate the information within parition
 #'
-#' @param statinfo
+#' @param statinfo a data frame that contains some information of the alignments
 #' @param step the step of sliding windows
 #' 
 #' @export

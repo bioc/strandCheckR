@@ -4,11 +4,13 @@
 \alias{getWinFromBamFile}
 \title{get the number of positive/negative reads of all windows from a single end bam file}
 \usage{
-getWinFromBamFile(bamfilein, chromosomes, yieldSize = 1e+08, win = 1000,
-  step = 100, limit = 0.75, coverage = FALSE)
+getWinFromBamFile(bamfilein, mq = 0, chromosomes, yieldSize = 1e+08,
+  win = 1000, step = 100, limit = 0.75, coverage = FALSE)
 }
 \arguments{
 \item{bamfilein}{the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
+
+\item{mq}{very read that has mapping quality below \code{mq} will be removed before any analysis}
 
 \item{chromosomes}{the list of chromosomes to be read}
 

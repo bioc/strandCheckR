@@ -1,6 +1,7 @@
 #' @title get the number of positive/negative reads of all windows from a single end bam file
 #'
 #' @param bamfilein the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.
+#' @param mq very read that has mapping quality below \code{mq} will be removed before any analysis
 #' @param chromosomes the list of chromosomes to be read
 #' @param yieldSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
 #' @param win the length of the sliding window, 1000 by default.
@@ -15,7 +16,7 @@
 #' bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
 #' win <- getWin(bamfilein)
 #'
-getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=100,limit=0.75,coverage=FALSE){
+getWinFromBamFile <- function(bamfilein,mq=0,chromosomes,yieldSize=1e8,win=1000,step=100,limit=0.75,coverage=FALSE){
   bf <- BamFile(bamfilein)
   seqinfo <- seqinfo(bf)
   allChromosomes <- seqnames(seqinfo)
@@ -42,11 +43,20 @@ getWinFromBamFile <- function(bamfilein,chromosomes,yieldSize=1e8,win=1000,step=
     idPart <- which(chromosomes %in% part)
     statInfo$Sequence[idPart] <- part
     statInfo$Length[idPart] <- lengthSeq[allChromosomes %in% part]
-    
-    bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand"),
-                                                which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart]))))
-    statInfo$NbOriginalReads[idPart] <- sapply(seq_along(bam),function(i){length(bam[[i]]$strand)})
+    if (mq>0){
+      bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand","mapq"),
+                                                  which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart]))))
+      mqfilter <- lapply(bam,function(chr){which(chr$mapq>=mq)})
+      statInfo$NbOriginalReads[idPart] <- sapply(mqfilter,length)
+    } else{
+      bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand"),
+                                                  which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart]))))
+      statInfo$NbOriginalReads[idPart] <- sapply(seq_along(bam),function(i){length(bam[[i]]$strand)})
+    }
     if (sum(statInfo$NbOriginalReads[idPart])>0){
+      if (mq>0){
+        bam <- lapply(1:length(bam),function(i){list("pos"=bam[[i]]$pos[mqfilter[[i]]],"cigar"=bam[[i]]$cigar[mqfilter[[i]]],"strand"=bam[[i]]$strand[mqfilter[[i]]])})    
+      }
       statInfo[idPart,] <- statInfoInPartition(statInfo[idPart,],step)
       bam <- concatenateAlignments(bam,statInfo[idPart,])
       winPositiveAlignments <- getWinOfAlignments(bam,"+",win,step,limit,coverage=coverage)

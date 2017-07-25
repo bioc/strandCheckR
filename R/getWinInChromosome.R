@@ -4,7 +4,7 @@
 #' 
 #' @param Win a data frame contains the information of every window in \code{chromosomes}
 #' @param chromsomes a vector of chromosome names
-#' @param statInfo
+#' @param statInfo a data frame that contains some information of the alignments
 #' @param win the length of sliding window
 #' @param step the step length to sliding the window
 #' @export

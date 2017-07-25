@@ -4,10 +4,10 @@
 \alias{filterDNA}
 \title{Filter Single End Bam File}
 \usage{
-filterDNA(bamfilein, bamfileout, statfile, chromosomes, yieldSize = 1e+08,
-  mustKeepRanges, getWin = FALSE, win = 1000, step = 100,
-  threshold = 0.7, pvalueThreshold = 0.05, min = 0, max = 0,
-  errorRate = 0.01, limit = 0.75, coverage = FALSE)
+filterDNA(bamfilein, bamfileout, mq = 0, statfile, chromosomes,
+  yieldSize = 1e+08, mustKeepRanges, getWin = FALSE, win = 1000,
+  step = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
+  max = 0, errorRate = 0.01, limit = 0.75, coverage = FALSE)
 }
 \arguments{
 \item{bamfilein}{the input single end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
@@ -41,6 +41,8 @@ filterDNA(bamfilein, bamfileout, statfile, chromosomes, yieldSize = 1e+08,
 \item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default}
 
 \item{coverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
+
+\item{every}{read that has mapping quality below \code{mq} will be removed before any analysis}
 }
 \description{
 Filter putative double strand DNA from a strand specific single-end RNA-seq using a window sliding across the genome.

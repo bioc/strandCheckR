@@ -9,6 +9,8 @@ getWinInChromosome(Win, chromosomes, statInfo, win, step)
 \arguments{
 \item{Win}{a data frame contains the information of every window in \code{chromosomes}}
 
+\item{statInfo}{a data frame that contains some information of the alignments}
+
 \item{win}{the length of sliding window}
 
 \item{step}{the step length to sliding the window}

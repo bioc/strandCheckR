@@ -5,6 +5,7 @@
 #'
 #' @param bamfilein the input paired-end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param bamfileout the output filtered bam file
+#' @param mq every read that has mapping quality below \code{mq} will be removed before any analysis
 #' @param statfile the file to write the summary of the results
 #' @param chromosomes the list of chromosomes to be filtered
 #' @param yieldSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
@@ -40,7 +41,7 @@
 #' @importFrom dplyr mutate
 #' @import S4Vectors
 #'
-filterDNAPairs <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize = 1e8,mustKeepRanges,getWin=FALSE,win=1000,step=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,limit=0.75,pair="free",coverage=FALSE){
+filterDNAPairs <- function(bamfilein,bamfileout,mq=0,statfile,chromosomes,yieldSize = 1e8,mustKeepRanges,getWin=FALSE,win=1000,step=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,limit=0.75,pair="free",coverage=FALSE){
   stopifnot(pair=="free" | pair=="intersection" | pair=="union")
   startTime <- proc.time()
   bf <- BamFile(bamfilein)
@@ -86,21 +87,41 @@ filterDNAPairs <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize =
     statInfo$Length[idPart] <- lengthSeq[allChromosomes %in% part]
 
     if (pair=="free"){
-      bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand","flag"),
-                                                  which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart]))))
+      if (mq>0){
+        bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand","flag","mapq"),
+                                                    which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart])))) 
+        mqfilter <- lapply(bam,function(chr){which(chr$mapq>=mq)})
+        statInfo$NbOriginalReads[idPart] <- sapply(mqfilter,length)
+      } else{
+        bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand","flag"),
+                                                    which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart]))))  
+        statInfo$NbOriginalReads[idPart] <- sapply(seq_along(bam),function(i){length(bam[[i]]$strand)})
+      }
     }
     else{
-      bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand","flag","qname"),
-                                                  which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart]))))
+      if (mq>0){
+        bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand","flag","qname","mapq"),
+                                                    which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart])))) 
+        mqfilter <- lapply(bam,function(chr){which(chr$mapq>=mq)})
+        statInfo$NbOriginalReads[idPart] <- sapply(mqfilter,length)
+      } else{
+        bam <- scanBam(bamfilein,param=ScanBamParam(what=c("pos","cigar","strand","flag","qname"),
+                                                    which=GRanges(seqnames = part,ranges = IRanges(start=1,end=statInfo$Length[idPart]))))  
+        statInfo$NbOriginalReads[idPart] <- sapply(seq_along(bam),function(i){length(bam[[i]]$strand)})
+      }
     }
-
-    statInfo$NbOriginalReads[idPart] <- sapply(seq_along(bam),function(i){length(bam[[i]]$strand)})
     if (sum(statInfo$NbOriginalReads[idPart])>0){
       statInfo[idPart,] <- statInfoInPartition(statInfo[idPart,],step)
       if (pair=="free"){
+        if (mq>0){
+          bam <- lapply(1:length(bam),function(i){list("pos"=bam[[i]]$pos[mqfilter[[i]]],"flag"=bam[[i]]$flag[mqfilter[[i]]],"cigar"=bam[[i]]$cigar[mqfilter[[i]]],"strand"=bam[[i]]$strand[mqfilter[[i]]])})    
+        }
         bam <- concatenateAlignments(bam,statInfo[idPart,],flag=TRUE)
       }
       else{
+        if (mq>0){
+          bam <- lapply(1:length(bam),function(i){list("pos"=bam[[i]]$pos[mqfilter[[i]]],"flag"=bam[[i]]$flag[mqfilter[[i]]],"qname"=bam[[i]]$qname[mqfilter[[i]]],"cigar"=bam[[i]]$cigar[mqfilter[[i]]],"strand"=bam[[i]]$strand[mqfilter[[i]]])})    
+        }
         bam <- concatenateAlignments(bam,statInfo[idPart,],flag=TRUE,qname=TRUE)
       }
       mustKeepWin <- list()
@@ -159,7 +180,11 @@ filterDNAPairs <- function(bamfilein,bamfileout,statfile,chromosomes,yieldSize =
         }
         if (statInfo$NbKeptFirstReads[id]>0 | statInfo$NbKeptSecondReads[i]>0){
           chromosomeIndex <- which(allChromosomes == part[i])
-          bamSave(writer,bamRange(reader,c(chromosomeIndex-1,0,lengthSeq[chromosomeIndex]))[keptAlignments[rangeInChr]- statInfo$FirstReadInPartition[id]+1,],refid=chromosomeIndex-1)#write the kept alignments into the output bam file
+          if (mq>0){
+            bamSave(writer,bamRange(reader,c(chromosomeIndex-1,0,lengthSeq[chromosomeIndex]))[mqfilter[[i]][keptAlignments[rangeInChr]- statInfo$FirstReadInPartition[id]+1],],refid=chromosomeIndex-1)#write the kept alignments into the output bam file 
+          } else{
+            bamSave(writer,bamRange(reader,c(chromosomeIndex-1,0,lengthSeq[chromosomeIndex]))[keptAlignments[rangeInChr]- statInfo$FirstReadInPartition[id]+1,],refid=chromosomeIndex-1)#write the kept alignments into the output bam file  
+          }
           rm(rangeInChr)
         }
       }

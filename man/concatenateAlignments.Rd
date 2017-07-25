@@ -2,15 +2,22 @@
 % Please edit documentation in R/concatenateAlignments.R
 \name{concatenateAlignments}
 \alias{concatenateAlignments}
-\title{concatenate a list of alignments into one}
+\title{Concatenate a list of Alignments into One}
 \usage{
 concatenateAlignments(bam, statinfo, flag = FALSE, qname = FALSE)
 }
 \arguments{
 \item{bam}{a list returned by \code{scanBam} function, each element correspond to a chromosome, containing the information of strand, starting position, cigar string, and eventually flag, qname}
 
-\item{qname}{}
+\item{statinfo}{a data frame that contains some information of the alignments}
+
+\item{flag}{either the alignments contain the \code{flag} field}
+
+\item{qname}{either the alignmetns contain the \code{qname} field}
+}
+\value{
+the concatenated alignments of the input list
 }
 \description{
-concatenate a list of alignments into one
+This method take a list of alignments and concatenate them into one.
 }

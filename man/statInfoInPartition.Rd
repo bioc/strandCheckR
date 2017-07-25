@@ -7,5 +7,7 @@
 statInfoInPartition(statinfo, step)
 }
 \arguments{
+\item{statinfo}{a data frame that contains some information of the alignments}
+
 \item{step}{the step of sliding windows}
 }

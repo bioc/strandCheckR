@@ -11,6 +11,8 @@ getWinFromGranges(gr, chromosomes, statinfo, win, step)
 
 \item{chromosomes}{a list of chromosome names}
 
+\item{statinfo}{a data frame that contains some information of the alignments}
+
 \item{win}{the length of sliding window}
 
 \item{step}{the step length to sliding the window}
