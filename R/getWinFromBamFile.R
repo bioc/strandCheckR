@@ -84,7 +84,7 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
       # Calculate the first/last bases/reads in the chromosome partition
       statInfo[idPart,] <- statInfoInPartition(statInfo[idPart,], winStep)
       # concatenate several lists of the chromosome partition into one list
-      bam <- concatenateAlignments(bam,statInfo[idPart,])
+      bam <- concatenateAlignments(bam, statInfo[idPart,])
       winPositiveAlignments <- getWinOfAlignments(bam, "+", winWidth, winStep, limit = 1, coverage=TRUE)
       winNegativeAlignments <- getWinOfAlignments(bam, "-", winWidth, winStep, limit = 1, coverage=TRUE)
       rm(bam)

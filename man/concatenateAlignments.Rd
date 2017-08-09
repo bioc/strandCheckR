@@ -4,20 +4,20 @@
 \alias{concatenateAlignments}
 \title{Concatenate a list of Alignments into One}
 \usage{
-concatenateAlignments(bam, statinfo, flag = FALSE, qname = FALSE)
+concatenateAlignments(bam, statInfo)
 }
 \arguments{
 \item{bam}{a list returned by \code{scanBam} function, each element correspond to a chromosome, containing the information of strand, starting position, cigar string, and eventually flag, qname}
 
-\item{statinfo}{a data frame that contains some information of the alignments}
-
-\item{flag}{either the alignments contain the \code{flag} field}
-
-\item{qname}{either the alignmetns contain the \code{qname} field}
+\item{statInfo}{a data frame that contains some key information of the alignments}
 }
 \value{
 the concatenated alignments of the input list
 }
 \description{
-This method take a list of alignments and concatenate them into one.
+Concatenate a list of Alignments from multiple chromosomes into a single object
+}
+\details{
+This method take a list of alignments across one or more chromosomes as output by \code{scanBam} 
+and concatenates them into a single set of alignments which may include multiple chromosomes
 }
