@@ -4,20 +4,21 @@
 \alias{getWinOfAlignments}
 \title{get the window ranges that contain each read fragment}
 \usage{
-getWinOfAlignments(bam, str, win, step, limit, subset, coverage = FALSE)
+getWinOfAlignments(bam, str, winSize, winStep, limit, subset,
+  useCoverage = FALSE)
 }
 \arguments{
 \item{bam}{a list contains the read information of one chromosome}
 
 \item{str}{the considering strand}
 
-\item{win}{the window size}
+\item{winSize}{the window size}
 
-\item{step}{the window step}
+\item{winStep}{the window winStep}
 
 \item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window.}
 
 \item{subset}{if we consider only a subset of the input reads}
 
-\item{coverage}{either base on coverage or number of reads}
+\item{useCoverage}{either base on coverage or number of reads}
 }
