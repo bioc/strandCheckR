@@ -6,3 +6,10 @@
 \usage{
 partitionChromosomes(chromosomes, lengthSeq, yieldSize)
 }
+\arguments{
+\item{chromosomes}{a vector of chromosomes to be partitionned}
+
+\item{lengthSeq}{the length of each chromosome}
+
+\item{yieldSize}{the minimum sum of length of the chromosomes in each partition}
+}
