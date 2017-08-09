@@ -3,7 +3,7 @@
 #' @param bamfilein the input paired-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param mq every read that has mapping quality below \code{mq} will be removed before any analysis
 #' @param chromosomes the list of chromosomes to be read
-#' @param yieldSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
+#' @param partitionSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
 #' @param win the length of the sliding window, 1000 by default.
 #' @param step the step length to sliding the window, 100 by default.
 #' @param limit a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default
@@ -17,7 +17,7 @@
 #' bamfilein <- system.file("data","120.10.bam",package = "rnaCleanR")
 #' win <- getWinFromPairedBamFile(bamfilein)
 #'
-getWinFromPairedBamFile <- function(bamfilein,mq=0,chromosomes,yieldSize=1e8,win=1000,step=100,limit=0.75,coverage=FALSE){
+getWinFromPairedBamFile <- function(bamfilein,mq=0,chromosomes,partitionSize=1e8,win=1000,step=100,limit=0.75,coverage=FALSE){
   bf <- BamFile(bamfilein)
   seqinfo <- seqinfo(bf)
   allChromosomes <- seqnames(seqinfo)
@@ -25,7 +25,7 @@ getWinFromPairedBamFile <- function(bamfilein,mq=0,chromosomes,yieldSize=1e8,win
   if (missing(chromosomes)){
     chromosomes <- allChromosomes
   }
-  partition <- partitionChromosomes(chromosomes,lengthSeq[allChromosomes %in% chromosomes],yieldSize = yieldSize)
+  partition <- partitionChromosomes(chromosomes,lengthSeq[allChromosomes %in% chromosomes],partitionSize = partitionSize)
   if (coverage==TRUE){
     allWin <- data.frame("Type"=c(),"Chr"=c(), "Start" = c(), "NbPositive"= c(), "NbNegative"= c(),"MaxCoverage" = c()) 
   }

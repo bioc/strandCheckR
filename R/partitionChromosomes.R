@@ -1,10 +1,17 @@
-#' @title partition the set of chromosomes such that each part contains a subset of chromosome whose sum of length is at least 1e8
-#' @param chromosomes a vector of chromosomes to be partitionned
+#' @title Partition the chromosomes
+#' 
+#' @description Partition the set of chromosomes for easier processing
+#' 
+#' @details Partition the set of chromosomes such that each part contains a 
+#' subset of chromosome whose sum of length is >= \code{partitionSize}.
+#' This is to enable faster processing by \code{getWinFromBamFile} and \code{filterDNA}
+#' 
+#' @param chromosomes a vector of chromosomes to be partitioned
 #' @param lengthSeq the length of each chromosome
-#' @param yieldSize the minimum sum of length of the chromosomes in each partition
+#' @param partitionSize the minimum sum of length of the chromosomes in each partition
 #' @export
 #'
-partitionChromosomes <- function(chromosomes,lengthSeq,yieldSize){
+partitionChromosomes <- function(chromosomes, lengthSeq, partitionSize){
   sumLength <- cumsum(as.numeric(lengthSeq))
   partition <- list()
   currentSum <- 0
@@ -12,7 +19,7 @@ partitionChromosomes <- function(chromosomes,lengthSeq,yieldSize){
   lastChrInPart <- 1
   idPart <- 1
   while (lastChrInPart <= length(chromosomes)){
-    lastChrInPart <- which(sumLength >= currentSum+yieldSize)
+    lastChrInPart <- which(sumLength >= currentSum+partitionSize)
     if (length(lastChrInPart) == 0){
       lastChrInPart <- length(chromosomes)
     }

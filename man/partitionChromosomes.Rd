@@ -2,14 +2,22 @@
 % Please edit documentation in R/partitionChromosomes.R
 \name{partitionChromosomes}
 \alias{partitionChromosomes}
-\title{partition the set of chromosomes such that each part contains a subset of chromosome whose sum of length is at least 1e8}
+\title{Partition the chromosomes}
 \usage{
-partitionChromosomes(chromosomes, lengthSeq, yieldSize)
+partitionChromosomes(chromosomes, lengthSeq, partitionSize)
 }
 \arguments{
-\item{chromosomes}{a vector of chromosomes to be partitionned}
+\item{chromosomes}{a vector of chromosomes to be partitioned}
 
 \item{lengthSeq}{the length of each chromosome}
 
-\item{yieldSize}{the minimum sum of length of the chromosomes in each partition}
+\item{partitionSize}{the minimum sum of length of the chromosomes in each partition}
+}
+\description{
+Partition the set of chromosomes for easier processing
+}
+\details{
+Partition the set of chromosomes such that each part contains a 
+subset of chromosome whose sum of length is >= \code{partitionSize}.
+This is to enable faster processing by \code{getWinFromBamFile} and \code{filterDNA}
 }

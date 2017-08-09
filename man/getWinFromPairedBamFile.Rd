@@ -4,8 +4,9 @@
 \alias{getWinFromPairedBamFile}
 \title{get the number of positive/negatives of all windows from a paired end bam file}
 \usage{
-getWinFromPairedBamFile(bamfilein, mq = 0, chromosomes, yieldSize = 1e+08,
-  win = 1000, step = 100, limit = 0.75, coverage = FALSE)
+getWinFromPairedBamFile(bamfilein, mq = 0, chromosomes,
+  partitionSize = 1e+08, win = 1000, step = 100, limit = 0.75,
+  coverage = FALSE)
 }
 \arguments{
 \item{bamfilein}{the input paired-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
@@ -14,7 +15,7 @@ getWinFromPairedBamFile(bamfilein, mq = 0, chromosomes, yieldSize = 1e+08,
 
 \item{chromosomes}{the list of chromosomes to be read}
 
-\item{yieldSize}{by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8}
+\item{partitionSize}{by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8}
 
 \item{win}{the length of the sliding window, 1000 by default.}
 

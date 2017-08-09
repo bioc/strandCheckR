@@ -1,126 +1,162 @@
 #' @title get the number of positive/negative reads of all windows from a single end bam file
 #'
 #' @param file the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.
-#' @param mq very read that has mapping quality below \code{mq} will be removed before any analysis
 #' @param chromosomes the list of chromosomes to be read
-#' @param yieldSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
-#' @param win the length of the sliding window, 1000 by default.
+#' @param mapq very read that has mapping quality below \code{mapq} will be removed before any analysis
+#' @param partitionSize by default is 1e8, i.e. the bam file is read by blocks of chromosomes 
+#' such that the total length of each block is at least 1e8
+#' @param winWidth the width of the sliding window, 1000 by default.
 #' @param step the step length to sliding the window, 100 by default.
-#' @param limit a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default
-#' @param coverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
+#' 
 #' @seealso filterDNA, filterDNAPairs, getWinFromPairedBamFile, plotHist, plotWin
 #' @export
 #' @importFrom IRanges Views
 #' @importFrom dplyr mutate
+#' @importFrom GenomeInfoDb seqinfo
+#' @importFrom Rsamtools bamMapqFilter
+#' @importFrom Rsamtools ScanBamParam
 #' @examples
 #' file <- system.file("data","s1.chr1.bam",package = "strandCheckR")
 #' win <- getWinFromBamFile(file)
 #'
-getWinFromBamFile <- function(file, mq=0, chromosomes, yieldSize=1e8, win=1000, step=100,
-                              limit=0.75, coverage=FALSE){
+getWinFromBamFile <- function(file, chromosomes, mapq=0, partitionSize=1e8, winWidth=1000, step=100){
+  
   # Check the input is a BamFile. Convert if necessary
-  bf <- BamFile(file)
-  seqinfo <- seqinfo(bf)
-  allChromosomes <- seqnames(seqinfo)
-  lengthSeq <- seqlengths(seqinfo)
+  if (class(file) != "BamFile") file <- BamFile(file)
+  
+  # Check valid chromosomes
+  
+  # Check valid mapq value
+  
+  # Get the seqinfo object & all genomic information
+  sq <- seqinfo(file)
+  allChromosomes <- seqnames(sq)
+  lengthSeq <- seqlengths(sq)
+  
+  # Set the chromosome(s) to work on
   if (missing(chromosomes)){
     chromosomes <- allChromosomes
   }
-  partition <- partitionChromosomes(chromosomes,lengthSeq[allChromosomes %in% chromosomes],yieldSize = yieldSize)
-  if (coverage==TRUE){
-    allWin <- data.frame("Chr" = c(), "Start" = c(), "NbPositive" = c(), "NbNegative" = c(),"MaxCoverage" = c())
-  } else{
-    allWin <- data.frame("Chr" = c(), "Start" = c(), "NbPositive" = c(), "NbNegative" = c())
-  }
-  statInfo <- data.frame("Sequence"="chr","Length"=rep(0,length(chromosomes)),
-                         "NbOriginalReads" = rep(0,length(chromosomes)),
-                         "FirstBaseInPartition" = rep(NA,length(chromosomes)),
-                         "LastBaseInPartition" = rep(NA,length(chromosomes)),
-                         "FirstReadInPartition" = rep(NA,length(chromosomes)),
-                         "LastReadInPartition" = rep(NA,length(chromosomes)),
+  # Allocate chromosomes for optimal partition sizes & speed
+  partition <- partitionChromosomes(chromosomes, lengthSeq[allChromosomes %in% chromosomes], partitionSize = partitionSize)
+  
+  # Initialise the data frames for window information 
+  allWin <- list(length(partition))
+  statInfo <- data.frame(Sequence = chromosomes, 
+                         Length = lengthSeq[chromosomes],
+                         NbOriginalReads = rep(NA, length(chromosomes)),
+                         FirstBaseInPartition = rep(NA, length(chromosomes)),
+                         LastBaseInPartition = rep(NA, length(chromosomes)),
+                         FirstReadInPartition = rep(NA,length(chromosomes)),
+                         LastReadInPartition = rep(NA, length(chromosomes)),
                          stringsAsFactors = FALSE)
-
-  for (part in partition){
+  
+  # Step through each set of partitions
+  for (n in seq_along(partition)){
+    
+    # Set the required values for this section
+    part <- partition[[n]]
     idPart <- which(chromosomes %in% part)
-    statInfo$Sequence[idPart] <- part
-    statInfo$Length[idPart] <- lengthSeq[allChromosomes %in% part]
-    if (mq>0){
-      bam <- scanBam(file,param = ScanBamParam(what = c("pos","cigar","strand","mapq"),
-                                                  which = GRanges(seqnames = part,ranges = IRanges(start = 1,end = statInfo$Length[idPart]))))
-      mqfilter <- lapply(bam,function(chr){which(chr$mapq >= mq)}) #get the read ids that fass the mapping quality filter for each chromosome
-      statInfo$NbOriginalReads[idPart] <- sapply(mqfilter,length)
-    } else{
-      bam <- scanBam(file,param=ScanBamParam(what = c("pos","cigar","strand"),
-                                                  which = GRanges(seqnames = part,ranges = IRanges(start = 1,end = statInfo$Length[idPart]))))
-      statInfo$NbOriginalReads[idPart] <- sapply(seq_along(bam),function(i){length(bam[[i]]$strand)})
-    }
-    if (sum(statInfo$NbOriginalReads[idPart])>0){
-      if (mq>0){
-        bam <- lapply(1:length(bam),function(i){list("pos" = bam[[i]]$pos[mqfilter[[i]]],
-                                                     "cigar" = bam[[i]]$cigar[mqfilter[[i]]],
-                                                     "strand" = bam[[i]]$strand[mqfilter[[i]]])})#keep only the reads that pass the mapping quality filter
-      }
-      statInfo[idPart,] <- statInfoInPartition(statInfo[idPart,],step)# calculate the first/last bases/reads in the chromosome partition
-      bam <- concatenateAlignments(bam,statInfo[idPart,])# concatenate several lists of the chromosome partition into one list
-      winPositiveAlignments <- getWinOfAlignments(bam,"+",win,step,limit,coverage=coverage)
-      winNegativeAlignments <- getWinOfAlignments(bam,"-",win,step,limit,coverage=coverage)
+    chrEnd <- lengthSeq[allChromosomes %in% part]
+    
+    # Get & Summarise the reads
+    sbp <- ScanBamParam(what = c("pos","cigar","strand"),
+                        which = GRanges(seqnames = part,ranges = IRanges(start = 1,end = chrEnd)))
+    bamMapqFilter(sbp) <- mapq
+    
+    # Return the reads from the bam file as a list, with each element containing reads from a single chr
+    bam <- scanBam(file, param = sbp)
+    nReadsInPart <- vapply(seq_along(bam),
+                           function(i){length(bam[[i]]$strand)}, 
+                           integer(1))
+    statInfo$NbOriginalReads[idPart] <- nReadsInPart
+    
+    if (sum(nReadsInPart) > 0){
+      
+      # Calculate the first/last bases/reads in the chromosome partition
+      statInfo[idPart,] <- statInfoInPartition(statInfo[idPart,], step)
+      # concatenate several lists of the chromosome partition into one list
+      bam <- concatenateAlignments(bam,statInfo[idPart,])
+      winPositiveAlignments <- getWinOfAlignments(bam, "+", winWidth, step, limit = 1, coverage=TRUE)
+      winNegativeAlignments <- getWinOfAlignments(bam, "-", winWidth, step, limit = 1, coverage=TRUE)
       rm(bam)
-      if (coverage){#calculate strand information based on coverage
-        #make sure winPositiveAlignments$Coverage and winNegativeAlignments$Coverage have the same length to avoid some warnings afterward
-        lenPC <- length(winPositiveAlignments$Coverage)
-        lenNC <- length(winNegativeAlignments$Coverage)
-        if (lenPC>lenNC) {
-          winNegativeAlignments$Coverage <- c(winNegativeAlignments$Coverage,rep(0,lenPC-lenNC))
-        } else{
-          winPositiveAlignments$Coverage <- c(winPositiveAlignments$Coverage,rep(0,lenNC-lenPC))
-        }
-        #calculate the number of positive and negative bases in each window
-        nbWin <- ceiling((length(winPositiveAlignments$Coverage)-win)/step)+1
-        NbPositive <- Views(winPositiveAlignments$Coverage,
-                                 start = seq(1,(nbWin-1)*step+1,step),
-                                 end=seq(win,(nbWin-1)*step+win,step)) %>%
-          sum() %>% Rle()
-        NbNegative <- Views(winNegativeAlignments$Coverage,
-                                 start = seq(1,(nbWin-1)*step+1,step),
-                                 end=seq(win,(nbWin-1)*step+win,step)) %>%
-          sum() %>% Rle()
-        #calculate max the max coverage in each window
-        maxCoverage <- Views(winPositiveAlignments$Coverage+winNegativeAlignments$Coverage,
-                             start = seq(1,(nbWin-1)*step+1,step),
-                             end=seq(win,(nbWin-1)*step+win,step)) %>%
-          max() %>% Rle()
-      } else{#calculate strand information based on number of reads have the same length to avoid some warnings afterward
-        NbPositive <- coverage(winPositiveAlignments$Win)
-        NbNegative <- coverage(winNegativeAlignments$Win)
-        #make sure NbPositive and NbNegative have the
-        lenP <- length(NbPositive)
-        lenN <- length(NbNegative)
-        if (lenP>lenN) {
-          NbNegative <- c(NbNegative,rep(0,lenP-lenN))
-        } else{
-          NbPositive <- c(NbPositive,rep(0,lenN-lenP))
-        }
+      
+      ##################################################
+      # calculate strand information based on coverage #
+      ##################################################
+      
+      # make sure winPositiveAlignments$Coverage and winNegativeAlignments$Coverage
+      # have the same length to avoid some warnings afterward
+      lastBase <- max(c(length(winPositiveAlignments$Coverage),
+                        length(winNegativeAlignments$Coverage)))
+      lenPC <- length(winPositiveAlignments$Coverage)
+      lenNC <- length(winNegativeAlignments$Coverage)
+      if (lenNC < lastBase) {
+        winNegativeAlignments$Coverage <- c(winNegativeAlignments$Coverage,rep(0, lastBase - lenNC))
+      } 
+      if (lenPC < lastBase){
+        winPositiveAlignments$Coverage <- c(winPositiveAlignments$Coverage,rep(0, lastBase - lenPC))
       }
+      
+      #calculate the number of positive and negative bases in each window
+      nbWin <- ceiling((lastBase - winWidth) / step) + 1
+      st <- seq(1, (nbWin - 1)*step + 1, by =step)
+      end <- seq(winWidth, (nbWin-1)*step + winWidth, by = step)
+      CovPositive <- Views(winPositiveAlignments$Coverage, start = st, end = end) 
+      CovPositive <- Rle(sum(CovPositive))
+      CovNegative <- Views(winNegativeAlignments$Coverage, start = st, end = end) 
+      CovNegative <- Rle(sum(CovNegative))
+      
+      #calculate max the max coverage in each window
+      maxCoverage <- Rle(max(Views(winPositiveAlignments$Coverage + winNegativeAlignments$Coverage, 
+                                   start = st, end=end)))
+      
+      ######################################################
+      # calculate strand information based on nbr of reads #
+      ######################################################
+      
+      # Calculate strand information based on number of reads 
+      # have the same length to avoid some warnings afterward
+      NbPositive <- coverage(winPositiveAlignments$Win)
+      NbNegative <- coverage(winNegativeAlignments$Win)
+      # Find the last window in both sets of windows
+      lastWin <- max(c(end(winNegativeAlignments$Win), 
+                       end(winPositiveAlignments$Win)))
+      stopifnot(lastWin == nbWin)
+      # Fill with zeroes if required
+      #make sure NbPositive and NbNegative have the same length
+      lenP <- length(NbPositive)
+      lenN <- length(NbNegative)
+      if (lenN < lastWin) NbNegative <- c(NbNegative,rep(0,lastWin - lenN))
+      if (lenP < lastWin) NbPositive <- c(NbPositive,rep(0,lastWin - lenP))
+      
+      
       #fill the information of the present window into the data frame to be returned
-      presentWin <- which(as.vector((NbPositive>0) | (NbNegative>0))==TRUE)
-      if (coverage){
-        Win <- data.frame("Start" = presentWin, "NbPositive" = NbPositive[presentWin], "NbNegative" = NbNegative[presentWin],"MaxCoverage" = maxCoverage[presentWin])
-      }
-      else{
-        Win <- data.frame("Start" = presentWin, "NbPositive" = NbPositive[presentWin], "NbNegative" = NbNegative[presentWin])
-      }
-      Chromosome <- rep("",nrow(Win))
+      presentWin <- which(as.vector( (NbPositive>0) | (NbNegative>0))==TRUE)
+      Chromosome <- Rle(rep("", length(presentWin)))
+      Start <- integer(length(presentWin))
+      # Step through for each chromosome in the current partition
       for (i in seq_along(part)){
-        id <- which(chromosomes == part[i])
-        mi <- ceiling(statInfo$FirstBaseInPartition[id]/step) #id of the first window of the chromosome
-        ma <- ceiling((statInfo$LastBaseInPartition[id]-win+1)/step)#id of the last window of the chromosome
-        j <- which(Win$Start >=mi & Win$Start <=ma)#get the window of the chromosome
-        Chromosome[j] <- part[i]
-        Win$Start[j] <- Win$Start[j] - mi +1
+        currentChr <- part[i]
+        id <- which(chromosomes == currentChr)
+        idFirst <- ceiling(statInfo$FirstBaseInPartition[id] / step) # id of the first window of the chromosome
+        idLast <- ceiling((statInfo$LastBaseInPartition[id] - winWidth+1) / step)# id of the last window of the chromosome
+        idRows <- which(presentWin >= idFirst & presentWin <= idLast) #get the windows of the chromosome
+        Chromosome[idRows] <- currentChr
+        Start[idRows] <- (presentWin[idRows] - idFirst)*step + 1
       }
-      Win[["Chr"]] <- Chromosome
-      allWin <- rbind(allWin,Win)
+      
+      Win <- DataFrame(Chr = Chromosome, Start = Start, 
+                       NbPositive = NbPositive[presentWin], NbNegative = NbNegative[presentWin],
+                       CovPositive = CovPositive[presentWin], CovNegative = CovNegative[presentWin],
+                       MaxCoverage = maxCoverage[presentWin])
+      
+      allWin[[n]] <- Win
+      
     }
   }
-  return(allWin %>% mutate("Start" = (Start-1)*step+1))
+  
+  # rbind all Partitions
+  do.call(rbind, allWin)
+  
 }

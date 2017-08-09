@@ -8,7 +8,7 @@
 #' @param bamfileout the output filtered bam file
 #' @param statfile the file to write the summary of the results
 #' @param chromosomes the list of chromosomes to be filtered
-#' @param yieldSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
+#' @param partitionSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
 #' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.
 #' @param getWin if TRUE, the function will return a data frame containing the information of all windows. It's FALSE by default.
 #' @param win the length of the sliding window, 1000 by default.
@@ -55,7 +55,7 @@
 #' @importFrom dplyr mutate
 #' @import S4Vectors
 #'
-filterDNA <- function(bamfilein,bamfileout,mq=0,statfile,chromosomes,yieldSize = 1e8, mustKeepRanges,getWin=FALSE,win=1000,step=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,limit=0.75,coverage=FALSE){
+filterDNA <- function(bamfilein,bamfileout,mq=0,statfile,chromosomes,partitionSize = 1e8, mustKeepRanges,getWin=FALSE,win=1000,step=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,limit=0.75,coverage=FALSE){
   startTime <- proc.time()
   bf <- BamFile(bamfilein)
   seqinfo <- seqinfo(bf)
@@ -64,7 +64,7 @@ filterDNA <- function(bamfilein,bamfileout,mq=0,statfile,chromosomes,yieldSize =
   if (missing(chromosomes)){
     chromosomes <- allChromosomes
   }
-  partition <- partitionChromosomes(chromosomes,lengthSeq[allChromosomes %in% chromosomes],yieldSize = yieldSize)
+  partition <- partitionChromosomes(chromosomes,lengthSeq[allChromosomes %in% chromosomes],partitionSize = partitionSize)
 
   reader <- bamReader(bamfilein,idx=TRUE) #open a reader of the input bamfile to extract read afterward
   header <- getHeader(reader) #get the header of the input bam file

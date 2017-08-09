@@ -4,29 +4,26 @@
 \alias{getWinFromBamFile}
 \title{get the number of positive/negative reads of all windows from a single end bam file}
 \usage{
-getWinFromBamFile(bamfilein, mq = 0, chromosomes, yieldSize = 1e+08,
-  win = 1000, step = 100, limit = 0.75, coverage = FALSE)
+getWinFromBamFile(file, chromosomes, mapq = 0, partitionSize = 1e+08,
+  winWidth = 1000, step = 100)
 }
 \arguments{
-\item{bamfilein}{the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
-
-\item{mq}{very read that has mapping quality below \code{mq} will be removed before any analysis}
+\item{file}{the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
 
 \item{chromosomes}{the list of chromosomes to be read}
 
-\item{yieldSize}{by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8}
+\item{mapq}{very read that has mapping quality below \code{mapq} will be removed before any analysis}
 
-\item{win}{the length of the sliding window, 1000 by default.}
+\item{partitionSize}{by default is 1e8, i.e. the bam file is read by blocks of chromosomes 
+such that the total length of each block is at least 1e8}
+
+\item{winWidth}{the width of the sliding window, 1000 by default.}
 
 \item{step}{the step length to sliding the window, 100 by default.}
-
-\item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default}
-
-\item{coverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
 }
 \examples{
-bamfilein <- system.file("data","s1.chr1.bam",package = "strandCheckR")
-win <- getWinFromBamFile(bamfilein)
+file <- system.file("data","s1.chr1.bam",package = "strandCheckR")
+win <- getWinFromBamFile(file)
 
 }
 \seealso{

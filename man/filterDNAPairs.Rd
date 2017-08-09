@@ -5,7 +5,7 @@
 \title{Filter Paired End Bam File}
 \usage{
 filterDNAPairs(bamfilein, bamfileout, mq = 0, statfile, chromosomes,
-  yieldSize = 1e+08, mustKeepRanges, getWin = FALSE, win = 1000,
+  partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, win = 1000,
   step = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
   max = 0, errorRate = 0.01, limit = 0.75, pair = "free",
   coverage = FALSE)
@@ -21,7 +21,7 @@ filterDNAPairs(bamfilein, bamfileout, mq = 0, statfile, chromosomes,
 
 \item{chromosomes}{the list of chromosomes to be filtered}
 
-\item{yieldSize}{by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8}
+\item{partitionSize}{by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8}
 
 \item{mustKeepRanges}{a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.}
 
