@@ -2,7 +2,14 @@
 % Please edit documentation in R/keptAlignment.R
 \name{keptAlignment}
 \alias{keptAlignment}
-\title{get the prbability of being kept for each fragment of reads}
+\title{get the kept probability of each read fragment}
 \usage{
 keptAlignment(fragments, keptProbaW, errorRate)
+}
+\arguments{
+\item{fragments}{an IRange object defind the starting, ending position of each fragment}
+
+\item{keptProbaW}{an Rle object define the kept probability of every sliding window}
+
+\item{errorRate}{the rate that a read has wrong strand}
 }
