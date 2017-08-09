@@ -1,6 +1,6 @@
 #' @title get the number of positive/negative reads of all windows from a single end bam file
 #'
-#' @param bamfilein the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.
+#' @param file the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param mq very read that has mapping quality below \code{mq} will be removed before any analysis
 #' @param chromosomes the list of chromosomes to be read
 #' @param yieldSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
@@ -13,11 +13,13 @@
 #' @importFrom IRanges Views
 #' @importFrom dplyr mutate
 #' @examples
-#' bamfilein <- system.file("data","s1.chr1.bam",package = "strandCheckR")
-#' win <- getWinFromBamFile(bamfilein)
+#' file <- system.file("data","s1.chr1.bam",package = "strandCheckR")
+#' win <- getWinFromBamFile(file)
 #'
-getWinFromBamFile <- function(bamfilein,mq=0,chromosomes,yieldSize=1e8,win=1000,step=100,limit=0.75,coverage=FALSE){
-  bf <- BamFile(bamfilein)
+getWinFromBamFile <- function(file, mq=0, chromosomes, yieldSize=1e8, win=1000, step=100,
+                              limit=0.75, coverage=FALSE){
+  # Check the input is a BamFile. Convert if necessary
+  bf <- BamFile(file)
   seqinfo <- seqinfo(bf)
   allChromosomes <- seqnames(seqinfo)
   lengthSeq <- seqlengths(seqinfo)
@@ -43,12 +45,12 @@ getWinFromBamFile <- function(bamfilein,mq=0,chromosomes,yieldSize=1e8,win=1000,
     statInfo$Sequence[idPart] <- part
     statInfo$Length[idPart] <- lengthSeq[allChromosomes %in% part]
     if (mq>0){
-      bam <- scanBam(bamfilein,param = ScanBamParam(what = c("pos","cigar","strand","mapq"),
+      bam <- scanBam(file,param = ScanBamParam(what = c("pos","cigar","strand","mapq"),
                                                   which = GRanges(seqnames = part,ranges = IRanges(start = 1,end = statInfo$Length[idPart]))))
       mqfilter <- lapply(bam,function(chr){which(chr$mapq >= mq)}) #get the read ids that fass the mapping quality filter for each chromosome
       statInfo$NbOriginalReads[idPart] <- sapply(mqfilter,length)
     } else{
-      bam <- scanBam(bamfilein,param=ScanBamParam(what = c("pos","cigar","strand"),
+      bam <- scanBam(file,param=ScanBamParam(what = c("pos","cigar","strand"),
                                                   which = GRanges(seqnames = part,ranges = IRanges(start = 1,end = statInfo$Length[idPart]))))
       statInfo$NbOriginalReads[idPart] <- sapply(seq_along(bam),function(i){length(bam[[i]]$strand)})
     }
