@@ -2,7 +2,22 @@
 % Please edit documentation in R/getWinOfAlignments.R
 \name{getWinOfAlignments}
 \alias{getWinOfAlignments}
-\title{get fragments of reads from a bam file}
+\title{get the window ranges that contain each read fragment}
 \usage{
 getWinOfAlignments(bam, str, win, step, limit, subset, coverage = FALSE)
+}
+\arguments{
+\item{bam}{a list contains the read information of one chromosome}
+
+\item{str}{the considering strand}
+
+\item{win}{the window size}
+
+\item{step}{the window step}
+
+\item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window.}
+
+\item{subset}{if we consider only a subset of the input reads}
+
+\item{coverage}{either base on coverage or number of reads}
 }
