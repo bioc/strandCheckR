@@ -4,22 +4,22 @@
 \alias{getWinFromBamFile}
 \title{get the number of positive/negative reads of all windows from a single end bam file}
 \usage{
-getWinFromBamFile(file, chromosomes, mapq = 0, partitionSize = 1e+08,
-  winWidth = 1000, step = 100)
+getWinFromBamFile(file, chromosomes, mapqFilter = 0, partitionSize = 1e+08,
+  winWidth = 1000, winStep = 100, paired)
 }
 \arguments{
 \item{file}{the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
 
 \item{chromosomes}{the list of chromosomes to be read}
 
-\item{mapq}{very read that has mapping quality below \code{mapq} will be removed before any analysis}
+\item{mapqFilter}{very read that has mapping quality below \code{mapqFilter} will be removed before any analysis}
 
 \item{partitionSize}{by default is 1e8, i.e. the bam file is read by blocks of chromosomes 
 such that the total length of each block is at least 1e8}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 
-\item{step}{the step length to sliding the window, 100 by default.}
+\item{winStep}{the winStep length to sliding the window, 100 by default.}
 }
 \examples{
 file <- system.file("data","s1.chr1.bam",package = "strandCheckR")

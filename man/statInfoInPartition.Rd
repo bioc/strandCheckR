@@ -4,10 +4,10 @@
 \alias{statInfoInPartition}
 \title{calculate the information within parition}
 \usage{
-statInfoInPartition(statinfo, step)
+statInfoInPartition(statInfo, winStep)
 }
 \arguments{
-\item{statinfo}{a data frame that contains some information of the alignments}
+\item{statInfo}{a data frame that contains some information of the alignments}
 
-\item{step}{the step of sliding windows}
+\item{winStep}{the winStep of sliding windows}
 }

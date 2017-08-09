@@ -2,16 +2,15 @@
 #'
 #' @param file the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param chromosomes the list of chromosomes to be read
-#' @param mapq very read that has mapping quality below \code{mapq} will be removed before any analysis
+#' @param mapqFilter very read that has mapping quality below \code{mapqFilter} will be removed before any analysis
 #' @param partitionSize by default is 1e8, i.e. the bam file is read by blocks of chromosomes 
 #' such that the total length of each block is at least 1e8
 #' @param winWidth the width of the sliding window, 1000 by default.
-#' @param step the step length to sliding the window, 100 by default.
+#' @param winStep the winStep length to sliding the window, 100 by default.
 #' 
 #' @seealso filterDNA, filterDNAPairs, getWinFromPairedBamFile, plotHist, plotWin
 #' @export
 #' @importFrom IRanges Views
-#' @importFrom dplyr mutate
 #' @importFrom GenomeInfoDb seqinfo
 #' @importFrom Rsamtools bamMapqFilter
 #' @importFrom Rsamtools ScanBamParam
@@ -19,36 +18,45 @@
 #' file <- system.file("data","s1.chr1.bam",package = "strandCheckR")
 #' win <- getWinFromBamFile(file)
 #'
-getWinFromBamFile <- function(file, chromosomes, mapq=0, partitionSize=1e8, winWidth=1000, step=100){
+getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8, winWidth=1000, winStep=100, paired){
   
   # Check the input is a BamFile. Convert if necessary
   if (class(file) != "BamFile") file <- BamFile(file)
   
-  # Check valid chromosomes
+  # Check valid mapqFilter value
+  if(mapqFilter < 0 || !is.numeric(mapqFilter)) stop("Invalid value for mapqFilter. Must be positive & numeric.")
   
-  # Check valid mapq value
+  # Check the paired status
+  if (missing(paired)){
+    #autodetect
+  }
   
   # Get the seqinfo object & all genomic information
   sq <- seqinfo(file)
   allChromosomes <- seqnames(sq)
-  lengthSeq <- seqlengths(sq)
-  
-  # Set the chromosome(s) to work on
-  if (missing(chromosomes)){
+  # Subset if required
+  if (!missing(chromosomes)){
+    stopifnot(all(chromosomes %in% allChromosomes))
+    sq <- sq[chromosomes]
+  }
+  else{
     chromosomes <- allChromosomes
   }
+  nChr <- length(chromosomes)
+  lengthSeq <- seqlengths(sq)
+
   # Allocate chromosomes for optimal partition sizes & speed
-  partition <- partitionChromosomes(chromosomes, lengthSeq[allChromosomes %in% chromosomes], partitionSize = partitionSize)
+  partition <- partitionSeqinfo(sq, partitionSize = partitionSize)
   
   # Initialise the data frames for window information 
   allWin <- list(length(partition))
   statInfo <- data.frame(Sequence = chromosomes, 
-                         Length = lengthSeq[chromosomes],
-                         NbOriginalReads = rep(NA, length(chromosomes)),
-                         FirstBaseInPartition = rep(NA, length(chromosomes)),
-                         LastBaseInPartition = rep(NA, length(chromosomes)),
-                         FirstReadInPartition = rep(NA,length(chromosomes)),
-                         LastReadInPartition = rep(NA, length(chromosomes)),
+                         Length = lengthSeq,
+                         NbOriginalReads = rep(NA, nChr),
+                         FirstBaseInPartition = rep(NA, nChr),
+                         LastBaseInPartition = rep(NA, nChr),
+                         FirstReadInPartition = rep(NA,nChr),
+                         LastReadInPartition = rep(NA, nChr),
                          stringsAsFactors = FALSE)
   
   # Step through each set of partitions
@@ -57,12 +65,12 @@ getWinFromBamFile <- function(file, chromosomes, mapq=0, partitionSize=1e8, winW
     # Set the required values for this section
     part <- partition[[n]]
     idPart <- which(chromosomes %in% part)
-    chrEnd <- lengthSeq[allChromosomes %in% part]
+    chrEnd <- lengthSeq[chromosomes %in% part]
     
     # Get & Summarise the reads
     sbp <- ScanBamParam(what = c("pos","cigar","strand"),
                         which = GRanges(seqnames = part,ranges = IRanges(start = 1,end = chrEnd)))
-    bamMapqFilter(sbp) <- mapq
+    bamMapqFilter(sbp) <- mapqFilter
     
     # Return the reads from the bam file as a list, with each element containing reads from a single chr
     bam <- scanBam(file, param = sbp)
@@ -74,11 +82,11 @@ getWinFromBamFile <- function(file, chromosomes, mapq=0, partitionSize=1e8, winW
     if (sum(nReadsInPart) > 0){
       
       # Calculate the first/last bases/reads in the chromosome partition
-      statInfo[idPart,] <- statInfoInPartition(statInfo[idPart,], step)
+      statInfo[idPart,] <- statInfoInPartition(statInfo[idPart,], winStep)
       # concatenate several lists of the chromosome partition into one list
       bam <- concatenateAlignments(bam,statInfo[idPart,])
-      winPositiveAlignments <- getWinOfAlignments(bam, "+", winWidth, step, limit = 1, coverage=TRUE)
-      winNegativeAlignments <- getWinOfAlignments(bam, "-", winWidth, step, limit = 1, coverage=TRUE)
+      winPositiveAlignments <- getWinOfAlignments(bam, "+", winWidth, winStep, limit = 1, coverage=TRUE)
+      winNegativeAlignments <- getWinOfAlignments(bam, "-", winWidth, winStep, limit = 1, coverage=TRUE)
       rm(bam)
       
       ##################################################
@@ -99,9 +107,9 @@ getWinFromBamFile <- function(file, chromosomes, mapq=0, partitionSize=1e8, winW
       }
       
       #calculate the number of positive and negative bases in each window
-      nbWin <- ceiling((lastBase - winWidth) / step) + 1
-      st <- seq(1, (nbWin - 1)*step + 1, by =step)
-      end <- seq(winWidth, (nbWin-1)*step + winWidth, by = step)
+      nbWin <- ceiling((lastBase - winWidth) / winStep) + 1
+      st <- seq(1, (nbWin - 1)*winStep + 1, by =winStep)
+      end <- seq(winWidth, (nbWin-1)*winStep + winWidth, by = winStep)
       CovPositive <- Views(winPositiveAlignments$Coverage, start = st, end = end) 
       CovPositive <- Rle(sum(CovPositive))
       CovNegative <- Views(winNegativeAlignments$Coverage, start = st, end = end) 
@@ -139,11 +147,11 @@ getWinFromBamFile <- function(file, chromosomes, mapq=0, partitionSize=1e8, winW
       for (i in seq_along(part)){
         currentChr <- part[i]
         id <- which(chromosomes == currentChr)
-        idFirst <- ceiling(statInfo$FirstBaseInPartition[id] / step) # id of the first window of the chromosome
-        idLast <- ceiling((statInfo$LastBaseInPartition[id] - winWidth+1) / step)# id of the last window of the chromosome
+        idFirst <- ceiling(statInfo$FirstBaseInPartition[id] / winStep) # id of the first window of the chromosome
+        idLast <- ceiling((statInfo$LastBaseInPartition[id] - winWidth+1) / winStep)# id of the last window of the chromosome
         idRows <- which(presentWin >= idFirst & presentWin <= idLast) #get the windows of the chromosome
         Chromosome[idRows] <- currentChr
-        Start[idRows] <- (presentWin[idRows] - idFirst)*step + 1
+        Start[idRows] <- (presentWin[idRows] - idFirst)*winStep + 1
       }
       
       Win <- DataFrame(Chr = Chromosome, Start = Start, 

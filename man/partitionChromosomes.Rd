@@ -2,9 +2,12 @@
 % Please edit documentation in R/partitionChromosomes.R
 \name{partitionChromosomes}
 \alias{partitionChromosomes}
+\alias{partitionSeqinfo}
 \title{Partition the chromosomes}
 \usage{
-partitionChromosomes(chromosomes, lengthSeq, partitionSize)
+partitionChromosomes(chromosomes, lengthSeq, partitionSize = 1e+08)
+
+partitionSeqinfo(sq, partitionSize = 1e+08)
 }
 \arguments{
 \item{chromosomes}{a vector of chromosomes to be partitioned}
@@ -12,12 +15,14 @@ partitionChromosomes(chromosomes, lengthSeq, partitionSize)
 \item{lengthSeq}{the length of each chromosome}
 
 \item{partitionSize}{the minimum sum of length of the chromosomes in each partition}
+
+\item{sq}{a seqinfo object to be partitioned}
 }
 \description{
 Partition the set of chromosomes for easier processing
 }
 \details{
 Partition the set of chromosomes such that each part contains a 
-subset of chromosome whose sum of length is >= \code{partitionSize}.
+subset of chromosomes whose sum of length is >= \code{partitionSize}.
 This is to enable faster processing by \code{getWinFromBamFile} and \code{filterDNA}
 }
