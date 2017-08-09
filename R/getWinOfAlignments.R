@@ -1,5 +1,11 @@
-#' @title get fragments of reads from a bam file
-#'
+#' @title get the window ranges that contain each read fragment
+#' @param bam a list contains the read information of one chromosome
+#' @param str the considering strand
+#' @param win the window size
+#' @param step the window step
+#' @param limit a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window.
+#' @param subset if we consider only a subset of the input reads
+#' @param coverage either base on coverage or number of reads
 #' @export
 #' @importFrom GenomicAlignments extractAlignmentRangesOnReference
 #' @import S4Vectors
