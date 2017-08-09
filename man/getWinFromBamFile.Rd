@@ -25,8 +25,8 @@ getWinFromBamFile(bamfilein, mq = 0, chromosomes, yieldSize = 1e+08,
 \item{coverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
 }
 \examples{
-bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-win <- getWin(bamfilein)
+bamfilein <- system.file("data","s1.chr1.bam",package = "strandCheckR")
+win <- getWinFromBamFile(bamfilein)
 
 }
 \seealso{
