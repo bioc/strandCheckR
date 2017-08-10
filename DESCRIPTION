@@ -7,4 +7,7 @@ Maintainer: Hien To <hien.to@adelaide.edu.au>
 Description: More about what it does (maybe more than one line)
 License: GPL (>= 2)
 LazyData: TRUE
+Imports:
+  dplyr,
+  magrittr
 RoxygenNote: 6.0.1

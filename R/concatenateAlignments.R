@@ -13,33 +13,36 @@
 #'
 concatenateAlignments <- function(bam, statInfo){
   
-  chr <- gsub("(^[^:]*):.+", "\\1", names(bam))
   nm <- names(bam[[1]])
   chk <- vapply(bam, function(x){all(names(x) %in% nm)}, logical(1))
   stopifnot(all(chk))
   stopifnot(nrow(statInfo) == length(bam))
   
-  flag <- "flag" %in% nm
-  qname <- "qname" %in% nm
-  
   #initialize the concatenating alignments
   nbTotalReads <- sum(statInfo$NbOriginalReads)
-  concatAlignments <- list("strand"=rep("*",nbTotalReads),
-                           "pos"=rep(0,nbTotalReads),
-                           "cigar"=rep("",nbTotalReads))
-  if (flag) concatAlignments$flag <- rep(0,nbTotalReads)
-  if (qname) concatAlignments$qname <- rep("",nbTotalReads)
-  
+  concatAlignments <- vector("list",length(nm))
+  names(concatAlignments) <- nm
+  for (name in nm){
+    if (is.factor(bam[[1]][[name]])){
+      concatAlignments[[name]] <- factor(rep("*",nbTotalReads), levels = levels(bam[[1]][[name]]))
+    } else{
+      if (typeof(bam[[1]][[name]]) == "integer"){
+        concatAlignments[[name]] <- rep(0,nbTotalReads)
+      } 
+      if (typeof(bam[[1]][[name]]) == "character"){
+        concatAlignments[[name]] <- rep("",nbTotalReads)
+      }  
+    }
+  }
   
   #concatenate the alignments
   for (i in seq_along(bam)){
     if (statInfo$NbOriginalRead[i] > 0){
-      pos <- statInfo$FirstReadInPartition[i]:statInfo$LastReadInPartition[i]
-      concatAlignments$strand[pos] <- as.character(bam[[i]]$strand)
-      concatAlignments$pos[pos] <- bam[[i]]$pos + statInfo$FirstBaseInPartition[i]
-      concatAlignments$cigar[pos] <- bam[[i]]$cigar
-      if (flag) concatAlignments$flag[pos] <- bam[[i]]$flag
-      if (qname) concatAlignments$qname[pos] <- bam[[i]]$qname      
+      range <- statInfo$FirstReadInPartition[i]:statInfo$LastReadInPartition[i]
+      concatAlignments$pos[range] <- bam[[i]]$pos + statInfo$FirstBaseInPartition[i]
+      for (name in nm[nm!="pos"]){
+        concatAlignments[[name]][range] <- bam[[i]][[name]]
+      }
     }
   }
   

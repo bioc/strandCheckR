@@ -28,9 +28,12 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
   
   # Check the paired status
   if (missing(paired)){
-    #autodetect
+    message("Testing paired end bam file by checking the first 100000 reads")
+    checkFile <- BamFile(file$path, yieldSize = 100000)
+    flag <- scanBam(checkFile, param = ScanBamParam(what = "flag"))[[1]]$flag
+    paired <- any(flag %% 2 == 1)
+    if (paired) message("Your bam file is paired end") else message("Your bam file is singe end")
   }
-  
   # Get the seqinfo object & all genomic information
   sq <- seqinfo(file)
   allChromosomes <- seqnames(sq)
@@ -44,18 +47,19 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
   }
   nChr <- length(chromosomes)
   lengthSeq <- seqlengths(sq)
-
+  
+  
   # Allocate chromosomes for optimal partition sizes & speed
   partition <- partitionSeqinfo(sq, partitionSize = partitionSize)
   
   # Initialise the data frames for window information 
-  allWin <- list(length(partition))
+  allWin <- vector("list",length(partition))
   statInfo <- data.frame(Sequence = chromosomes, 
                          Length = lengthSeq,
                          NbOriginalReads = rep(NA, nChr),
                          FirstBaseInPartition = rep(NA, nChr),
                          LastBaseInPartition = rep(NA, nChr),
-                         FirstReadInPartition = rep(NA,nChr),
+                         FirstReadInPartition = rep(NA, nChr),
                          LastReadInPartition = rep(NA, nChr),
                          stringsAsFactors = FALSE)
   
@@ -154,17 +158,13 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
         Start[idRows] <- (presentWin[idRows] - idFirst)*winStep + 1
       }
       
-      Win <- DataFrame(Chr = Chromosome, Start = Start, 
+      allWin[[n]] <- DataFrame(Chr = Chromosome, Start = Start, 
                        NbPositive = NbPositive[presentWin], NbNegative = NbNegative[presentWin],
                        CovPositive = CovPositive[presentWin], CovNegative = CovNegative[presentWin],
                        MaxCoverage = maxCoverage[presentWin])
-      
-      allWin[[n]] <- Win
-      
     }
   }
   
   # rbind all Partitions
   do.call(rbind, allWin)
-  
 }

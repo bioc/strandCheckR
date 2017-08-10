@@ -23,8 +23,8 @@ statInfoInPartition <- function(statInfo, winStep){
 
 isValidStatInfo <- function(df){
   
-  reqNames <- c("Sequence", "Length", "NbOriginalReads", "FirstBaseInPartition", "LastBaseInPartition",
-                "FirstReadInPartition", "LastReadInPartition")
+  reqNames <- c("Sequence", "Length", "NbOriginalReads", "FirstBaseInPartition", 
+                "LastBaseInPartition","FirstReadInPartition","LastReadInPartition")
   if (all(reqNames %in% names(df))) return(TRUE)
   FALSE
   
