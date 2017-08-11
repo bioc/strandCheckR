@@ -1,5 +1,5 @@
 #' @title calculate the information within parition
-#'
+#' @description update the information of first/base base/read of each chromosome within the partition
 #' @param statInfo a data frame that contains some information of the alignments
 #' @param winStep the winStep of sliding windows
 #' 

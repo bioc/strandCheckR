@@ -14,6 +14,8 @@ getWinFromIRanges(gr, win, step, limit, maxWin)
 \item{step}{the step length to sliding the window}
 
 \item{limit}{a read is considered to be included in a window if and only if at least limit percent of it is in the window.}
+
+\item{maxWin}{the maximum window id}
 }
 \description{
 get the list of windows that overlaps an Iranges object

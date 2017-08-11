@@ -5,7 +5,7 @@
 \title{Plot the histogram of positive proportions of the input windows data frame}
 \usage{
 plotHist(windows, group = c(10, 100, 1000), save = FALSE,
-  file = "hist.pdf", facet_wrap_chromosomes = FALSE)
+  file = "hist.pdf", facet_wrap_chromosomes = FALSE, useCoverage = FALSE)
 }
 \arguments{
 \item{windows}{data frame containing the number of positive/negative reads for each window
@@ -18,17 +18,19 @@ Windows can be get by the function \code{getWinFromBamFile} (for single end bam 
 \item{file}{the file name to save to plot}
 
 \item{facet_wrap_chromosomes}{if TRUE, then the plots will be splitted by chromosomes. FALSE by default}
+
+\item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
 }
 \description{
 Plot the histogram of positive proportions of the input windows data frame
 }
 \examples{
 #for single end bam file
-bamfilein = system.file("data/s1.chr1.bam",package = "rnaCleanR")
+bamfilein = system.file("data/s1.chr1.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(bamfilein)
 plotHist(windows)
 #for paired end bamfile
-bamfilepair = system.file("data/120.10.bam",package = "rnaCleanR")
+bamfilepair = system.file("data/120.10.bam",package = "strandCheckR")
 windowsP <- getWinFromPariedBamFile(bamfilein = "data/120.10.bam")
 plotHist(windowsP)
 }

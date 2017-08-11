@@ -11,3 +11,6 @@ statInfoInPartition(statInfo, winStep)
 
 \item{winStep}{the winStep of sliding windows}
 }
+\description{
+update the information of first/base base/read of each chromosome within the partition
+}

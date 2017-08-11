@@ -4,6 +4,7 @@
 #' @param win the length of sliding window
 #' @param step the step length to sliding the window
 #' @param limit a read is considered to be included in a window if and only if at least limit percent of it is in the window. 
+#' @param maxWin the maximum window id
 #' 
 #' @export
 #'

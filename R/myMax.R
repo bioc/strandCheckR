@@ -1,7 +1,3 @@
-#' @title get pairwise max of two objects
-#'
-#' @export
-#'
 
 myMax <- function (..., na.rm = FALSE)
 {
@@ -9,7 +5,7 @@ myMax <- function (..., na.rm = FALSE)
   if (length(elts) == 0L)
     stop("no arguments")
   if (all(vapply(elts, function(x) is.atomic(x) && !is.object(x),NA))) {
-    mmm <- .Internal(pmax(na.rm, ...))
+    mmm <- pmax(na.rm, ...)
   }
   else {
     mmm <- elts[[1L]]

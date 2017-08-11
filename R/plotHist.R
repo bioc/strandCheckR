@@ -9,30 +9,40 @@
 #' @param save if TRUE, then the plot will be save into the file given by \code{file} parameter
 #' @param file the file name to save to plot
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
+#' @param useCoverage if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default
 #' @seealso getWinFromBamFile, getWinFromPairedBamFile, plotWin
 #'
 #' @examples
 #' #for single end bam file
-#' bamfilein = system.file("data/s1.chr1.bam",package = "rnaCleanR")
+#' bamfilein = system.file("data/s1.chr1.bam",package = "strandCheckR")
 #' windows <- getWinFromBamFile(bamfilein)
 #' plotHist(windows)
 #' #for paired end bamfile
-#' bamfilepair = system.file("data/120.10.bam",package = "rnaCleanR")
+#' bamfilepair = system.file("data/120.10.bam",package = "strandCheckR")
 #' windowsP <- getWinFromPariedBamFile(bamfilein = "data/120.10.bam")
 #' plotHist(windowsP)
 #' @export
 #' @importFrom magrittr set_colnames
 #' @importFrom dplyr mutate select filter
+#' @importFrom graphics hist
+#' @importFrom stats rbinom
+#' @importFrom stats pnorm
 #'
-plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",facet_wrap_chromosomes=FALSE){
-  coverage <- "MaxCoverage" %in% colnames(windows)
-  if (coverage){
-    windows <- mutate(windows,"NbReads" = MaxCoverage) %>% select(-c(Start,MaxCoverage))
+plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",facet_wrap_chromosomes=FALSE, useCoverage=FALSE){
+  if (!facet_wrap_chromosomes){
+    windows <- windows[names(windows) != "Chr"]
+  } 
+  if (useCoverage){
+    windows <- windows[!(names(windows) %in% c("NbPositive","NbNegative"))]
+    windows <- as.data.frame(windows)
+    windows <- mutate(windows,"PositiveProportion" = CovPositive/(CovPositive+CovNegative)) %>%
+      select(-c(CovPositive,CovNegative))
+  } else{
+    windows <- windows[!(names(windows) %in% c("CovPositive","CovNegative"))]
+    windows <- as.data.frame(windows)
+    windows <- mutate(windows,"PositiveProportion" = NbPositive/(NbPositive+NbNegative)) %>%
+      select(-c(NbPositive,NbNegative))
   }
-  else{
-    windows <- mutate(windows,"NbReads" = windows$NbPositive+windows$NbNegative) %>% select(-Start)  
-  }
-  if (!facet_wrap_chromosomes) windows <- select(windows,-Chr)
   if (length(group)==0){
     leg <- "all"
   } else{
@@ -42,27 +52,27 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     }
     leg <- c(leg,paste0(">",group[length(group)]))
   }
-  x <- lapply(seq_along(group),function(i){which(group[i]<windows$NbReads)})
+  x <- lapply(seq_along(group),function(i){which(group[i]<windows$MaxCoverage)})
   G <- rep(leg[1],nrow(windows))
   for (i in seq_along(group)){
     G[x[[i]]] <- leg[i+1]
   }
-  windows$NbReads = G
+  windows$MaxCoverage = G
   breaks <- 100
   if ("Type" %in% colnames(windows)){
     histoFirst <- lapply(leg,function(l){
-      a <- filter(windows,NbReads==l,Type=="First") %>% mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
+      a <- filter(windows,MaxCoverage==l,Type=="First") 
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
           sapply(chromosomes,function(chr){
             ac <- filter(a,Chr==chr)
-            hist(ac$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
-          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% mutate("NbReads"=l,"Type"="First")
+            hist(ac$PositiveProportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
+          }) %>% reshape2::melt()  %>% set_colnames(c("PositiveProportion","Chr","Count")) %>% mutate("MaxCoverage"=l,"Type"="First")
         } else{
-          data.frame("Count"=hist(a$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
-                     "Proportion" = 0:100,
-                     "NbReads" = l,"Type"="First")
+          data.frame("Count"=hist(a$PositiveProportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
+                     "PositiveProportion" = 0:100,
+                     "MaxCoverage" = l,"Type"="First")
         }
       }})
     null <- sapply(histoFirst,is.null)
@@ -70,18 +80,18 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     histoFirst <- do.call(rbind,histoFirst)
 
     histoSecond <- lapply(leg,function(l){
-      a <- filter(windows,NbReads==l,Type=="Second") %>% mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
+      a <- filter(windows,MaxCoverage==l,Type=="Second") 
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
           sapply(chromosomes,function(chr){
             ac <- filter(a,Chr==chr)
-            hist(ac$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
-          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% mutate("NbReads"=l,"Type"="Second")
+            hist(ac$PositiveProportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
+          }) %>% reshape2::melt()  %>% set_colnames(c("PositiveProportion","Chr","Count")) %>% mutate("MaxCoverage"=l,"Type"="Second")
         } else{
-          data.frame("Count"=hist(a$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
-                     "Proportion" = 0:100,
-                     "NbReads" = l,"Type"="Second")
+          data.frame("Count"=hist(a$PositiveProportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
+                     "PositiveProportion" = 0:100,
+                     "MaxCoverage" = l,"Type"="Second")
         }
       }})
     null <- sapply(histoSecond,is.null)
@@ -89,13 +99,13 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     histoSecond <- do.call(rbind,histoSecond) 
     histo <- rbind(histoFirst,histoSecond)
     if (facet_wrap_chromosomes){
-      g <- ggplot2::ggplot(histo, ggplot2::aes(Proportion, Count, fill=NbReads, width=1))+
+      g <- ggplot2::ggplot(histo, ggplot2::aes(PositiveProportion, Count, fill=MaxCoverage, width=1))+
         ggplot2::scale_fill_discrete(breaks=leg)+
         ggplot2::geom_bar(stat="identity", width=.3,position="stack") +
         ggplot2::facet_wrap(~Type+Chr)
     }
     else{
-      g <- ggplot2::ggplot(histo, ggplot2::aes(Proportion, Count, fill=NbReads, width=1))+
+      g <- ggplot2::ggplot(histo, ggplot2::aes(PositiveProportion, Count, fill=MaxCoverage, width=1))+
         ggplot2::scale_fill_discrete(breaks=leg)+
         ggplot2::geom_bar(stat="identity", width=.3,position="stack")+
         ggplot2::facet_wrap(~Type)
@@ -103,7 +113,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
      g <- g +  ggplot2::ylab("Count") +
       ggplot2::xlab("Positive Proportion")+
       ggplot2::theme_bw()
-    if (coverage){
+    if (useCoverage){
       g <- g + ggplot2::labs(fill = "Max Coverage")
     }
     if (save==TRUE){
@@ -116,19 +126,19 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
   }
   else{
     histo<- lapply(leg,function(l){
-      a <- filter(windows,NbReads==l) %>% mutate("Proportion"=NbPositive/(NbPositive+NbNegative))
+      a <- filter(windows,MaxCoverage==l) %>% mutate("PositiveProportion"=NbPositive/(NbPositive+NbNegative))
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
           sapply(chromosomes,function(chr){
             ac <- filter(a,Chr==chr)
-            hist(ac$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
-          }) %>% reshape2::melt()  %>% set_colnames(c("Proportion","Chr","Count")) %>% mutate("NbReads"=l)
+            hist(ac$PositiveProportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count
+          }) %>% reshape2::melt()  %>% set_colnames(c("PositiveProportion","Chr","Count")) %>% mutate("MaxCoverage"=l)
         }
         else{
-          data.frame("Count"=hist(a$Proportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
-                     "Proportion" = 0:100,
-                     "NbReads" = l)
+          data.frame("Count"=hist(a$PositiveProportion,breaks=0:(breaks+1)/breaks - 1/(2*breaks),plot=FALSE)$count,
+                     "PositiveProportion" = 0:100,
+                     "MaxCoverage" = l)
         }
       }})
     rm(windows)
@@ -136,19 +146,19 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     histo <- histo[!null]
     histo <- do.call(rbind,histo)
     if (facet_wrap_chromosomes){
-      g <- ggplot2::ggplot(histo, ggplot2::aes(Proportion, Count, fill=NbReads, width=1))+
+      g <- ggplot2::ggplot(histo, ggplot2::aes(PositiveProportion, Count, fill=MaxCoverage, width=1))+
         ggplot2::scale_fill_discrete(breaks=leg)+
         ggplot2::facet_wrap(~Chr)
     }
     else{
-      g <- ggplot2::ggplot(histo, ggplot2::aes(Proportion, Count, fill=NbReads, width=1))+
+      g <- ggplot2::ggplot(histo, ggplot2::aes(PositiveProportion, Count, fill=MaxCoverage, width=1))+
         ggplot2::scale_fill_discrete(breaks=leg)
     }
     g <- g + ggplot2::geom_bar(stat="identity", width=.3,position="stack") +
       ggplot2::ylab("Count") +
       ggplot2::xlab("Positive Proportion")+
       ggplot2::theme_bw()
-    if (coverage){
+    if (useCoverage){
       g <- g + ggplot2::labs(fill = "Max Coverage")
     }
     if (save==TRUE){

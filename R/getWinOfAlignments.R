@@ -1,4 +1,5 @@
-#' @title get the window ranges that contain each read fragment
+#' @title get the window ranges of alignments
+#' @description calculate the windows that contain each read fragment
 #' @param bam a list contains the read information of one chromosome
 #' @param str the considering strand
 #' @param winSize the window size

@@ -6,7 +6,7 @@
 \usage{
 plotWin(windows, group = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
   0.9), pvalue = 0.05, save = FALSE, file = "win.pdf",
-  facet_wrap_chromosomes = FALSE)
+  facet_wrap_chromosomes = FALSE, useCoverage = FALSE)
 }
 \arguments{
 \item{windows}{data frame containing the number of positive/negative reads for each window.
@@ -23,6 +23,8 @@ Windows can be get by the function \code{getWinFromBamFile} (for single end bam 
 \item{file}{the file name to save to plot}
 
 \item{facet_wrap_chromosomes}{if TRUE, then the plots will be splitted by chromosomes. FALSE by default}
+
+\item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
 }
 \description{
 Plot the number of reads vs positive proportion of the input windows data frame.
@@ -30,11 +32,11 @@ Plot the number of reads vs positive proportion of the input windows data frame.
 \examples{
 
 #for single end bam file
-bamfilein = system.file("data/s1.chr1.bam",package = "rnaCleanR")
+bamfilein = system.file("data/s1.chr1.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(bamfilein)
 plotWin(windows)
 #for paired end bamfile
-bamfilepair = system.file("data/120.10.bam",package = "rnaCleanR")
+bamfilepair = system.file("data/120.10.bam",package = "strandCheckR")
 windowsP <- getWinFromPairedBamFile(bamfilein = "data/120.10.bam")
 plotWin(windowsP)
 

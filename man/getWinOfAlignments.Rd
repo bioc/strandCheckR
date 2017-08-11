@@ -2,10 +2,10 @@
 % Please edit documentation in R/getWinOfAlignments.R
 \name{getWinOfAlignments}
 \alias{getWinOfAlignments}
-\title{get the window ranges that contain each read fragment}
+\title{get the window ranges of alignments}
 \usage{
-getWinOfAlignments(bam, str, winSize, winStep, limit, subset,
-  useCoverage = FALSE)
+getWinOfAlignments(bam, str, winSize, winStep, limit, useCoverage = FALSE,
+  subset)
 }
 \arguments{
 \item{bam}{a list contains the read information of one chromosome}
@@ -18,7 +18,10 @@ getWinOfAlignments(bam, str, winSize, winStep, limit, subset,
 
 \item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window.}
 
-\item{subset}{if we consider only a subset of the input reads}
-
 \item{useCoverage}{either base on coverage or number of reads}
+
+\item{subset}{if we consider only a subset of the input reads}
+}
+\description{
+calculate the windows that contain each read fragment
 }

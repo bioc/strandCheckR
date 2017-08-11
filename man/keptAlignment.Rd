@@ -13,3 +13,6 @@ keptAlignment(fragments, keptProbaW, errorRate)
 
 \item{errorRate}{the rate that a read has wrong strand}
 }
+\description{
+calculate the keeping probability of each read fragment based on the keeping probability of the windows containing it
+}

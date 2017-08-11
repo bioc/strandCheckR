@@ -34,7 +34,6 @@ concatenateAlignments <- function(bam, statInfo){
       }  
     }
   }
-  
   #concatenate the alignments
   for (i in seq_along(bam)){
     if (statInfo$NbOriginalRead[i] > 0){
@@ -45,7 +44,6 @@ concatenateAlignments <- function(bam, statInfo){
       }
     }
   }
-  
   return(concatAlignments)
 }
 

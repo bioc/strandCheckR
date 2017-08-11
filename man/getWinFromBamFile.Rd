@@ -2,7 +2,7 @@
 % Please edit documentation in R/getWinFromBamFile.R
 \name{getWinFromBamFile}
 \alias{getWinFromBamFile}
-\title{get the number of positive/negative reads of all windows from a single end bam file}
+\title{get the strand information of all windows from a single end bam file}
 \usage{
 getWinFromBamFile(file, chromosomes, mapqFilter = 0, partitionSize = 1e+08,
   winWidth = 1000, winStep = 100, paired)
@@ -20,6 +20,9 @@ such that the total length of each block is at least 1e8}
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 
 \item{winStep}{the winStep length to sliding the window, 100 by default.}
+}
+\description{
+get the number of positive/negative reads of all windows from a single end bam file
 }
 \examples{
 file <- system.file("data","s1.chr1.bam",package = "strandCheckR")

@@ -4,18 +4,18 @@
 \alias{filterDNAPairs}
 \title{Filter Paired End Bam File}
 \usage{
-filterDNAPairs(bamfilein, bamfileout, mq = 0, statfile, chromosomes,
-  partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, win = 1000,
-  step = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
+filterDNAPairs(bamfilein, bamfileout, mapqFilter = 0, statfile, chromosomes,
+  partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, winWidth = 1000,
+  winStep = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
   max = 0, errorRate = 0.01, limit = 0.75, pair = "free",
-  coverage = FALSE)
+  useCoverage = FALSE)
 }
 \arguments{
 \item{bamfilein}{the input paired-end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
 
 \item{bamfileout}{the output filtered bam file}
 
-\item{mq}{every read that has mapping quality below \code{mq} will be removed before any analysis}
+\item{mapqFilter}{every read that has mapping quality below \code{mapqFilter} will be removed before any analysis}
 
 \item{statfile}{the file to write the summary of the results}
 
@@ -27,17 +27,20 @@ filterDNAPairs(bamfilein, bamfileout, mq = 0, statfile, chromosomes,
 
 \item{getWin}{if TRUE, the function will return a data frame containing the information of all windows. It's FALSE by default.}
 
-\item{win}{the length of the sliding window, 1000 by default.}
+\item{winWidth}{the length of the sliding window, 1000 by default.}
 
-\item{step}{the step length to sliding the window, 100 by default.}
+\item{winStep}{the step length to sliding the window, 100 by default.}
 
 \item{threshold}{the threshold upper which we keep the reads. 0.7 by default}
 
 \item{pvalueThreshold}{the threshold for the p-value. 0.05 by default}
 
-\item{min}{if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 0 by default}
+\item{min}{In the case that \code{useCoverage=FALSE}, if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 
+For the case that \code{useCoverage=TRUE}, if a window has max coverage least than \code{min}, then it will be rejected. 0 by default}
 
-\item{max}{if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.}
+\item{max}{In the case that \code{useCoverage=FALSE},if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. 
+For the case that \code{useCoverage=TRUE}, if a window has max coverage more than \code{max}, then it will be kept. 
+If 0 then it doesn't have effect on selecting window. 0 by default.#'}
 
 \item{errorRate}{the probability that an RNA read takes the false strand. 0.01 by default}
 
@@ -45,7 +48,7 @@ filterDNAPairs(bamfilein, bamfileout, mq = 0, statfile, chromosomes,
 
 \item{pair}{if "free" than the any pair of reads do not need to be both kept in the filtered file, i.e. first reads and second reads are filtered independently. Otherwise, if pair = "intersection" then a pair of reads is kept if and only if both first and second reads are kept; if pair = "union" then a pair of reads is kept if either the first or the second read is kept.}
 
-\item{coverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
+\item{useCoverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
 }
 \description{
 Filter putative double strand DNA from a strand specific paried-end RNA-seq using a window sliding across the genome.
@@ -57,7 +60,7 @@ For each window, we use logistic regression to estimate the proportion of reads 
 stranded RNA (positive or negative).
 }
 \examples{
-bamfilein <- system.file("data","120.10.bam",package = "rnaCleanR")
+bamfilein <- system.file("data","120.10.bam",package = "strandCheckR")
 filterDNAPairs(bamfilein,bamfileout="out.bam",statfile = "out.stat")
 }
 \seealso{

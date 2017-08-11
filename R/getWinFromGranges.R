@@ -5,6 +5,10 @@
 #' @param statinfo a data frame that contains some information of the alignments
 #' @param win the length of sliding window
 #' @param step the step length to sliding the window
+#' @importFrom GenomicRanges start<-
+#' @importFrom GenomicRanges end<-
+#' @importFrom GenomicRanges ranges<-
+#' @importFrom BiocGenerics strand
 #' @export
 #'
 #'

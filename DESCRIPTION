@@ -4,10 +4,23 @@ Title: Calculate strandness information of a bam file
 Version: 0.1.0
 Author: Hien To & Steve Pederson
 Maintainer: Hien To <hien.to@adelaide.edu.au>
-Description: More about what it does (maybe more than one line)
+Description: This package aims to quantify and remove putative double strand DNA from a strand-specific RNA sample. There are also options and methods to plot the positive/negative proportions of all sliding windows, which allow users to have an idea of how much the sample was contaminated and the appropriate threshold to be used for filtering.
 License: GPL (>= 2)
 LazyData: TRUE
 Imports:
   dplyr,
-  magrittr
+  magrittr,
+  GenomeInfoDb,
+  GenomicAlignments,
+  GenomicRanges,
+  IRanges,
+  Rsamtools,
+  S4Vectors,
+  rbamtools,
+  graphics,
+  base,
+  BiocGenerics,
+  ggplot2,
+  reshape2,
+  stats
 RoxygenNote: 6.0.1

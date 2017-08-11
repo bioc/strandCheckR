@@ -13,84 +13,73 @@
 #' @param save if TRUE, then the plot will be save into the file given by \code{file} parameter
 #' @param file the file name to save to plot
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
+#' @param useCoverage if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default
 #' @seealso getWinFromBamFile, getWinFromPairedBamFile, plotHist
 #'
 #' @importFrom dplyr select mutate distinct
 #' @examples
 #'
 #' #for single end bam file
-#' bamfilein = system.file("data/s1.chr1.bam",package = "rnaCleanR")
+#' bamfilein = system.file("data/s1.chr1.bam",package = "strandCheckR")
 #' windows <- getWinFromBamFile(bamfilein)
 #' plotWin(windows)
 #' #for paired end bamfile
-#' bamfilepair = system.file("data/120.10.bam",package = "rnaCleanR")
+#' bamfilepair = system.file("data/120.10.bam",package = "strandCheckR")
 #' windowsP <- getWinFromPairedBamFile(bamfilein = "data/120.10.bam")
 #' plotWin(windowsP)
 #'
 #' @export
 #'
 
-plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05,save=FALSE,file="win.pdf",facet_wrap_chromosomes=FALSE){
-  coverage <- "MaxCoverage" %in% colnames(windows)
-  if (!facet_wrap_chromosomes) windows <- select(windows,-Chr)
-  windows <- select(windows,-Start) 
-  windows <- mutate(windows,"NbReads"=NbPositive+NbNegative,"PositiveProportion" = NbPositive/(NbPositive+NbNegative)) %>%
+plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05,save=FALSE,file="win.pdf",facet_wrap_chromosomes=FALSE,useCoverage=FALSE){
+  if (!facet_wrap_chromosomes){
+    windows <- windows[names(windows) != "Chr"]
+  } 
+  if (useCoverage){
+    windows <- windows[!(names(windows) %in% c("NbPositive","NbNegative"))]
+    windows <- as.data.frame(windows)
+    windows <- mutate(windows,"NbReads"=CovPositive+CovNegative,"PositiveProportion" = CovPositive/(CovPositive+CovNegative)) %>%
+      select(-c(CovPositive,CovNegative))
+  } else{
+    windows <- windows[!(names(windows) %in% c("CovPositive","CovNegative"))]
+    windows <- as.data.frame(windows)
+    windows <- mutate(windows,"NbReads"=NbPositive+NbNegative,"PositiveProportion" = NbPositive/(NbPositive+NbNegative)) %>%
       select(-c(NbPositive,NbNegative))
-  
-  if (coverage){
-    if (length(group)==0){
-      leg <- "all"
-    } else{
-      leg <- paste0("<",group[1])
-      for (i in seq_along(group[-1])){
-        leg <- c(leg,paste0(group[i],"-",group[i+1]))
-      }
-      leg <- c(leg,paste0(">",group[length(group)]))
-    }
-    x <- lapply(seq_along(group),function(i){which(group[i]<windows$MaxCoverage)})
-    G <- rep(leg[1],nrow(windows))
-    for (i in seq_along(group)){
-      G[x[[i]]] <- leg[i+1]
-    }
-    windows$MaxCoverage = G  
   }
+  
+  
+  if (length(group)==0){
+    leg <- "all"
+  } else{
+    leg <- paste0("<",group[1])
+    for (i in seq_along(group[-1])){
+      leg <- c(leg,paste0(group[i],"-",group[i+1]))
+    }
+    leg <- c(leg,paste0(">",group[length(group)]))
+  }
+  x <- lapply(seq_along(group),function(i){which(group[i]<windows$MaxCoverage)})
+  G <- rep(leg[1],nrow(windows))
+  for (i in seq_along(group)){
+    G[x[[i]]] <- leg[i+1]
+  }
+  windows$MaxCoverage = G  
+  
   
   if ("Type" %in% colnames(windows)){
     if (facet_wrap_chromosomes==TRUE){
-      if (coverage){
-        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          distinct(Chr,Type,NbReads,MaxCoverage,PositiveProportion) 
-      } else{
-        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          distinct(Chr,Type,NbReads, PositiveProportion)  
-      }
+      windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+        distinct(Chr,Type,NbReads,MaxCoverage,PositiveProportion) 
     } else{
-      if (coverage){
-        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          distinct(Type,NbReads,MaxCoverage,PositiveProportion)
-      } else{
-        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          distinct(Type,NbReads, PositiveProportion)  
-      }
+      windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+        distinct(Type,NbReads,MaxCoverage,PositiveProportion)
     }
   } else{
     if (facet_wrap_chromosomes==TRUE){
-      if (coverage){
-        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          distinct(Chr,NbReads,MaxCoverage,PositiveProportion)  
-      } else{
-        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          distinct(Chr,NbReads, PositiveProportion)
-      }
+      windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+        distinct(Chr,NbReads,MaxCoverage,PositiveProportion)  
     } else{
-      if (coverage){
-        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          distinct(NbReads,MaxCoverage,PositiveProportion)  
-      } else{
-        windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-          distinct(NbReads, PositiveProportion)
-      }
-      
+      windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
+        distinct(NbReads,MaxCoverage,PositiveProportion)  
     }
   }
   rm(windows)
@@ -119,22 +108,16 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
   ThresholdN <- rbind(ThresholdN,data.frame("NbReads" = max(windowsReduced$NbReads), "PositiveProportion" = (1-threshold), "Threshold"=paste0(threshold)))
   if ("Type" %in% colnames(windowsReduced)){
     gg <- ggplot2::ggplot()
-    if (coverage){
-      gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = MaxCoverage))  
-      gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
-      gg <- gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
-    } else{
-      gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion))
-      gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = Threshold))
-      gg <- gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = Threshold))
-    }
+    gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = MaxCoverage))  
+    gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
+    gg <- gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
     if (facet_wrap_chromosomes==TRUE){
-        gg <- gg + ggplot2::facet_wrap(~Type+Chr)  
+      gg <- gg + ggplot2::facet_wrap(~Type+Chr)  
     } else{
-        gg <- gg +ggplot2::facet_wrap(~Type)  
+      gg <- gg +ggplot2::facet_wrap(~Type)  
     }
     gg <- gg + ggplot2::theme_bw()
-    if (coverage){
+    if (useCoverage){
       gg <- gg + ggplot2::labs(x = "Number of Bases", y = "Positive Proportion")
     } else{
       gg <- gg + ggplot2::labs(x = "Number of Reads", y = "Positive Proportion")
@@ -147,20 +130,14 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
     }
   } else{
     gg <- ggplot2::ggplot()
-    if (coverage){
-      gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = MaxCoverage))  
-      gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
-      gg <- gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
-    } else{
-      gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion))
-      gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = Threshold))
-      gg <- gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = Threshold))
-    }
+    gg <- gg + ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = MaxCoverage))  
+    gg <- gg + ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
+    gg <- gg + ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold))
     if (facet_wrap_chromosomes==TRUE){
       gg <- gg +ggplot2::facet_wrap(~Chr)  
     }
     gg <- gg + ggplot2::theme_bw()
-    if (coverage){
+    if (useCoverage){
       gg <- gg + ggplot2::labs(x = "Number of Bases", y = "Positive Proportion")
     } else{
       gg <- gg + ggplot2::labs(x = "Number of Reads", y = "Positive Proportion")

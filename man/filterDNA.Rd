@@ -4,19 +4,21 @@
 \alias{filterDNA}
 \title{Filter Single End Bam File}
 \usage{
-filterDNA(bamfilein, bamfileout, mq = 0, statfile, chromosomes,
-  partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, win = 1000,
-  step = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
-  max = 0, errorRate = 0.01, limit = 0.75, coverage = FALSE)
+filterDNA(file, fileout, statfile, chromosomes, mapqFilter = 0,
+  partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, winWidth = 1000,
+  winStep = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
+  max = 0, errorRate = 0.01, limit = 0.75, useCoverage = FALSE)
 }
 \arguments{
-\item{bamfilein}{the input single end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
+\item{file}{the input single end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
 
-\item{bamfileout}{the output filtered bam file}
+\item{fileout}{the output filtered bam file}
 
 \item{statfile}{the file to write the summary of the results}
 
 \item{chromosomes}{the list of chromosomes to be filtered}
+
+\item{mapqFilter}{every read that has mapping quality below \code{mapqFilter} will be removed before any analysis}
 
 \item{partitionSize}{by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8}
 
@@ -24,25 +26,26 @@ filterDNA(bamfilein, bamfileout, mq = 0, statfile, chromosomes,
 
 \item{getWin}{if TRUE, the function will return a data frame containing the information of all windows. It's FALSE by default.}
 
-\item{win}{the length of the sliding window, 1000 by default.}
+\item{winWidth}{the length of the sliding window, 1000 by default.}
 
-\item{step}{the step length to sliding the window, 100 by default.}
+\item{winStep}{the step length to sliding the window, 100 by default.}
 
 \item{threshold}{the threshold upper which we keep the windows. 0.7 by default}
 
 \item{pvalueThreshold}{the threshold for the p-value. 0.05 by default}
 
-\item{min}{if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 0 by default}
+\item{min}{In the case that \code{useCoverage=FALSE}, if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 
+For the case that \code{useCoverage=TRUE}, if a window has max coverage least than \code{min}, then it will be rejected. 0 by default}
 
-\item{max}{if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. If 0 then it doesn't have effect on selecting window. 0 by default.}
+\item{max}{In the case that \code{useCoverage=FALSE},if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. 
+For the case that \code{useCoverage=TRUE}, if a window has max coverage more than \code{max}, then it will be kept. 
+If 0 then it doesn't have effect on selecting window. 0 by default.}
 
 \item{errorRate}{the probability that an RNA read takes the false strand. 0.01 by default}
 
 \item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default}
 
-\item{coverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
-
-\item{every}{read that has mapping quality below \code{mq} will be removed before any analysis}
+\item{useCoverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
 }
 \description{
 Filter putative double strand DNA from a strand specific single-end RNA-seq using a window sliding across the genome.
@@ -67,8 +70,8 @@ Since each alignment can be belonged to several windows, then the probability of
 all windows that contain it.
 }
 \examples{
-bamfilein <- system.file("data","s1.chr1.bam",package = "rnaCleanR")
-filterDNA(bamfilein,bamfileout="out.bam",statfile = "out.stat")
+file <- system.file("data","s1.chr1.bam",package = "strandCheckR")
+filterDNA(file,fileout="out.bam",statfile = "out.stat")
 }
 \seealso{
 filterDNAPairs, getWinFromBamFile, getWinFromPairedBamFile, plotHist, plotWin
