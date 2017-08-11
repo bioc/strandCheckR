@@ -84,7 +84,7 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
   # Allocate chromosomes for optimal partition sizes & speed
   partition <- partitionSeqinfo(sq, partitionSize = partitionSize)
   
-  reader <- bamReader(file,idx=TRUE) #open a reader of the input bamfile to extract read afterward
+  reader <- bamReader(file$path,idx=TRUE) #open a reader of the input bamfile to extract read afterward
   header <- getHeader(reader) #get the header of the input bam file
   writer <- bamWriter(header,fileout) #prepare to write the output bamfile with the same header
   logitThreshold <- log(threshold/(1-threshold))
@@ -181,7 +181,7 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
           statInfo$NbKeptReads[id] <- length(rangeInChr)
         }
         if (statInfo$NbKeptReads[id]>0){
-          chromosomeIndex <- which(allChromosomes == part[i])
+          chromosomeIndex <- which(chromosomes == part[i])
           if (mapqFilter>0){
             bamSave(writer,bamRange(reader,c(chromosomeIndex-1,0,lengthSeq[chromosomeIndex]))[mqfilter[[i]][keptAlignment[rangeInChr]- statInfo$FirstReadInPartition[id]+1],],refid=chromosomeIndex-1)#write the kept alignments into the output bam file  
           } else{

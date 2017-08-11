@@ -4,14 +4,14 @@
 \alias{filterDNAPairs}
 \title{Filter Paired End Bam File}
 \usage{
-filterDNAPairs(bamfilein, bamfileout, mapqFilter = 0, statfile, chromosomes,
+filterDNAPairs(file, bamfileout, mapqFilter = 0, statfile, chromosomes,
   partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, winWidth = 1000,
   winStep = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
   max = 0, errorRate = 0.01, limit = 0.75, pair = "free",
   useCoverage = FALSE)
 }
 \arguments{
-\item{bamfilein}{the input paired-end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
+\item{file}{the input paired-end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
 
 \item{bamfileout}{the output filtered bam file}
 
@@ -60,8 +60,8 @@ For each window, we use logistic regression to estimate the proportion of reads 
 stranded RNA (positive or negative).
 }
 \examples{
-bamfilein <- system.file("data","120.10.bam",package = "strandCheckR")
-filterDNAPairs(bamfilein,bamfileout="out.bam",statfile = "out.stat")
+file <- system.file("data","120.10.bam",package = "strandCheckR")
+filterDNAPairs(file,bamfileout="out.bam",statfile = "out.stat")
 }
 \seealso{
 filterDNA, getWinFromBamFile, getWinFromPairedBamFile, plotHist, plotWin

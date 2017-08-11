@@ -38,8 +38,9 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
   if (useCoverage){
     windows <- windows[!(names(windows) %in% c("NbPositive","NbNegative"))]
     windows <- as.data.frame(windows)
-    windows <- mutate(windows,"NbReads"=CovPositive+CovNegative,"PositiveProportion" = CovPositive/(CovPositive+CovNegative)) %>%
-      select(-c(CovPositive,CovNegative))
+    windows$NbReads <- windows[["CovPositive"]] + windows[["CovNegative"]]
+    windows$PositiveProportion <- windows[["CovPositive"]] / (windows[["CovPositive"]] +windows[["CovNegative"]])
+    windows <- windows[,-c("CovPositive", "CovNegative")]
   } else{
     windows <- windows[!(names(windows) %in% c("CovPositive","CovNegative"))]
     windows <- as.data.frame(windows)
