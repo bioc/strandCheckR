@@ -33,7 +33,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     windows <- windows[names(windows) != "Chr"]
   }
   if (useCoverage){
-    windows <- windows[!(names(windows) %in% c("NbPositive","NbNegative"))]
+    windows <-  windows[!(names(windows) %in% c("NbPositive","NbNegative"))]
     windows <- as.data.frame(windows)
     windows <- mutate(windows,"PositiveProportion" = CovPositive/(CovPositive+CovNegative)) %>%
       select(-c(CovPositive,CovNegative))
@@ -126,7 +126,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
   }
   else{
     histo<- lapply(leg,function(l){
-      a <- filter(windows,MaxCoverage==l) %>% mutate("PositiveProportion"=NbPositive/(NbPositive+NbNegative))
+      a <- filter(windows,MaxCoverage==l) 
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
