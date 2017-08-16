@@ -18,7 +18,7 @@
 #' windows <- getWinFromBamFile(file = bamfilein)
 #' plotHist(windows)
 #' #for paired end bamfile
-#' bamfilepair = system.file("extdata","120.10.bam",package = "strandCheckR")
+#' bamfilepair = system.file("extdata","120.bam",package = "strandCheckR")
 #' windowsP <- getWinFromBamFile(file = bamfilepair)
 #' plotHist(windowsP)
 #' @export
