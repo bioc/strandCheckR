@@ -1,4 +1,4 @@
-calculateStrandCoverage <- function(winPositiveAlignments,winNegativeAlignments,winWidth,winStep){
+calculateStrandCoverage <- function(winPositiveAlignments, winNegativeAlignments, winWidth = 1000, winStep= 100){
   # make sure winPositiveAlignments$Coverage and winNegativeAlignments$Coverage
   # have the same length to avoid some warnings afterward
   lastBase <- max(c(length(winPositiveAlignments$Coverage),
@@ -25,4 +25,5 @@ calculateStrandCoverage <- function(winPositiveAlignments,winNegativeAlignments,
   maxCoverage <- Rle(max(Views(winPositiveAlignments$Coverage + winNegativeAlignments$Coverage, 
                                start = st, end=end)))
   list("CovPositive"=CovPositive,"CovNegative"=CovNegative,"MaxCoverage"=maxCoverage)
+  
 }

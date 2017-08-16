@@ -13,21 +13,24 @@
 #' @seealso getWinFromBamFile, plotWin
 #'
 #' @examples
+#' \dontrun{
 #' #for single end bam file
 #' bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 #' windows <- getWinFromBamFile(file = bamfilein)
 #' plotHist(windows)
+#' 
 #' #for paired end bamfile
 #' bamfilepair = system.file("extdata","120.bam",package = "strandCheckR")
 #' windowsP <- getWinFromBamFile(file = bamfilepair)
 #' plotHist(windowsP)
-#' @export
+#' }
+#' 
 #' @importFrom magrittr set_colnames
 #' @importFrom dplyr mutate select filter
 #' @importFrom graphics hist
 #' @importFrom stats rbinom
 #' @importFrom stats pnorm
-
+#' @export
 plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",facet_wrap_chromosomes=FALSE, useCoverage=FALSE){
   if (!facet_wrap_chromosomes){
     windows <- windows[names(windows) != "Chr"]

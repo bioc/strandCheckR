@@ -30,16 +30,17 @@ Windows can be get by the function \code{getWinFromBamFile}.}
 Plot the number of reads vs positive proportion of the input windows data frame.
 }
 \examples{
-
+\dontrun{
 #for single end bam file
 bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
 plotWin(windows)
+
 #for paired end bamfile
 bamfilepair = system.file("extdata","120.bam",package = "strandCheckR")
 windowsP <- getWinFromBamFile(file = bamfilepair)
 plotWin(windowsP)
-
+}
 }
 \seealso{
 getWinFromBamFile,  plotHist

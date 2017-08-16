@@ -13,11 +13,13 @@
 #' @importFrom IRanges Views
 #' @importFrom GenomeInfoDb seqinfo
 #' @importFrom Rsamtools bamMapqFilter<-
+#' @importFrom Rsamtools bamMapqFilter
 #' @importFrom Rsamtools ScanBamParam
 #' @examples
+#' \dontrun{
 #' file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 #' win <- getWinFromBamFile(file)
-#'
+#' }
 getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8, winWidth=1000, winStep=100, paired){
   # Check the input is a BamFile. Convert if necessary
   if (class(file) != "BamFile") file <- BamFile(file)
@@ -31,7 +33,7 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
     checkFile <- BamFile(file$path, yieldSize = 100000)
     flag <- scanBam(checkFile, param = ScanBamParam(what = "flag"))[[1]]$flag
     paired <- any(flag %% 2 == 1)
-    if (paired) message("Your bam file is paired end") else message("Your bam file is singe end")
+    if (paired) message("Your bam file is paired end") else message("Your bam file is single end")
   }
   
   # Get the seqinfo object & all genomic information
@@ -80,9 +82,9 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
     bamMapqFilter(sbp) <- mapqFilter
     
     # Return the reads from the bam file as a list, with each element containing reads from a single chr
-    bam <- scanBam(file, param = sbp)
-    nReadsInPart <- vapply(seq_along(bam),
-                           function(i){length(bam[[i]]$strand)}, 
+    readInfo <- scanBam(file, param = sbp)
+    nReadsInPart <- vapply(seq_along(readInfo),
+                           function(i){length(readInfo[[i]]$strand)}, 
                            integer(1))
     chromosomeInfo$NbOriginalReads[idPart] <- nReadsInPart
     
@@ -91,17 +93,18 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
       # Calculate the first/last bases/reads in the chromosome partition
       chromosomeInfo[idPart,] <- chromosomeInfoInPartition(chromosomeInfo[idPart,], winStep)
       # concatenate several lists of the chromosome partition into one list
-      bam <- concatenateAlignments(bam, chromosomeInfo[idPart,])
+      readInfo <- concatenateAlignments(readInfo, chromosomeInfo[idPart,])
       if (paired){
-        firstReadIndex <- ((floor(bam$flag/64) %% 2) == 1)
+        firstReadIndex <- ((floor(readInfo$flag/64) %% 2) == 1)
         secondReadIndex <- !firstReadIndex
         subset <- list("first"=firstReadIndex,"second"=secondReadIndex)
       } else{
         subset <- list(NULL)
       }
       for (s in seq_along(subset)){
-        winPositiveAlignments <- getWinOfAlignments(bam,"+",winWidth,winStep,limit = 0, useCoverage=TRUE,subset[[s]])
-        winNegativeAlignments <- getWinOfAlignments(bam,"-",winWidth,winStep,limit = 0, useCoverage=TRUE,subset[[s]])
+        
+        winPositiveAlignments <- getWinOfAlignments(readInfo,"+",winWidth,winStep,limit = 0, useCoverage=TRUE,subset[[s]])
+        winNegativeAlignments <- getWinOfAlignments(readInfo,"-",winWidth,winStep,limit = 0, useCoverage=TRUE,subset[[s]])
         
         ##################################################
         # calculate strand information based on coverage #
@@ -125,7 +128,8 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
         win <- getWinInChromosome(win,part,chromosomeInfo[idPart,],winWidth,winStep)
         if (s==1){
           allWin[[n]] <- win
-        } else{
+        } 
+        else{
           allWin[[n]]$Type <- Rle("First")
           win$Type <- Rle("Second")
           allWin[[n]] <- rbind(allWin[[n]],win)

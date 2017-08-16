@@ -4,19 +4,20 @@
 \alias{getWinOfAlignments}
 \title{get the window ranges of alignments}
 \usage{
-getWinOfAlignments(bam, str, winSize, winStep, limit, useCoverage = FALSE,
-  subset = NULL)
+getWinOfAlignments(readInfo, strand, winWidth, winStep, limit,
+  useCoverage = FALSE, subset = NULL)
 }
 \arguments{
-\item{bam}{a list contains the read information of one chromosome}
+\item{readInfo}{a list contains the read information of one chromosome}
 
-\item{str}{the considering strand}
+\item{strand}{the considering strand}
 
-\item{winSize}{the window size}
+\item{winWidth}{the window size}
 
 \item{winStep}{the window winStep}
 
-\item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window.}
+\item{limit}{a read is considered to be included in a window if and only if at least \code{limit} 
+percent of it is in the window.}
 
 \item{useCoverage}{either base on coverage or number of reads}
 

@@ -72,8 +72,11 @@ Since each alignment can be belonged to several windows, then the probability of
 all windows that contain it.
 }
 \examples{
+\dontrun{
 file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 filterDNA(file,fileout="out.bam",statfile = "out.stat")
+}
+
 }
 \seealso{
 getWinFromBamFile, plotHist, plotWin

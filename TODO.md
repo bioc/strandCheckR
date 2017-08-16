@@ -1,4 +1,5 @@
 # Changes to make
 
-- Create an `S4` object for `statInfo`, or `chrInfo`, or whatever we decide to call it?
 - Check the `limit` argument in `getWinOfAlignments()`
+- Set an S4 method for getWinFromRanges(???) Maybe define methods for IRanges & GRanges objects separately. 
+Would they need to return the sam type of object though?

@@ -2,21 +2,25 @@
 % Please edit documentation in R/getWinFromGranges.R
 \name{getWinFromGranges}
 \alias{getWinFromGranges}
-\title{get the ranges of windows from a GRanges}
+\title{Get the Ranges of Sliding Windows from a GRanges object}
 \usage{
-getWinFromGranges(gr, chromosomes, statinfo, win, step)
+getWinFromGranges(x, chromosomes, chromosomeInfo, winWidth = 1000,
+  winStep = 100)
 }
 \arguments{
-\item{gr}{a GRanges object}
+\item{x}{a GRanges object}
 
 \item{chromosomes}{a list of chromosome names}
 
-\item{statinfo}{a data frame that contains some information of the alignments}
+\item{chromosomeInfo}{a data frame that contains some information of the alignments}
 
-\item{win}{the length of sliding window}
+\item{winWidth}{The width of each window}
 
-\item{step}{the step length to sliding the window}
+\item{winStep}{The step size for sliding the window}
+}
+\value{
+A list of two logical vectors defining whether to keep windows based on positive or negative strands
 }
 \description{
-get the lists of positive/negative windows that overlap a GRanges objects
+Get the Ranges of positive/negative windows that overlap a GRanges object
 }

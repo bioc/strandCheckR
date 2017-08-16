@@ -25,14 +25,18 @@ Windows can be get by the function \code{getWinFromBamFile}.}
 Plot the histogram of positive proportions of the input windows data frame
 }
 \examples{
+\dontrun{
 #for single end bam file
 bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
 plotHist(windows)
+
 #for paired end bamfile
 bamfilepair = system.file("extdata","120.bam",package = "strandCheckR")
 windowsP <- getWinFromBamFile(file = bamfilepair)
 plotHist(windowsP)
+}
+
 }
 \seealso{
 getWinFromBamFile, plotWin

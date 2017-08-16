@@ -27,9 +27,10 @@ such that the total length of each block is at least 1e8}
 get the number of positive/negative reads of all windows from a single end bam file
 }
 \examples{
+\dontrun{
 file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 win <- getWinFromBamFile(file)
-
+}
 }
 \seealso{
 filterDNA, getWinFromPairedBamFile, plotHist, plotWin

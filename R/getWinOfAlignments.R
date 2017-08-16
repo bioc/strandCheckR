@@ -1,40 +1,49 @@
 #' @title get the window ranges of alignments
+#' 
 #' @description calculate the windows that contain each read fragment
-#' @param bam a list contains the read information of one chromosome
-#' @param str the considering strand
-#' @param winSize the window size
+#' 
+#' @param readInfo a list contains the read information of one chromosome
+#' @param strand the considering strand
+#' @param winWidth the window size
 #' @param winStep the window winStep
-#' @param limit a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window.
+#' @param limit a read is considered to be included in a window if and only if at least \code{limit} 
+#' percent of it is in the window.
 #' @param subset if we consider only a subset of the input reads
 #' @param useCoverage either base on coverage or number of reads
+#' 
 #' @importFrom GenomicAlignments extractAlignmentRangesOnReference
-#' @import S4Vectors
-#' @importFrom utils globalVariables
+#' @importFrom S4Vectors mcols
+#' 
 #' @export
-#'
-
-getWinOfAlignments <- function(bam, str, winSize, winStep, limit, useCoverage=FALSE, subset=NULL){
+getWinOfAlignments <- function(readInfo, strand, winWidth, winStep, limit, useCoverage=FALSE, subset=NULL){
   
   if (is.null(subset)){
-    index <- which(bam$strand==str)
-    position <- extractAlignmentRangesOnReference(bam$cigar[index],pos=bam$pos[index]) %>% data.frame() %>% dplyr::select(-c(group_name))
-    maxWin <- ceiling((max(position$end)-winSize)/winStep)+1
-    range <- IRanges(position$start,position$end,position$width)
-    winrange <- getWinFromIRanges(range,winSize,winStep,limit,maxWin)
+    index <- which(readInfo$strand==strand)
+    # Read CIGAR strings to get fragment positions relative to windows
+    position <- extractAlignmentRangesOnReference(readInfo$cigar[index],pos=readInfo$pos[index]) 
+    position <- as.data.frame(position)
+    # Get the final window number
+    maxWin <- ceiling((max(position$end) - winWidth) / winStep) + 1
+    range <- IRanges::IRanges(position$start, position$end, position$width)
+    winrange <- getWinFromIRanges(range, winWidth, winStep, limit, maxWin)
     mcols(winrange) <- data.frame("alignment"=index[position$group])
   }
   else{
-    index <- which(bam$strand[subset]==str)
-    position <- extractAlignmentRangesOnReference(bam$cigar[subset][index],pos=bam$pos[subset][index]) %>% data.frame() %>% dplyr::select(-c(group_name))
-    maxWin <- ceiling((max(position$end)-winSize)/winStep)+1
-    range <- IRanges(position$start,position$end,position$width)
-    winrange <- getWinFromIRanges(range,winSize,winStep,limit,maxWin)
-    mcols(winrange) <- data.frame("alignment"=which(subset==TRUE)[index[position$group]])
+    if (is.logical(subset) && length(subset) != length(readInfo$strand)) stop("Invalid subset vector")
+    index <- which(readInfo$strand[subset]==strand)
+    # Read CIGAR strings to get fragment positions relative to windows
+    position <- extractAlignmentRangesOnReference(readInfo$cigar[subset][index],pos=readInfo$pos[subset][index]) 
+    position <- as.data.frame(position)
+    # Get the final window number
+    maxWin <- ceiling((max(position$end)-winWidth) / winStep) + 1
+    range <- IRanges::IRanges(position$start, position$end, position$width)
+    winrange <- getWinFromIRanges(range, winWidth, winStep, limit, maxWin)
+    mcols(winrange) <- data.frame("alignment" = which(subset)[index[position$group]])
   }
   if (useCoverage==TRUE){
-    return(list("Win"=winrange,"Coverage"=coverage(range)))
+    return(list("Win" = winrange, "Coverage" = IRanges::coverage(range)))
   }
   else{
-    return(list("Win"=winrange))
+    return(list("Win" = winrange))
   }
 }
