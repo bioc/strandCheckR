@@ -63,6 +63,9 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
                                LastReadInPartition = rep(NA, nChr),
                                stringsAsFactors = FALSE)
   
+  #what to scan from bam file
+  scanWhat <- c("pos","cigar","strand")
+  if (paired) scanWhat <- c(scanWhat,"flag")
   # Step through each set of partitions
   for (n in seq_along(partition)){
     
@@ -72,14 +75,8 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
     chrEnd <- lengthSeq[chromosomes %in% part]
     
     # Get & Summarise the reads
-    if (paired){
-      sbp <- ScanBamParam(what = c("pos","cigar","strand","flag"),
-                          which = GRanges(seqnames = part,ranges = IRanges(start = 1,end = chrEnd)))  
-    } else{
-      sbp <- ScanBamParam(what = c("pos","cigar","strand"),
+    sbp <- ScanBamParam(what = scanWhat,
                           which = GRanges(seqnames = part,ranges = IRanges(start = 1,end = chrEnd)))
-    }
-    
     bamMapqFilter(sbp) <- mapqFilter
     
     # Return the reads from the bam file as a list, with each element containing reads from a single chr

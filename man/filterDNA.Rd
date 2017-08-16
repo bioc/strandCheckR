@@ -76,5 +76,5 @@ file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 filterDNA(file,fileout="out.bam",statfile = "out.stat")
 }
 \seealso{
-filterDNAPairs, getWinFromBamFile, getWinFromPairedBamFile, plotHist, plotWin
+getWinFromBamFile, plotHist, plotWin
 }

@@ -43,7 +43,7 @@
 #' Since each alignment can be belonged to several windows, then the probability of keeping an alignment is the maximum probability defined by
 #' all windows that contain it.
 #'
-#' @seealso filterDNAPairs, getWinFromBamFile, getWinFromPairedBamFile, plotHist, plotWin
+#' @seealso getWinFromBamFile, plotHist, plotWin
 #'
 #' @examples
 #' file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")

@@ -10,16 +10,16 @@
 #' @param file the file name to save to plot
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
 #' @param useCoverage if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default
-#' @seealso getWinFromBamFile, getWinFromPairedBamFile, plotWin
+#' @seealso getWinFromBamFile, plotWin
 #'
 #' @examples
 #' #for single end bam file
-#' bamfilein = system.file("data/s1.chr1.bam",package = "strandCheckR")
+#' bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 #' windows <- getWinFromBamFile(bamfilein)
 #' plotHist(windows)
 #' #for paired end bamfile
-#' bamfilepair = system.file("data/120.10.bam",package = "strandCheckR")
-#' windowsP <- getWinFromPariedBamFile(bamfilein = "data/120.10.bam")
+#' bamfilepair = system.file("extdata","120.10.bam",package = "strandCheckR")
+#' windowsP <- getWinFromBamFile(bamfilein = bamfilepair)
 #' plotHist(windowsP)
 #' @export
 #' @importFrom magrittr set_colnames

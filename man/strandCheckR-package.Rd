@@ -34,7 +34,7 @@ Maintainer: Hien To <hien.to@adelaide.edu.au>
 %  Optional links to other man pages
 %}
 \examples{
-bamfilein <- system.file("exdata","s1.chr1.bam",package = "strandCheckR")
+bamfilein <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(bamfilein)
 plotWin(windows)
 plotHist(windows)
