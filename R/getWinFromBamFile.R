@@ -8,7 +8,7 @@
 #' @param winWidth the width of the sliding window, 1000 by default.
 #' @param winStep the winStep length to sliding the window, 100 by default.
 #' @param paired if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.
-#' @seealso filterDNA, filterDNAPairs, getWinFromPairedBamFile, plotHist, plotWin
+#' @seealso filterDNA, getWinFromPairedBamFile, plotHist, plotWin
 #' @export
 #' @importFrom IRanges Views
 #' @importFrom GenomeInfoDb seqinfo
