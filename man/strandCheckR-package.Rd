@@ -12,9 +12,11 @@
 \details{
  The package has some following main functions:
  
- - getWinFromBamFile: calculate positive/negative proprortion and sum of reads over all sliding windows from a single end bam file
+ - getWinFromBamFile: calculate positive/negative proprortion and sum of reads over all sliding windows from a bam file
  
- - getWinFromPairedBamFile: calculate positive/negative proprortion and sum of reads over all sliding windows from a paried end bam file
+ - plotHist: plot histogram of positive proportion of windows calculated from getWinFromBamFile method
+ 
+ - plotWin: plot positive proportion vs number of reads of windows calculated from getWinFromBamFile method
  
  - filterDNA: filter a bam file
 }

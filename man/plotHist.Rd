@@ -9,7 +9,7 @@ plotHist(windows, group = c(10, 100, 1000), save = FALSE,
 }
 \arguments{
 \item{windows}{data frame containing the number of positive/negative reads for each window
-Windows can be get by the function \code{getWinFromBamFile} (for single end bam file) or \code{getWinFromPairedBamFile} (for paired end bam file).}
+Windows can be get by the function \code{getWinFromBamFile}.}
 
 \item{group}{an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{group} = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000}
 
