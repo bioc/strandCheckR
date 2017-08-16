@@ -6,20 +6,20 @@
 #' and concatenates them into a single set of alignments which may include multiple chromosomes
 #' 
 #' @param bam a list returned by \code{scanBam} function, each element correspond to a chromosome, containing the information of strand, starting position, cigar string, and eventually flag, qname
-#' @param statInfo a data frame that contains some key information of the alignments
+#' @param chromosomeInfo a data frame that contains some key information of the alignments
 #' 
 #' @return the concatenated alignments of the input list
 #' @export
 #'
-concatenateAlignments <- function(bam, statInfo){
+concatenateAlignments <- function(bam, chromosomeInfo){
   
   nm <- names(bam[[1]])
   chk <- vapply(bam, function(x){all(names(x) %in% nm)}, logical(1))
   stopifnot(all(chk))
-  stopifnot(nrow(statInfo) == length(bam))
+  stopifnot(nrow(chromosomeInfo) == length(bam))
   
   #initialize the concatenating alignments
-  nbTotalReads <- sum(statInfo$NbOriginalReads)
+  nbTotalReads <- sum(chromosomeInfo$NbOriginalReads)
   concatAlignments <- vector("list",length(nm))
   names(concatAlignments) <- nm
   for (name in nm){
@@ -36,9 +36,9 @@ concatenateAlignments <- function(bam, statInfo){
   }
   #concatenate the alignments
   for (i in seq_along(bam)){
-    if (statInfo$NbOriginalRead[i] > 0){
-      range <- statInfo$FirstReadInPartition[i]:statInfo$LastReadInPartition[i]
-      concatAlignments$pos[range] <- bam[[i]]$pos + statInfo$FirstBaseInPartition[i]
+    if (chromosomeInfo$NbOriginalRead[i] > 0){
+      range <- chromosomeInfo$FirstReadInPartition[i]:chromosomeInfo$LastReadInPartition[i]
+      concatAlignments$pos[range] <- bam[[i]]$pos + chromosomeInfo$FirstBaseInPartition[i]
       for (name in nm[nm!="pos"]){
         concatAlignments[[name]][range] <- bam[[i]][[name]]
       }

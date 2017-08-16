@@ -5,7 +5,7 @@
 \title{get the window ranges of alignments}
 \usage{
 getWinOfAlignments(bam, str, winSize, winStep, limit, useCoverage = FALSE,
-  subset)
+  subset = NULL)
 }
 \arguments{
 \item{bam}{a list contains the read information of one chromosome}

@@ -5,6 +5,7 @@
 #' @param errorRate the rate that a read has wrong strand
 #' @export
 #'
+
 keptAlignment <- function(fragments,keptProbaW,errorRate){
     if(length(fragments)>0){
       minL <- min(width(fragments))

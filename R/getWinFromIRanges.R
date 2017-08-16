@@ -10,10 +10,10 @@
 #'
 #'
 getWinFromIRanges <- function(gr,win,step,limit,maxWin){
-  startWin <- ceiling((start(gr)-win+(1-limit)*width(gr))/step)+1
+  startWin <- ceiling((start(gr)-win+(limit)*width(gr))/step)+1
   startWin[startWin<1] <- 1
   startWin[startWin>maxWin] <- maxWin
-  endWin <- floor((end(gr)-1-(1-limit)*width(gr))/step)+1
+  endWin <- floor((end(gr)-1-(limit)*width(gr))/step)+1
   endWin[endWin>maxWin] <- maxWin
   IRanges(start = startWin,end = endWin)
 }

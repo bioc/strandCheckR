@@ -20,12 +20,14 @@ such that the total length of each block is at least 1e8}
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 
 \item{winStep}{the winStep length to sliding the window, 100 by default.}
+
+\item{paired}{if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.}
 }
 \description{
 get the number of positive/negative reads of all windows from a single end bam file
 }
 \examples{
-file <- system.file("data","s1.chr1.bam",package = "strandCheckR")
+file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 win <- getWinFromBamFile(file)
 
 }

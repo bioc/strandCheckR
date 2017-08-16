@@ -4,14 +4,14 @@
 \alias{getWinInChromosome}
 \title{get window data frame with the correct chromosome name and position}
 \usage{
-getWinInChromosome(Win, chromosomes, statInfo, winWidth, winStep)
+getWinInChromosome(Win, chromosomes, chromosomeInfo, winWidth, winStep)
 }
 \arguments{
 \item{Win}{a data frame contains the information of every window in \code{chromosomes}}
 
 \item{chromosomes}{a vector of chromosome names}
 
-\item{statInfo}{a data frame that contains some information of the alignments}
+\item{chromosomeInfo}{a data frame that contains some information of the alignments}
 
 \item{winWidth}{the length of sliding window}
 

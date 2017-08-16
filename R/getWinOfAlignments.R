@@ -7,12 +7,15 @@
 #' @param limit a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window.
 #' @param subset if we consider only a subset of the input reads
 #' @param useCoverage either base on coverage or number of reads
-#' @export
 #' @importFrom GenomicAlignments extractAlignmentRangesOnReference
 #' @import S4Vectors
+#' @importFrom utils globalVariables
+#' @export
 #'
-getWinOfAlignments <- function(bam, str, winSize, winStep, limit, useCoverage=FALSE, subset){
-  if (missing(subset)){
+
+getWinOfAlignments <- function(bam, str, winSize, winStep, limit, useCoverage=FALSE, subset=NULL){
+  
+  if (is.null(subset)){
     index <- which(bam$strand==str)
     position <- extractAlignmentRangesOnReference(bam$cigar[index],pos=bam$pos[index]) %>% data.frame() %>% dplyr::select(-c(group_name))
     maxWin <- ceiling((max(position$end)-winSize)/winStep)+1

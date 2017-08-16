@@ -27,11 +27,11 @@
 #' @importFrom graphics hist
 #' @importFrom stats rbinom
 #' @importFrom stats pnorm
-#'
+
 plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",facet_wrap_chromosomes=FALSE, useCoverage=FALSE){
   if (!facet_wrap_chromosomes){
     windows <- windows[names(windows) != "Chr"]
-  } 
+  }
   if (useCoverage){
     windows <- windows[!(names(windows) %in% c("NbPositive","NbNegative"))]
     windows <- as.data.frame(windows)
@@ -61,7 +61,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
   breaks <- 100
   if ("Type" %in% colnames(windows)){
     histoFirst <- lapply(leg,function(l){
-      a <- filter(windows,MaxCoverage==l,Type=="First") 
+      a <- filter(windows,MaxCoverage==l,Type=="First")
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
@@ -80,7 +80,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     histoFirst <- do.call(rbind,histoFirst)
 
     histoSecond <- lapply(leg,function(l){
-      a <- filter(windows,MaxCoverage==l,Type=="Second") 
+      a <- filter(windows,MaxCoverage==l,Type=="Second")
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
           chromosomes <- unique(a$Chr)
@@ -96,7 +96,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
       }})
     null <- sapply(histoSecond,is.null)
     histoSecond <- histoSecond[!null]
-    histoSecond <- do.call(rbind,histoSecond) 
+    histoSecond <- do.call(rbind,histoSecond)
     histo <- rbind(histoFirst,histoSecond)
     if (facet_wrap_chromosomes){
       g <- ggplot2::ggplot(histo, ggplot2::aes(PositiveProportion, Count, fill=MaxCoverage, width=1))+

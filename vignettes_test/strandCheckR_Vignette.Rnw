@@ -30,17 +30,16 @@ Then each read fragment is assigned to a probability of being kept or not, based
 
 \section{Get windows information}
 
-If the input bam file conatins single end reads, the function \textit{getWinFromBamFile} can be used to get the number of +/- stranded reads from all sliding windows throughout the bam file.
+The function \textit{getWinFromBamFile} can be used to get the number of +/- stranded reads from all sliding windows throughout the bam file.
 The bamfile should be sorted and have an index file located at the same path as well.
 
 
 <<getwin,eval=FALSE>>=
 library(strandCheckR)
-file <- system.file("data","s1.chr1.bam",package = "strandCheckR")
+file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 win <- getWinFromBamFile(file)
 @
 
-If the bam file is paired-end, then \textit{getWinFromPairedBamFile} should be used.
 
 With these windows, you can have some plots via \textit{plotHist} and \textit{plotWin} functions.
 
@@ -72,7 +71,7 @@ Given a threshold, a positive (resp. negative) window is kept if and only if it 
 
 \section{Filter bam files}
 
-The functions \textit{filterDNA} removes potential double strand DNA from a single end bam file.
+The functions \textit{filterDNA} removes potential double strand DNA from a bam file.
 
 <<filteDNA, eval=FALSE>>=
 filterDNA(bamfilein = file,bamfileout = "filter.bam", threshold = 0.7)
@@ -80,5 +79,4 @@ filterDNA(bamfilein = file,bamfileout = "filter.bam", threshold = 0.7)
 
 Other parameters can be specified for more flexible filtering: define the ranges that you want to always keep, the mininum number of reads under which you want to ignore, the rate that an RNA read has false strand etc.
 
-For paired end data, the function \textit{filterDNAPairs} should be used.
 \end{document}

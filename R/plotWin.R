@@ -32,6 +32,7 @@
 #'
 
 plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05,save=FALSE,file="win.pdf",facet_wrap_chromosomes=FALSE,useCoverage=FALSE){
+  
   if (!facet_wrap_chromosomes){
     windows <- windows[names(windows) != "Chr"]
   } 

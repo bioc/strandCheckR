@@ -4,21 +4,20 @@
 #' 
 #' @param Win a data frame contains the information of every window in \code{chromosomes}
 #' @param chromosomes a vector of chromosome names
-#' @param statInfo a data frame that contains some information of the alignments
+#' @param chromosomeInfo a data frame that contains some information of the alignments
 #' @param winWidth the length of sliding window
 #' @param winStep the step length to sliding the window
 #' @export
 #'
-getWinInChromosome <- function(Win,chromosomes,statInfo,winWidth,winStep){
-  Win$Chr <- rep("",nrow(Win))
+getWinInChromosome <- function(Win,chromosomes,chromosomeInfo,winWidth,winStep){
   for (i in seq_along(chromosomes)){
-    if (!is.na(statInfo$FirstBaseInPartition[i])){
+    if (!is.na(chromosomeInfo$FirstBaseInPartition[i])){
       currentChr <- chromosomes[i]
       id <- which(chromosomes == currentChr)
-      idFirst <- ceiling(statInfo$FirstBaseInPartition[id] / winStep) # id of the first window of the chromosome
-      idLast <- ceiling((statInfo$LastBaseInPartition[id] - winWidth+1) / winStep)# id of the last window of the chromosome
+      idFirst <- ceiling(chromosomeInfo$FirstBaseInPartition[id] / winStep) # id of the first window of the chromosome
+      idLast <- ceiling((chromosomeInfo$LastBaseInPartition[id] - winWidth+1) / winStep)# id of the last window of the chromosome
       idRows <- which(Win$Start >= idFirst & Win$Start <= idLast) #get the windows of the chromosome
-      Win$Chr[idRows] <- currentChr
+      Win$Chr[idRows] <- Rle(currentChr)
       Win$Start[idRows] <- (Win$Start[idRows] - idFirst)*winStep +1
     }
   }

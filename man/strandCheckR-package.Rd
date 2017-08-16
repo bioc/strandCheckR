@@ -16,9 +16,7 @@
  
  - getWinFromPairedBamFile: calculate positive/negative proprortion and sum of reads over all sliding windows from a paried end bam file
  
- - filterDNA: filter a single end bam file
- 
- - filterDNAPairs: filter a paired end bam file
+ - filterDNA: filter a bam file
 }
 \author{
 Thu-Hien To & Steve Pederson
@@ -36,15 +34,9 @@ Maintainer: Hien To <hien.to@adelaide.edu.au>
 %  Optional links to other man pages
 %}
 \examples{
-bamfilein <- system.file("data","s1.chr1.bam",package = "strandCheckR")
+bamfilein <- system.file("exdata","s1.chr1.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(bamfilein)
 plotWin(windows)
 plotHist(windows)
 filterDNA(file = bamfilein,fileout = "filter.bam")
-
-bamfileinP <- system.file("data","120.chr10.bam",package = "strandCheckR")
-windows <- getWinFromPariedBamFile(bamfilein)
-plotWin(windows)
-plotHist(windows)
-filterDNAPairs(file = bamfileinP,fileout = "filterP.bam", useCoverage=TRUE)
 }
