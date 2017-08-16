@@ -21,11 +21,11 @@
 #'
 #' #for single end bam file
 #' bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
-#' windows <- getWinFromBamFile(bamfilein)
+#' windows <- getWinFromBamFile(file = bamfilein)
 #' plotWin(windows)
 #' #for paired end bamfile
 #' bamfilepair = system.file("extdata","120.10.bam",package = "strandCheckR")
-#' windowsP <- getWinFromPairedBamFile(bamfilepair)
+#' windowsP <- getWinFromPairedBamFile(file = bamfilepair)
 #' plotWin(windowsP)
 #'
 #' @export

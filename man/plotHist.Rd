@@ -27,11 +27,11 @@ Plot the histogram of positive proportions of the input windows data frame
 \examples{
 #for single end bam file
 bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
-windows <- getWinFromBamFile(bamfilein)
+windows <- getWinFromBamFile(file = bamfilein)
 plotHist(windows)
 #for paired end bamfile
 bamfilepair = system.file("extdata","120.10.bam",package = "strandCheckR")
-windowsP <- getWinFromBamFile(bamfilein = bamfilepair)
+windowsP <- getWinFromBamFile(file = bamfilepair)
 plotHist(windowsP)
 }
 \seealso{
