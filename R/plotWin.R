@@ -52,18 +52,18 @@ plotWin <- function(windows,group=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pv
   
   
   if (length(group)==0){
-    leg <- "all"
+    groupNames <- "all"
   } else{
-    leg <- paste0("<",group[1])
+    groupNames <- paste0("<",group[1])
     for (i in seq_along(group[-1])){
-      leg <- c(leg,paste0(group[i],"-",group[i+1]))
+      groupNames <- c(groupNames,paste0(group[i],"-",group[i+1]))
     }
-    leg <- c(leg,paste0(">",group[length(group)]))
+    groupNames <- c(groupNames,paste0(">",group[length(group)]))
   }
   x <- lapply(seq_along(group),function(i){which(group[i]<windows$MaxCoverage)})
-  G <- rep(leg[1],nrow(windows))
+  G <- rep(groupNames[1],nrow(windows))
   for (i in seq_along(group)){
-    G[x[[i]]] <- leg[i+1]
+    G[x[[i]]] <- groupNames[i+1]
   }
   windows$MaxCoverage = G  
   

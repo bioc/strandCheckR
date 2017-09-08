@@ -6,7 +6,7 @@
 #' @param strand the considering strand
 #' @param winWidth the window size
 #' @param winStep the window winStep
-#' @param limit a read is considered to be included in a window if and only if at least \code{limit} 
+#' @param readProp a read is considered to be included in a window if and only if at least \code{readProp} 
 #' percent of it is in the window.
 #' @param subset if we consider only a subset of the input reads
 #' @param useCoverage either base on coverage or number of reads
@@ -15,7 +15,7 @@
 #' @importFrom S4Vectors mcols
 #' 
 #' @export
-getWinOfAlignments <- function(readInfo, strand, winWidth, winStep, limit, useCoverage=FALSE, subset=NULL){
+getWinOfAlignments <- function(readInfo, strand, winWidth, winStep, readProp, useCoverage=FALSE, subset=NULL){
   
   if (is.null(subset)){
     index <- which(readInfo$strand==strand)
@@ -25,7 +25,7 @@ getWinOfAlignments <- function(readInfo, strand, winWidth, winStep, limit, useCo
     # Get the final window number
     maxWin <- ceiling((max(position$end) - winWidth) / winStep) + 1
     range <- IRanges::IRanges(position$start, position$end, position$width)
-    winrange <- getWinFromIRanges(range, winWidth, winStep, limit, maxWin)
+    winrange <- getWinFromIRanges(range, winWidth, winStep, readProp, maxWin)
     mcols(winrange) <- data.frame("alignment"=index[position$group])
   }
   else{
@@ -37,7 +37,7 @@ getWinOfAlignments <- function(readInfo, strand, winWidth, winStep, limit, useCo
     # Get the final window number
     maxWin <- ceiling((max(position$end)-winWidth) / winStep) + 1
     range <- IRanges::IRanges(position$start, position$end, position$width)
-    winrange <- getWinFromIRanges(range, winWidth, winStep, limit, maxWin)
+    winrange <- getWinFromIRanges(range, winWidth, winStep, readProp, maxWin)
     mcols(winrange) <- data.frame("alignment" = which(subset)[index[position$group]])
   }
   if (useCoverage==TRUE){

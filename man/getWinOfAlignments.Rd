@@ -4,7 +4,7 @@
 \alias{getWinOfAlignments}
 \title{get the window ranges of alignments}
 \usage{
-getWinOfAlignments(readInfo, strand, winWidth, winStep, limit,
+getWinOfAlignments(readInfo, strand, winWidth, winStep, readProp,
   useCoverage = FALSE, subset = NULL)
 }
 \arguments{
@@ -16,7 +16,7 @@ getWinOfAlignments(readInfo, strand, winWidth, winStep, limit,
 
 \item{winStep}{the window winStep}
 
-\item{limit}{a read is considered to be included in a window if and only if at least \code{limit} 
+\item{readProp}{a read is considered to be included in a window if and only if at least \code{readProp} 
 percent of it is in the window.}
 
 \item{useCoverage}{either base on coverage or number of reads}

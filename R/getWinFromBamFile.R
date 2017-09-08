@@ -103,8 +103,8 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
       }
       for (s in seq_along(subset)){
         
-        winPositiveAlignments <- getWinOfAlignments(readInfo,"+",winWidth,winStep,limit = 0, useCoverage=TRUE,subset[[s]])
-        winNegativeAlignments <- getWinOfAlignments(readInfo,"-",winWidth,winStep,limit = 0, useCoverage=TRUE,subset[[s]])
+        winPositiveAlignments <- getWinOfAlignments(readInfo,"+",winWidth,winStep,readProp = 0, useCoverage=TRUE,subset[[s]])
+        winNegativeAlignments <- getWinOfAlignments(readInfo,"-",winWidth,winStep,readProp = 0, useCoverage=TRUE,subset[[s]])
         
         ##################################################
         # calculate strand information based on coverage #

@@ -1,4 +1,4 @@
-#' @title get the probability of keeping each window
+#' @title get the probability of begin kept for each window
 #' @description calculate the keeping probability of each window based on its positive/negative proportion
 #' @param winPositiveAlignments an object returned by getWinOfAlignments for positive reads
 #' @param winNegativeAlignments an object returned by getWinOfAlignments for negative reads
@@ -33,14 +33,10 @@ keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,winWidth,wi
   if (getWin){
     presentWin <- which(as.vector((nbPositive>0) | (nbNegative>0)) == TRUE)
     if (length(presentWin)>0){
+      Win <- DataFrame(Start = presentWin, 
+                       CovPositive = nbPositive[presentWin], CovNegative = nbNegative[presentWin])
       if (useCoverage){
-        Win <- DataFrame(Start = presentWin, 
-                         CovPositive = nbPositive[presentWin], CovNegative = nbNegative[presentWin],
-                         MaxCoverage = fromCoverage$maxCoverage[presentWin])
-      }
-      else{
-        Win <- DataFrame(Start = presentWin, 
-                         NbPositive = nbPositive[presentWin], NbNegative = nbNegative[presentWin])
+        Win[["MaxCoverage"]] = fromCoverage$maxCoverage[presentWin]
       }
     }
   }

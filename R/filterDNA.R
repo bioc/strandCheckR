@@ -21,7 +21,7 @@
 #'        For the case that \code{useCoverage=TRUE}, if a window has max coverage more than \code{max}, then it will be kept. 
 #'        If 0 then it doesn't have effect on selecting window. 0 by default.
 #' @param errorRate the probability that an RNA read takes the false strand. 0.01 by default
-#' @param limit a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default
+#' @param readProp a read is considered to be included in a window if and only if at least \code{readProp} percent of it is in the window. 0.75 by default
 #' @param useCoverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
 #' @param paired if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.
 #'
@@ -61,7 +61,7 @@
 #' @import S4Vectors
 #'
 #' @export
-filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSize = 1e8, mustKeepRanges,getWin=FALSE,winWidth=1000,winStep=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,limit=0.75,useCoverage=FALSE,paired){
+filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSize = 1e8, mustKeepRanges,getWin=FALSE,winWidth=1000,winStep=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,readProp=0.75,useCoverage=FALSE,paired){
   startTime <- proc.time()
   
   # Check the input is a BamFile. Convert if necessary
@@ -105,10 +105,7 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
     message("Summary will be written to file out.stat")
     statfile <- "out.stat"
   }
-  
-  if (!missing(mustKeepRanges)){
-    allChromosomesMustKeep <- levels(seqnames(mustKeepRanges))
-  }
+
   
   # Initialise the data frames for window information 
   allWin <- vector("list",length(partition))
@@ -177,13 +174,13 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
       mustKeepWin <- list()
       if (!missing(mustKeepRanges)){
         if (length(intersect(allChromosomesMustKeep,part))>0){
-          mustKeepWin <- getWinFromGranges(mustKeepRanges[seqnames(mustKeepRanges) %in% part],part,chromosomeInfo[idPart,],winWidth,winStep)
+          mustKeepWin <- getWinFromGranges(mustKeepRanges[seqnames(mustKeepRanges) %in% part],chromosomeInfo[idPart,],winWidth,winStep)
         }
       }
       
       for (s in seq_along(subset)){
-        winPositiveAlignments <- getWinOfAlignments(readInfo,"+",winWidth,winStep,limit = limit, useCoverage=TRUE,subset[[s]])
-        winNegativeAlignments <- getWinOfAlignments(readInfo,"-",winWidth,winStep,limit = limit, useCoverage=TRUE,subset[[s]])
+        winPositiveAlignments <- getWinOfAlignments(readInfo,"+",winWidth,winStep,readProp = readProp, useCoverage=TRUE,subset[[s]])
+        winNegativeAlignments <- getWinOfAlignments(readInfo,"-",winWidth,winStep,readProp = readProp, useCoverage=TRUE,subset[[s]])
         
         probaWin <- keptProbaWin(winPositiveAlignments,winNegativeAlignments,winWidth,winStep,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,useCoverage=useCoverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
         if (getWin){

@@ -47,23 +47,23 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
       select(-c(NbPositive,NbNegative))
   }
   if (length(group)==0){
-    leg <- "all"
+    groupNames <- "all"
   } else{
-    leg <- paste0("<",group[1])
+    groupNames <- paste0("<",group[1])
     for (i in seq_along(group[-1])){
-      leg <- c(leg,paste0(group[i],"-",group[i+1]))
+      groupNames <- c(groupNames,paste0(group[i],"-",group[i+1]))
     }
-    leg <- c(leg,paste0(">",group[length(group)]))
+    groupNames <- c(groupNames,paste0(">",group[length(group)]))
   }
   x <- lapply(seq_along(group),function(i){which(group[i]<windows$MaxCoverage)})
-  G <- rep(leg[1],nrow(windows))
+  G <- rep(groupNames[1],nrow(windows))
   for (i in seq_along(group)){
-    G[x[[i]]] <- leg[i+1]
+    G[x[[i]]] <- groupNames[i+1]
   }
   windows$MaxCoverage = G
   breaks <- 100
   if ("Type" %in% colnames(windows)){
-    histoFirst <- lapply(leg,function(l){
+    histoFirst <- lapply(groupNames,function(l){
       a <- filter(windows,MaxCoverage==l,Type=="First")
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
@@ -82,7 +82,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     histoFirst <- histoFirst[!null]
     histoFirst <- do.call(rbind,histoFirst)
 
-    histoSecond <- lapply(leg,function(l){
+    histoSecond <- lapply(groupNames,function(l){
       a <- filter(windows,MaxCoverage==l,Type=="Second")
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
@@ -100,25 +100,27 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     null <- sapply(histoSecond,is.null)
     histoSecond <- histoSecond[!null]
     histoSecond <- do.call(rbind,histoSecond)
+    
     histo <- rbind(histoFirst,histoSecond)
+    
     if (facet_wrap_chromosomes){
       g <- ggplot2::ggplot(histo, ggplot2::aes(PositiveProportion, Count, fill=MaxCoverage, width=1))+
-        ggplot2::scale_fill_discrete(breaks=leg)+
+        ggplot2::scale_fill_discrete(breaks=groupNames)+
         ggplot2::geom_bar(stat="identity", width=.3,position="stack") +
         ggplot2::facet_wrap(~Type+Chr)
     }
     else{
       g <- ggplot2::ggplot(histo, ggplot2::aes(PositiveProportion, Count, fill=MaxCoverage, width=1))+
-        ggplot2::scale_fill_discrete(breaks=leg)+
+        ggplot2::scale_fill_discrete(breaks=groupNames)+
         ggplot2::geom_bar(stat="identity", width=.3,position="stack")+
         ggplot2::facet_wrap(~Type)
     }
-     g <- g +  ggplot2::ylab("Count") +
+    
+    g <- g +  ggplot2::ylab("Count") +
       ggplot2::xlab("Positive Proportion")+
-      ggplot2::theme_bw()
-    if (useCoverage){
-      g <- g + ggplot2::labs(fill = "Max Coverage")
-    }
+      ggplot2::theme_bw() + 
+      ggplot2::labs(fill = "Max Coverage")
+    
     if (save==TRUE){
       message("The plot will be saved to the file ",file)
       ggplot2::ggsave(filename = file)
@@ -128,7 +130,7 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     }
   }
   else{
-    histo<- lapply(leg,function(l){
+    histo<- lapply(groupNames,function(l){
       a <- filter(windows,MaxCoverage==l) 
       if (nrow(a)>0){
         if (facet_wrap_chromosomes){
@@ -150,20 +152,19 @@ plotHist <- function(windows,group=c(10,100,1000),save=FALSE,file = "hist.pdf",f
     histo <- do.call(rbind,histo)
     if (facet_wrap_chromosomes){
       g <- ggplot2::ggplot(histo, ggplot2::aes(PositiveProportion, Count, fill=MaxCoverage, width=1))+
-        ggplot2::scale_fill_discrete(breaks=leg)+
+        ggplot2::scale_fill_discrete(breaks=groupNames)+
         ggplot2::facet_wrap(~Chr)
     }
     else{
       g <- ggplot2::ggplot(histo, ggplot2::aes(PositiveProportion, Count, fill=MaxCoverage, width=1))+
-        ggplot2::scale_fill_discrete(breaks=leg)
+        ggplot2::scale_fill_discrete(breaks=groupNames)
     }
     g <- g + ggplot2::geom_bar(stat="identity", width=.3,position="stack") +
       ggplot2::ylab("Count") +
       ggplot2::xlab("Positive Proportion")+
-      ggplot2::theme_bw()
-    if (useCoverage){
-      g <- g + ggplot2::labs(fill = "Max Coverage")
-    }
+      ggplot2::theme_bw() + 
+      ggplot2::labs(fill = "Max Coverage")
+    
     if (save==TRUE){
       message("The plot will be saved to the file ",file)
        ggplot2::ggsave(filename = file,plot = g)

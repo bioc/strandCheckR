@@ -7,7 +7,8 @@
 filterDNA(file, fileout, statfile, chromosomes, mapqFilter = 0,
   partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, winWidth = 1000,
   winStep = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
-  max = 0, errorRate = 0.01, limit = 0.75, useCoverage = FALSE, paired)
+  max = 0, errorRate = 0.01, readProp = 0.75, useCoverage = FALSE,
+  paired)
 }
 \arguments{
 \item{file}{the input single end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
@@ -43,7 +44,7 @@ If 0 then it doesn't have effect on selecting window. 0 by default.}
 
 \item{errorRate}{the probability that an RNA read takes the false strand. 0.01 by default}
 
-\item{limit}{a read is considered to be included in a window if and only if at least \code{limit} percent of it is in the window. 0.75 by default}
+\item{readProp}{a read is considered to be included in a window if and only if at least \code{readProp} percent of it is in the window. 0.75 by default}
 
 \item{useCoverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
 

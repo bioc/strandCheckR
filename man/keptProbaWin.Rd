@@ -2,7 +2,7 @@
 % Please edit documentation in R/keptProbaWin.R
 \name{keptProbaWin}
 \alias{keptProbaWin}
-\title{get the probability of keeping each window}
+\title{get the probability of begin kept for each window}
 \usage{
 keptProbaWin(winPositiveAlignments, winNegativeAlignments, winWidth, winStep,
   logitThreshold, pvalueThreshold, errorRate, mustKeepWin, min, max, getWin,

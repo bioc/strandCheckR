@@ -1,15 +1,14 @@
-#' @title Get the Ranges of Sliding Windows from a GRanges object
+#' @title Get the Sliding Windows from a GRanges object
 #' 
-#' @description Get the Ranges of positive/negative windows that overlap a GRanges object
+#' @description Get the positive/negative windows that overlap a GRanges object
 #' 
 #' 
 #' @param x a GRanges object
-#' @param chromosomes a list of chromosome names
-#' @param chromosomeInfo a data frame that contains some information of the alignments
+#' @param chromosomeInfo a data frame that contains some key information of the alignments
 #' @param winWidth The width of each window
 #' @param winStep The step size for sliding the window
 #' 
-#' @return A list of two logical vectors defining whether to keep windows based on positive or negative strands
+#' @return A list of two logical vectors (for positive and negative strand) defining which windows that overlap the given Granges objects
 #' 
 #' @importFrom GenomicRanges start<-
 #' @importFrom GenomicRanges end<-
@@ -18,7 +17,7 @@
 #' @importFrom GenomeInfoDb seqlevels
 #' 
 #' @export
-getWinFromGranges <- function(x, chromosomes, chromosomeInfo, winWidth = 1000, winStep = 100){
+getWinFromGranges <- function(x, chromosomeInfo, winWidth = 1000, winStep = 100){
   
   # Check for correct chromosomes 
   if (!all(chromosomes %in% seqlevels(x))) stop("Invalid specification of chromosomes.\nMust be in the set", seqlevels(x))
@@ -29,8 +28,8 @@ getWinFromGranges <- function(x, chromosomes, chromosomeInfo, winWidth = 1000, w
   if (!all(reqCols %in% names(chromosomeInfo))) stop("chromosomeInfo must contain the column ", reqCols)
   stopifnot(is.numeric(winWidth) || is.numeric(winStep))
   
-  for (i in seq_along(chromosomes)){
-    r <- which(as.vector(seqnames(x)) == chromosomes[i])
+  for (i in seq_along(chromosomeInfo$Sequence)){
+    r <- which(as.vector(seqnames(x)) == chromosomeInfo$Sequence[i])
     if (length(r)>0){
       start(ranges(x)[r]) <- start(ranges(x)[r]) + chromosomeInfo$FirstBaseInPartition[i] -1
       end(ranges(x)[r]) <- end(ranges(x)[r]) + chromosomeInfo$FirstBaseInPartition[i] -1  
@@ -43,6 +42,5 @@ getWinFromGranges <- function(x, chromosomes, chromosomeInfo, winWidth = 1000, w
   mustKeepNeg <- coverage(mustKeepNeg) > 0
   
   list(Positive = mustKeepPos, Negative = mustKeepNeg)
-  
 }
 
