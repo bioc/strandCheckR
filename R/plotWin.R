@@ -17,6 +17,8 @@
 #' @seealso getWinFromBamFile,  plotHist
 #'
 #' @importFrom dplyr select mutate distinct
+#' @importFrom stats pnorm
+#' 
 #' @examples
 #' \dontrun{
 #' #for single end bam file

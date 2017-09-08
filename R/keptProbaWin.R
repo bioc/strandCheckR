@@ -15,9 +15,11 @@
 #' @param useCoverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
 #' @param mustKeepWin the windows that must be kept regardless their strand proportion
 #' @param getWin if TRUE, the function will return a data frame containing the information of all windows. It's FALSE by default.
-#' @export
+#' 
 #' @importFrom IRanges coverage Views
+#' @importFrom stats pnorm
 #'
+#' @export
 keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,winWidth,winStep,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,useCoverage=FALSE){
   if (useCoverage){
     fromCoverage <- calculateStrandCoverage(winPositiveAlignments,winNegativeAlignments,winWidth,winStep)

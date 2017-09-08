@@ -18,6 +18,7 @@ Imports:
   S4Vectors,
   rbamtools,
   graphics,
+  grid,
   base,
   BiocGenerics,
   ggplot2,

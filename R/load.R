@@ -4,6 +4,3 @@
                            "Chr","NbReads","Threshold","ThresholdP","ThresholdN","PositiveProportion")) 
   invisible()
 }
-.onUnload <- function (libpath) {
-  library.dynam.unload("strandCheckR", libpath)
-}

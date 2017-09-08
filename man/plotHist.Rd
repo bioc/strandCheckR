@@ -4,14 +4,15 @@
 \alias{plotHist}
 \title{Plot the histogram of positive proportions of the input windows data frame}
 \usage{
-plotHist(windows, group = c(10, 100, 1000), save = FALSE,
-  file = "hist.pdf", facet_wrap_chromosomes = FALSE, useCoverage = FALSE)
+plotHist(windows, breaks = c(10, 100, 1000), save = FALSE,
+  file = "hist.pdf", facet_wrap_chromosomes = FALSE, useCoverage = FALSE,
+  ...)
 }
 \arguments{
 \item{windows}{data frame containing the number of positive/negative reads for each window
 Windows can be get by the function \code{getWinFromBamFile}.}
 
-\item{group}{an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{group} = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000}
+\item{breaks}{an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{breaks} = c(10,100,1000), which means that your windows will be partition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000}
 
 \item{save}{if TRUE, then the plot will be save into the file given by \code{file} parameter}
 
@@ -20,6 +21,8 @@ Windows can be get by the function \code{getWinFromBamFile}.}
 \item{facet_wrap_chromosomes}{if TRUE, then the plots will be splitted by chromosomes. FALSE by default}
 
 \item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
+
+\item{...}{used to pass parameters to facet_wrap}
 }
 \description{
 Plot the histogram of positive proportions of the input windows data frame

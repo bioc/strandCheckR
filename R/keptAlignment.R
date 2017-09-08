@@ -3,6 +3,9 @@
 #' @param fragments an IRange object defind the starting, ending position of each fragment
 #' @param keptProbaW an Rle object define the kept probability of every sliding window
 #' @param errorRate the rate that a read has wrong strand
+#' 
+#' @importFrom stats rbinom
+#' 
 #' @export
 #'
 
