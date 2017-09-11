@@ -58,7 +58,7 @@ plotHist <- function(windows, breaks=c(10,100,1000), save=FALSE, file = "hist.pd
   keepCols <- c("Nb", "Cov")[useCoverage + 1]
   windows <- as.data.frame(windows)
   windows <- dplyr::select(windows, one_of(c("Chr", "MaxCoverage", "Type")), starts_with(keepCols))
-  names(windows)[4:5] <- c("Pos", "Neg")
+  names(windows) <- str_extract(names(windows),"Chr|MaxCoverage|Type|Pos|Neg")
   windows$PositiveProportion <- windows$Pos / (windows$Pos + windows$Neg)
 
   

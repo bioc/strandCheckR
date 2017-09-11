@@ -4,7 +4,7 @@
 \alias{plotWin}
 \title{Plot the number of reads vs positive proportion of the input windows data frame.}
 \usage{
-plotWin(windows, group = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
+plotWin(windows, breaks = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
   0.9), pvalue = 0.05, save = FALSE, file = "win.pdf",
   facet_wrap_chromosomes = FALSE, useCoverage = FALSE)
 }
@@ -12,7 +12,7 @@ plotWin(windows, group = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
 \item{windows}{data frame containing the number of positive/negative reads for each window.
 Windows can be get by the function \code{getWinFromBamFile}.}
 
-\item{group}{an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{group} = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000}
+\item{breaks}{an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{breaks} = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000}
 
 \item{threshold}{a real vector that specifies which threshold lines you want to draw on the plot. The positive window above the threshold line (or negative window below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.}
 
@@ -28,19 +28,6 @@ Windows can be get by the function \code{getWinFromBamFile}.}
 }
 \description{
 Plot the number of reads vs positive proportion of the input windows data frame.
-}
-\examples{
-\dontrun{
-#for single end bam file
-bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
-windows <- getWinFromBamFile(file = bamfilein)
-plotWin(windows)
-
-#for paired end bamfile
-bamfilepair = system.file("extdata","120.bam",package = "strandCheckR")
-windowsP <- getWinFromBamFile(file = bamfilepair)
-plotWin(windowsP)
-}
 }
 \seealso{
 getWinFromBamFile,  plotHist
