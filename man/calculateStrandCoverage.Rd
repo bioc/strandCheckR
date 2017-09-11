@@ -10,11 +10,11 @@ calculateStrandCoverage(winPositiveAlignments, winNegativeAlignments,
 \arguments{
 \item{winPositiveAlignments}{a list that has a `Coverage` field that contains coverage coming from positive reads}
 
+\item{winNegativeAlignments}{a list that has a `Coverage` field that contains coverage coming from negative reads}
+
 \item{winWidth}{the length of the sliding window, 1000 by default.}
 
 \item{winStep}{the step length to sliding the window, 100 by default.}
-
-\item{winNegativeAlignmentsa}{a list that has a `Coverage` field that contains coverage coming from negative reads}
 }
 \description{
 Calculate the coverage coming from '+'/'-' reads in all sliding wndows
