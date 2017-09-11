@@ -18,7 +18,9 @@
 #'
 #' @importFrom dplyr select mutate distinct one_of starts_with
 #' @importFrom stats pnorm
-#' 
+#' @importFrom stringr str_extract
+#' @importFrom ggplot2 ggplot geom_point aes_string labs theme_bw theme facet_wrap geom_line ggsave
+#' @importFrom grid unit
 #' @examples
 #' \dontrun{
 #' bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
@@ -27,7 +29,7 @@
 #' @export
 #'
 
-plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05,save=FALSE,file="win.pdf",facet_wrap_chromosomes=FALSE,useCoverage=FALSE){
+plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05,save=FALSE,file="win.pdf",facet_wrap_chromosomes=FALSE,useCoverage=FALSE,...){
   
   # The initial checks for appropriate input
   reqWinCols <- c("Chr", "Start", "NbPositive", "NbNegative", "CovPositive", "CovNegative", "MaxCoverage")
@@ -119,10 +121,10 @@ plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),p
     facets <- ~Chr
   }
   
-  g <- ggplot2::ggplot() +
-    ggplot2::geom_point(data = windowsReduced, ggplot2::aes(x = NbReads, y = PositiveProportion, colour = group)) +
-    ggplot2::geom_line(data = ThresholdP, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold)) +
-    ggplot2::geom_line(data = ThresholdN, ggplot2::aes(x = NbReads, y = PositiveProportion, linetype = Threshold)) +
+  g <- ggplot() +
+    geom_point(data = windowsReduced, aes_string(x = "NbReads", y = "PositiveProportion", colour = "group")) +
+    geom_line(data = ThresholdP, aes_string(x = "NbReads", y = "PositiveProportion", linetype = "Threshold")) +
+    geom_line(data = ThresholdN, aes_string(x = "NbReads", y = "PositiveProportion", linetype = "Threshold")) +
     labs(x = "Number of Reads",
          y = "Proportion of Reads on '+' Strand",
          colour = "Max Coverage") +
@@ -131,7 +133,7 @@ plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),p
   if (!is.null(facets)) {
     # Get any facet arguments from dotArgs that have been set manually
     dotArgs <- list(...)
-    allowed <- names(formals(ggplot2::facet_wrap))
+    allowed <- names(formals(facet_wrap))
     keepArgs <- names(dotArgs) %in% setdiff(allowed, "facets")
     argList <- c(list(facets = facets), dotArgs[keepArgs])
     myFacets <- do.call(facet_wrap, argList)
@@ -139,7 +141,7 @@ plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),p
   }
   if (save==TRUE){
     message("The plot will be saved to the file ",file)
-    ggplot2::ggsave(filename = file,plot = g)
+    ggsave(filename = file,plot = g)
   }
   g
 }

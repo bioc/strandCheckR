@@ -1,3 +1,15 @@
+#' @title Calculate the strand information based on coverage
+#'
+#' @description Calculate the coverage coming from '+'/'-' reads in all sliding wndows
+#' 
+#' @param winPositiveAlignments a list that has a `Coverage` field that contains coverage coming from positive reads
+#' @param winNegativeAlignmentsa a list that has a `Coverage` field that contains coverage coming from negative reads
+#' @param winWidth the length of the sliding window, 1000 by default.
+#' @param winStep the step length to sliding the window, 100 by default.
+#' @importFrom IRanges Views
+#' @importFrom S4Vectors Rle
+
+
 calculateStrandCoverage <- function(winPositiveAlignments, winNegativeAlignments, winWidth = 1000, winStep= 100){
   # make sure winPositiveAlignments$Coverage and winNegativeAlignments$Coverage
   # have the same length to avoid some warnings afterward

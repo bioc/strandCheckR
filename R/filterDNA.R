@@ -106,6 +106,9 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
     statfile <- "out.stat"
   }
 
+  if (!missing(mustKeepRanges)){
+    allChromosomesMustKeep <- levels(seqnames(mustKeepRanges))
+  }
   
   # Initialise the data frames for window information 
   allWin <- vector("list",length(partition))

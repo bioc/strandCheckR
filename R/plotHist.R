@@ -35,7 +35,7 @@
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom magrittr set_colnames
 #' @importFrom dplyr mutate select filter one_of starts_with
-#' 
+#' @importFrom stringr str_extract
 #' @export
 plotHist <- function(windows, breaks=c(10,100,1000), save=FALSE, file = "hist.pdf", 
                      facet_wrap_chromosomes=FALSE, useCoverage=FALSE, ...){

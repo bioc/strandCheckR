@@ -1,3 +1,12 @@
+#' @title Calculate the strand information based the number of reads
+#'
+#' @description Calculate the number of reads coming from '+'/'-' strands in all sliding wndows
+#' @param winPositiveAlignments a list that has a `Win` field that contains information of sliding windows overalapping positive reads 
+#' @param winNegativeAlignments a a list that has a `Win` field that contains information of sliding windows overalapping negative reads
+#'  
+#' @importFrom IRanges coverage end
+
+
 calculateStrandNbReads <- function(winPositiveAlignments, winNegativeAlignments){
   
   # Calculate strand information based on number of reads 

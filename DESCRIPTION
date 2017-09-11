@@ -23,5 +23,6 @@ Imports:
   BiocGenerics,
   ggplot2,
   reshape2,
-  stats
+  stats, 
+  stringr
 RoxygenNote: 6.0.1

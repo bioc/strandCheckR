@@ -6,7 +6,7 @@
 \usage{
 plotWin(windows, breaks = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
   0.9), pvalue = 0.05, save = FALSE, file = "win.pdf",
-  facet_wrap_chromosomes = FALSE, useCoverage = FALSE)
+  facet_wrap_chromosomes = FALSE, useCoverage = FALSE, ...)
 }
 \arguments{
 \item{windows}{data frame containing the number of positive/negative reads for each window.
