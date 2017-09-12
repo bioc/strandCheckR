@@ -2,9 +2,9 @@
 #'
 #' @description Plot the histogram of positive proportions of the input windows data frame
 #'
-#' @param windows data frame containing the number of positive/negative reads for each window
-#' Windows can be get by the function \code{getWinFromBamFile}.
-#' @param breaks an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{breaks} = c(10,100,1000), which means that your windows will be partition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000
+#' @param windows data frame containing the strand information of the sliding windows.
+#' Windows can be obtained using the function \code{getWinFromBamFile}.
+#' @param breaks an integer vector that specifies how you want to partition the windows based on the coverage. By default \code{breaks} = c(10,100,1000), which means that your windows will be partitionned into 4 groups, those have coverage < 10, from 10 to 100, from 100 to 1000, and > 1000
 #' @param save if TRUE, then the plot will be save into the file given by \code{file} parameter
 #' @param file the file name to save to plot
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default

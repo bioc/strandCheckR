@@ -25,9 +25,17 @@ Windows can be get by the function \code{getWinFromBamFile}.}
 \item{facet_wrap_chromosomes}{if TRUE, then the plots will be splitted by chromosomes. FALSE by default}
 
 \item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
+
+\item{...}{used to pass parameters to facet_wrap}
 }
 \description{
 Plot the number of reads vs positive proportion of the input windows data frame.
+}
+\examples{
+\dontrun{
+bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
+windows <- getWinFromBamFile(file = bamfilein)
+plotWin(windows)}
 }
 \seealso{
 getWinFromBamFile,  plotHist

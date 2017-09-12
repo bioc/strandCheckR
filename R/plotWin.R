@@ -2,18 +2,19 @@
 #'
 #' @description Plot the number of reads vs positive proportion of the input windows data frame.
 
-#' @param windows data frame containing the number of positive/negative reads for each window.
-#' Windows can be get by the function \code{getWinFromBamFile}.
+#' @param windows data frame containing the strand information of the sliding windows.
+#' Windows can be obtained using the function \code{getWinFromBamFile}.
 #'
-#' @param breaks an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{breaks} = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000
+#' @param breaks an integer vector that specifies how you want to partition the windows based on the coverage. By default \code{breaks} = c(10,100,1000), which means that your windows will be paritionned into 4 groups, those have coverage < 10, from 10 to 100, from 100 to 1000, and > 1000
 #'
-#' @param threshold a real vector that specifies which threshold lines you want to draw on the plot. The positive window above the threshold line (or negative window below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.
+#' @param threshold a real vector that specifies which threshold lines you want to draw on the plot. The positive windows above the threshold line (or negative windows below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.
 #'
-#' @param pvalue 0.05 by default, any window has pvalue below it in the test comparing with a threshold will be kept.
+#' @param pvalue 0.05 by default, any window has pvalue below that in the test comparing with a given threshold will be kept.
 #' @param save if TRUE, then the plot will be save into the file given by \code{file} parameter
 #' @param file the file name to save to plot
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
 #' @param useCoverage if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default
+#' @param ... used to pass parameters to facet_wrap
 #' @seealso getWinFromBamFile,  plotHist
 #'
 #' @importFrom dplyr select mutate distinct one_of starts_with
@@ -25,7 +26,7 @@
 #' \dontrun{
 #' bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 #' windows <- getWinFromBamFile(file = bamfilein)
-#' plotWin(windows)
+#' plotWin(windows)}
 #' @export
 #'
 
