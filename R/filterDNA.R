@@ -81,14 +81,14 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
   
   # Get the seqinfo object & all genomic information
   sq <- seqinfo(file)
-  allChromosomes <- seqnames(sq)
+  allRefChromosomes <- seqnames(sq)
   # Subset if required
   if (!missing(chromosomes)){
-    stopifnot(all(chromosomes %in% allChromosomes))
+    stopifnot(all(chromosomes %in% allRefChromosomes))
     sq <- sq[chromosomes]
   }
   else{
-    chromosomes <- allChromosomes
+    chromosomes <- allRefChromosomes
   }
   nChr <- length(chromosomes)
   lengthSeq <- seqlengths(sq)
@@ -125,7 +125,7 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
   
   #what to scan from bam file
   scanWhat <- c("pos","cigar","strand")
-  if (mapqFilter) scanWhat <- c(scanWhat,"qmap")
+  if (mapqFilter) scanWhat <- c(scanWhat,"mapq")
   if (paired) scanWhat <- c(scanWhat,"flag")
   
   # Step through each set of partitions
@@ -141,38 +141,21 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
     sbp <- ScanBamParam(what = scanWhat,which = GRanges(seqnames = part,ranges = IRanges(start = 1,end = chrEnd)))
     readInfo <- scanBam(file, param = sbp)
     if (mapqFilter > 0){
-      mqfilter <- lapply(readInfo,function(chr){which(chr$mapq>=mapqFilter)})
       #get only reads that pass the mapping quality filter
-      if (paired){
-        readInfo <- lapply(seq_along(readInfo),function(i){list("pos"=readInfo[[i]]$pos[mqfilter[[i]]],
-                                                      "cigar"=readInfo[[i]]$cigar[mqfilter[[i]]],
-                                                      "strand"=readInfo[[i]]$strand[mqfilter[[i]]],
-                                                      "flag"=readInfo[[i]]$flag[mqfilter[[i]]])})    
-      } else{
-        readInfo <- lapply(seq_along(readInfo),function(i){list("pos"=readInfo[[i]]$pos[mqfilter[[i]]],
-                                                      "cigar"=readInfo[[i]]$cigar[mqfilter[[i]]],
-                                                      "strand"=readInfo[[i]]$strand[mqfilter[[i]]])})  
-      }
+      mqfilter <- lapply(readInfo,function(chr){which(chr$mapq>=mapqFilter)})
+      readInfo <- lapply(seq_along(readInfo),
+                         function(i){chr <- lapply(scanWhat[scanWhat!="mapq"], 
+                                                  function(field){field=readInfo[[i]][[field]][mqfilter[[i]]]})
+                                    names(chr) <- scanWhat[scanWhat!="mapq"]
+                                    chr})
+      names(readInfo) <- names(mqfilter)
     } 
     nReadsInPart <- vapply(seq_along(readInfo),
                            function(i){length(readInfo[[i]]$strand)}, 
                            integer(1))
     chromosomeInfo$NbOriginalReads[idPart] <- nReadsInPart
+    
     if (sum(nReadsInPart) > 0){
-      
-      # Calculate the first/last bases/reads in the chromosome partition
-      chromosomeInfo[idPart,] <- chromosomeInfoInPartition(chromosomeInfo[idPart,], winStep)
-      
-      # Concatenate several lists of the chromosome partition into one list
-      readInfo <- concatenateAlignments(readInfo,chromosomeInfo[idPart,])
-      if (paired){
-        firstReadIndex <- ((floor(readInfo$flag/64) %% 2) == 1)
-        secondReadIndex <- !firstReadIndex
-        subset <- list("first"=firstReadIndex,"second"=secondReadIndex)
-      } else{
-        subset <- list(NULL)
-      }
-      
       # Calculate the windows that overlap mustKeepRanges
       mustKeepWin <- list()
       if (!missing(mustKeepRanges)){
@@ -181,9 +164,23 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
         }
       }
       
+      # Calculate the first/last bases/reads in the chromosome partition
+      chromosomeInfo[idPart,] <- chromosomeInfoInPartition(chromosomeInfo[idPart,], winStep)
+      
+      # Concatenate several lists of the chromosome partition into one list
+      readInfo <- concatenateAlignments(readInfo,chromosomeInfo[idPart,])
+      
+      # Get the index of R1 and R2 reads and process each subset separately
+      if (paired){
+        firstReadIndex <- ((floor(readInfo$flag/64) %% 2) == 1)
+        secondReadIndex <- !firstReadIndex
+        subset <- list("R1"=firstReadIndex,"R2"=secondReadIndex)
+      } else{
+        subset <- list(NULL)
+      }
       for (s in seq_along(subset)){
-        winPositiveAlignments <- getWinOfAlignments(readInfo,"+",winWidth,winStep,readProp = readProp, useCoverage=TRUE,subset[[s]])
-        winNegativeAlignments <- getWinOfAlignments(readInfo,"-",winWidth,winStep,readProp = readProp, useCoverage=TRUE,subset[[s]])
+        winPositiveAlignments <- getWinOfAlignments(readInfo,"+",winWidth,winStep,readProp = readProp, useCoverage= (getWin || useCoverage),subset[[s]])
+        winNegativeAlignments <- getWinOfAlignments(readInfo,"-",winWidth,winStep,readProp = readProp, useCoverage= (getWin || useCoverage),subset[[s]])
         
         probaWin <- keptProbaWin(winPositiveAlignments,winNegativeAlignments,winWidth,winStep,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,useCoverage=useCoverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
         if (getWin){
@@ -191,19 +188,20 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
           if (s==1){
             allWin[[n]] <- win
           } else{
-            allWin[[n]]$Type <- Rle("First")
-            win$Type <- Rle("Second")
+            allWin[[n]]$Type <- Rle("R1")
+            win$Type <- Rle("R2")
             allWin[[n]] <- rbind(allWin[[n]],win)
           }
         }
         
-        # the positive alignments to be kept
-        keptPositiveAlignment <- keptAlignment(winPositiveAlignments$Win,probaWin$Positive,errorRate) 
-        keptNegativeAlignment <- keptAlignment(winNegativeAlignments$Win,probaWin$Negative,errorRate) 
+        # the positive read fragments to be kept
+        keptPositiveAlignment <- keptReadFragment(winPositiveAlignments$Win,probaWin$Positive,errorRate) 
+        # the negative read fragments to be kept
+        keptNegativeAlignment <- keptReadFragment(winNegativeAlignments$Win,probaWin$Negative,errorRate) 
        
         rm(probaWin)
         
-        # Infer the positive/negative alignments to be kept
+        # Infer the index of kept positive/negative alignments 
         if (s==1){
           keptAlignments <- c(unique(mcols(winPositiveAlignments$Win)$alignment[keptPositiveAlignment]),unique(mcols(winNegativeAlignments$Win)$alignment[keptNegativeAlignment]))  # the vector of all alignments to be kept  
         } else{
@@ -214,18 +212,19 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
       }
       rm(readInfo)
       
+      #Write the kept alignments into the output bamfile
+      #Run through each chromsome
       for (i in seq_along(part)){
         id <- which(chromosomes == part[i])
         if (chromosomeInfo$NbOriginalReads[id]>0){
+          #Get the kept alignments of the considering chromosome 
           rangeInChr <- which((keptAlignments>=chromosomeInfo$FirstReadInPartition[id] & keptAlignments<= chromosomeInfo$LastReadInPartition[id]))
           chromosomeInfo$NbKeptReads[id] <- length(rangeInChr)
-        }
-        if (chromosomeInfo$NbKeptReads[id]>0){
-          chromosomeIndex <- which(chromosomes == part[i])
-          if (mapqFilter>0){
-            bamSave(writer,bamRange(reader,c(chromosomeIndex-1,0,lengthSeq[chromosomeIndex]))[mqfilter[[i]][keptAlignments[rangeInChr]- chromosomeInfo$FirstReadInPartition[id]+1],],refid=chromosomeIndex-1)#write the kept alignments into the output bam file  
-          } else{
-            bamSave(writer,bamRange(reader,c(chromosomeIndex-1,0,lengthSeq[chromosomeIndex]))[keptAlignments[rangeInChr]- chromosomeInfo$FirstReadInPartition[id]+1,],refid=chromosomeIndex-1)#write the kept alignments into the output bam file  
+          if (chromosomeInfo$NbKeptReads[id]>0){
+            index <- keptAlignments[rangeInChr]- chromosomeInfo$FirstReadInPartition[id]+1
+            if (mapqFilter>0) index <- mqfilter[[i]][index]
+            #write the kept alignments into the output bam file  
+            bamSave(writer,bamRange(reader,c(which(allRefChromosomes == part[i])-1,0,lengthSeq[id]))[index,])
           }
           rm(rangeInChr)
         }

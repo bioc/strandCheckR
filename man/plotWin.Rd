@@ -9,14 +9,14 @@ plotWin(windows, breaks = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
   facet_wrap_chromosomes = FALSE, useCoverage = FALSE, ...)
 }
 \arguments{
-\item{windows}{data frame containing the number of positive/negative reads for each window.
-Windows can be get by the function \code{getWinFromBamFile}.}
+\item{windows}{data frame containing the strand information of the sliding windows.
+Windows can be obtained using the function \code{getWinFromBamFile}.}
 
-\item{breaks}{an integer vector that specifies how you want to partition the windows based on the number of reads. By default \code{breaks} = c(10,100,1000), which means that your windows will be parition into 4 groups, those have number of reads < 10, from 10 to 100, from 100 to 1000, and > 1000}
+\item{breaks}{an integer vector that specifies how you want to partition the windows based on the coverage. By default \code{breaks} = c(10,100,1000), which means that your windows will be paritionned into 4 groups, those have coverage < 10, from 10 to 100, from 100 to 1000, and > 1000}
 
-\item{threshold}{a real vector that specifies which threshold lines you want to draw on the plot. The positive window above the threshold line (or negative window below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.}
+\item{threshold}{a real vector that specifies which threshold lines you want to draw on the plot. The positive windows above the threshold line (or negative windows below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.}
 
-\item{pvalue}{0.05 by default, any window has pvalue below it in the test comparing with a threshold will be kept.}
+\item{pvalue}{0.05 by default, any window has pvalue below that in the test comparing with a given threshold will be kept.}
 
 \item{save}{if TRUE, then the plot will be save into the file given by \code{file} parameter}
 

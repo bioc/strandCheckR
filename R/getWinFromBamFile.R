@@ -130,8 +130,8 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
           allWin[[n]] <- win
         } 
         else{
-          allWin[[n]]$Type <- Rle("First")
-          win$Type <- Rle("Second")
+          allWin[[n]]$Type <- Rle("R1")
+          win$Type <- Rle("R2")
           allWin[[n]] <- rbind(allWin[[n]],win)
         }
       }

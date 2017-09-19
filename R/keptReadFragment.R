@@ -9,7 +9,7 @@
 #' @export
 #'
 
-keptAlignment <- function(fragments,keptProbaW,errorRate){
+keptReadFragment <- function(fragments,keptProbaW,errorRate){
     if(length(fragments)>0){
       minL <- min(width(fragments))
       maxL <- max(width(fragments))

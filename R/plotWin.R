@@ -53,6 +53,7 @@ plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),p
   names(windows) <- str_extract(names(windows),"Chr|MaxCoverage|Type|Pos|Neg")
   windows$NbReads <- windows$Pos + windows$Neg
   windows$PositiveProportion <- windows$Pos / windows$NbReads
+  
   # Annotate windows by the level of coverage in the each window
   if (length(breaks)==0){
     windows$group <- as.factor("all")
@@ -67,37 +68,28 @@ plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),p
   }
   
   #Remove duplicated points for lightening the plots
-  if (readType == "PE" && facet_wrap_chromosomes){
-    windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-      distinct(Chr,Type,NbReads,PositiveProportion,group) 
+  windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2))
+  if (facet_wrap_chromosomes){
+    windowsReduced <- distinct(windowsReduced,Chr,Type,NbReads,PositiveProportion,group) 
   }
-  if (readType == "PE" && !facet_wrap_chromosomes){
-    windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-      distinct(Type,NbReads,PositiveProportion,group) 
-  }
-  if (readType == "SE" && facet_wrap_chromosomes){
-    windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-      distinct(Chr,NbReads,PositiveProportion,group) 
-  }
-  if (readType == "SE" && !facet_wrap_chromosomes){
-    windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2)) %>%
-      distinct(NbReads,PositiveProportion,group) 
+  else {
+    windowsReduced <- distinct(windowsReduced,Type,NbReads,PositiveProportion,group) 
   }
   rm(windows)
   
-  # Calculating the threshold lines
+  # Generating the threshold lines
   ThresholdP <- data.frame("NbReads" = c(), "PositiveProportion" = c(), "Threshold"= c())
   ThresholdN <- data.frame("NbReads" = c(), "PositiveProportion" = c(), "Threshold"= c())
   nbSampling <- 10000
   for (t in threshold){
+    tP = log(t/(1-t))
     positiveReadsT <- sapply(1:nbSampling,function(N){
-      tP = log(t/(1-t))
       p = seq(round(N*t),N,1)
       pP = p/N
       mP = log(pP/(1-pP))
       sdP = sqrt(1/(N*pP*(1-pP)))
       pNorm <- pnorm(tP,mean = mP, sd = sdP)#pBinom <- pbinom(t*N,size = N, prob = pP)
-      aNorm <- which(pNorm <= 0.05)[1]
+      aNorm <- which(pNorm <= pvalue)[1]
       return(p[aNorm])
     })
     tP <- data.frame("NbReads" = 1:nbSampling, "PositiveProportion" = positiveReadsT/(1:nbSampling), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositive"=max(windowsReduced$NbPositive),"NbNegative"=round(max(windowsReduced $NbPositive)/t)-max(windowsReduced $NbPositive),"Threshold"=paste0(t)))
@@ -126,11 +118,13 @@ plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),p
     geom_point(data = windowsReduced, aes_string(x = "NbReads", y = "PositiveProportion", colour = "group")) +
     geom_line(data = ThresholdP, aes_string(x = "NbReads", y = "PositiveProportion", linetype = "Threshold")) +
     geom_line(data = ThresholdN, aes_string(x = "NbReads", y = "PositiveProportion", linetype = "Threshold")) +
-    labs(x = "Number of Reads",
-         y = "Proportion of Reads on '+' Strand",
+    labs(y = "Proportion of Reads on '+' Strand",
          colour = "Max Coverage") +
-    theme_bw() +
+    if (useCoverage) {g <- g + labs(x = "Number of aligned bases")}
+    else {g <- g + labs(x = "Number of reads")}
+  g <- g + theme_bw() +
     theme(plot.margin = unit(c(0.02,0.04,0.03,0.02), "npc"))
+  
   if (!is.null(facets)) {
     # Get any facet arguments from dotArgs that have been set manually
     dotArgs <- list(...)
