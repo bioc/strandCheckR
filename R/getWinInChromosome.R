@@ -15,6 +15,7 @@ getWinInChromosome <- function(Win, chromosomes, chromosomeInfo, winWidth = 1000
   if (!all(reqCols %in% names(chromosomeInfo))) stop("chromosomeInfo must contain the columns ", reqCols)
   stopifnot(is.numeric(winWidth) || is.numeric(winStep))
   
+  Win$Chr <- ""
   for (i in seq_along(chromosomes)){
     if (!is.na(chromosomeInfo$FirstBaseInPartition[i])){
       currentChr <- chromosomes[i]

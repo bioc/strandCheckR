@@ -1,6 +1,6 @@
 #' @title get the strand information of all windows from a single end bam file
 #' @description get the number of positive/negative reads of all windows from a single end bam file
-#' @param file the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.
+#' @param file the input bam file. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param chromosomes the list of chromosomes to be read
 #' @param mapqFilter very read that has mapping quality below \code{mapqFilter} will be removed before any analysis
 #' @param partitionSize by default is 1e8, i.e. the bam file is read by blocks of chromosomes 
@@ -28,18 +28,13 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
   if(mapqFilter < 0 || !is.numeric(mapqFilter)) stop("Invalid value for mapqFilter. Must be positive & numeric.")
   
   # Check the paired status
-  if (missing(paired)){
-    message("Testing paired end bam file by checking the first 100000 reads")
-    checkFile <- BamFile(file$path, yieldSize = 100000)
-    flag <- scanBam(checkFile, param = ScanBamParam(what = "flag"))[[1]]$flag
-    paired <- any(flag %% 2 == 1)
-    if (paired) message("Your bam file is paired end") else message("Your bam file is single end")
-  }
+  if (missing(paired)) paired <- checkPairedEnd(file$path)
   
   # Get the seqinfo object & all genomic information
   sq <- seqinfo(file)
   allChromosomes <- seqnames(sq)
-  # Subset if required
+  
+  # Subset chromosomes if required
   if (!missing(chromosomes)){
     stopifnot(all(chromosomes %in% allChromosomes))
     sq <- sq[chromosomes]
@@ -54,8 +49,10 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
   # Allocate chromosomes for optimal partition sizes & speed
   partition <- partitionSeqinfo(sq, partitionSize = partitionSize)
   
-  # Initialise the data frames for window information 
+  # Initialise the data frames for window information to be returned
   allWin <- vector("list",length(partition))
+  
+  # Initialise the data frames containing the chromosome information in each partition
   chromosomeInfo <- data.frame(Sequence = chromosomes, 
                                Length = lengthSeq,
                                NbOriginalReads = rep(NA, nChr),

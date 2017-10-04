@@ -78,9 +78,9 @@ plotHist <- function(windows, breaks=c(10,100,1000), save=FALSE, file = "hist.pd
   # Group the stranded proportions into 102 bins
   windows$propReads <- cut(windows$PositiveProportion, breaks = seq(0, 1, length.out = 102), include.lowest = TRUE)
   # Tally the bins by coverage
-  windows <- reshape2::dcast(windows, Type + propReads ~ group, fun.aggregate = length, value.var = "propReads")
+  windows <- reshape2::dcast(windows, Chr + Type + propReads ~ group, fun.aggregate = length, value.var = "propReads")
   # Melt for easy plotting with ggplot2
-  windows <- reshape2::melt(windows, id.vars = c("Type", "propReads"), variable.name = "Coverage")
+  windows <- reshape2::melt(windows, id.vars = c("Chr", "Type", "propReads"), variable.name = "Coverage")
   windows$propReads <- (as.integer(windows$propReads) - 1) / 100
   # Convert the numbers of windows into proportions keeping R1 & R2 separate
   windows <- lapply(split(windows, f = windows$Type), function(x){

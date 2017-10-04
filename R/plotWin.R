@@ -118,8 +118,7 @@ plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),p
     geom_point(data = windowsReduced, aes_string(x = "NbReads", y = "PositiveProportion", colour = "group")) +
     geom_line(data = ThresholdP, aes_string(x = "NbReads", y = "PositiveProportion", linetype = "Threshold")) +
     geom_line(data = ThresholdN, aes_string(x = "NbReads", y = "PositiveProportion", linetype = "Threshold")) +
-    labs(y = "Proportion of Reads on '+' Strand",
-         colour = "Max Coverage") +
+    labs(y = "Proportion of Reads on '+' Strand", colour = "Max Coverage") 
     if (useCoverage) {g <- g + labs(x = "Number of aligned bases")}
     else {g <- g + labs(x = "Number of reads")}
   g <- g + theme_bw() +

@@ -28,6 +28,7 @@ getWinFromGranges <- function(x, chromosomeInfo, winWidth = 1000, winStep = 100)
   if (!all(reqCols %in% names(chromosomeInfo))) stop("chromosomeInfo must contain the column ", reqCols)
   stopifnot(is.numeric(winWidth) || is.numeric(winStep))
   
+  # Calculate start/end position of each chromosome in the partition
   for (i in seq_along(chromosomeInfo$Sequence)){
     r <- which(as.vector(seqnames(x)) == chromosomeInfo$Sequence[i])
     if (length(r)>0){
@@ -36,8 +37,11 @@ getWinFromGranges <- function(x, chromosomeInfo, winWidth = 1000, winStep = 100)
     }
   }
   
+  # Calculate the windows that overlap the "+" ranges of x
   mustKeepPos <- getWinFromIRanges(ranges(x)[strand(x)!="-",], winWidth, winStep, 1) 
   mustKeepPos <- coverage(mustKeepPos) > 0
+  
+  # Calculate the windows that overlap the "-" ranges of x
   mustKeepNeg <- getWinFromIRanges(ranges(x)[strand(x)!="+",], winWidth, winStep, 1) 
   mustKeepNeg <- coverage(mustKeepNeg) > 0
   

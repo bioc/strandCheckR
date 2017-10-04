@@ -8,7 +8,7 @@ getWinFromBamFile(file, chromosomes, mapqFilter = 0, partitionSize = 1e+08,
   winWidth = 1000, winStep = 100, paired)
 }
 \arguments{
-\item{file}{the input single-end bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
+\item{file}{the input bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
 
 \item{chromosomes}{the list of chromosomes to be read}
 

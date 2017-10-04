@@ -21,46 +21,58 @@
 #'
 #' @export
 keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,winWidth,winStep,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,useCoverage=FALSE){
-  if (useCoverage){
+  
+  if (getWin || useCoverage){
     fromCoverage <- calculateStrandCoverage(winPositiveAlignments,winNegativeAlignments,winWidth,winStep)
-    nbPositive <- fromCoverage$CovPositive
-    nbNegative <- fromCoverage$CovNegative
-  }
-  else{
-    fromNbReads <- calculateStrandNbReads(winPositiveAlignments,winNegativeAlignments)
-    nbPositive <- fromNbReads$NbPositive
-    nbNegative <- fromNbReads$NbNegative
+    }
+  if (getWin || !useCoverage){
+    fromNbReads <- calculateStrandNbReads(winPositiveAlignments,winNegativeAlignments)    
   }
   
-  if (getWin){
-    presentWin <- which(as.vector((nbPositive>0) | (nbNegative>0)) == TRUE)
-    if (length(presentWin)>0){
-      Win <- DataFrame(Start = presentWin, 
-                       CovPositive = nbPositive[presentWin], CovNegative = nbNegative[presentWin])
-      if (useCoverage){
-        Win[["MaxCoverage"]] = fromCoverage$maxCoverage[presentWin]
-      }
+  if (useCoverage){
+    pos <- fromCoverage$CovPositive
+    neg <- fromCoverage$CovNegative
+    if (getWin){
+      presentWin <- which(as.vector((pos>0) | (neg>0)) == TRUE)
+      Win <- DataFrame(Start = presentWin,                          
+                       CovPositive = pos[presentWin],
+                       CovNegative = neg[presentWin],
+                       MaxCoverage = fromCoverage$MaxCoverage[presentWin],
+                       NbPositive = fromNbReads$NbPositive[presentWin],
+                       NbNegative = fromNbReads$NbNegative[presentWin])
+    }
+  } else{
+    pos <- fromNbReads$NbPositive
+    neg <- fromNbReads$NbNegative
+    if (getWin){
+      presentWin <- which(as.vector((pos>0) | (neg>0)) == TRUE)
+      Win <- DataFrame(Start = presentWin,                          
+                       NbPositive = pos[presentWin],
+                       NbNegative = neg[presentWin],
+                       CovPositive = fromCoverage$CovPositive[presentWin],
+                       CovNegative = fromCoverage$CovNegative[presentWin],
+                       MaxCoverage = fromCoverage$MaxCoverage[presentWin])
     }
   }
   
-  toTest <- (logitThreshold-abs(log(nbPositive/nbNegative)))/sqrt((nbPositive+nbNegative)/nbPositive/nbNegative)
+  toTest <- (logitThreshold-abs(log(pos/neg)))/sqrt((pos+neg)/pos/neg)
   pvalue <- Rle(pnorm(runValue(toTest)),runLength(toTest))
   rm(toTest)
-  pvalue[(nbPositive==0 | nbNegative==0)] <- 0
+  pvalue[(pos==0 | neg==0)] <- 0
   if (min>0){
     if (useCoverage){
       pvalue[fromCoverage$MaxCoverage<min] <- 1
     }
     else{
-      pvalue[(nbPositive+nbNegative)<min] <- 1
+      pvalue[(pos+neg)<min] <- 1
     }
   }
   keptWin <- rep(TRUE,length(runValue(pvalue)))
   keptWin[runValue(pvalue)>pvalueThreshold] <- FALSE
   keptWin <- Rle(keptWin,runLength(pvalue))
 
-  keptProbaPosWin <- keptWin*((nbPositive>nbNegative)*((nbPositive-nbNegative)/nbPositive)+(nbPositive<nbNegative)*errorRate)
-  keptProbaNegWin <- keptWin*((nbPositive<nbNegative)*((nbNegative-nbPositive)/nbNegative)+(nbPositive>nbNegative)*errorRate)
+  keptProbaPosWin <- keptWin*((pos>neg)*((pos-neg)/pos)+(pos<neg)*errorRate)
+  keptProbaNegWin <- keptWin*((pos<neg)*((neg-pos)/neg)+(pos>neg)*errorRate)
   
   if (length(mustKeepWin)>0){
     if (length(mustKeepWin$Positive)>length(keptProbaPosWin)) mustKeepWin$Positive <- mustKeepWin$Positive[length(keptProbaPosWin)]
@@ -72,12 +84,12 @@ keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,winWidth,wi
   }
   if (max>0){
     if (useCoverage){
-      keepMorePos <- (nbPositive>nbNegative)*(fromCoverage$MaxCoverage>=max)
-      keepMoreNeg <- (nbPositive<nbNegative)*(fromCoverage$MaxCoverage>=max)
+      keepMorePos <- (pos>neg)*(fromCoverage$MaxCoverage>=max)
+      keepMoreNeg <- (pos<neg)*(fromCoverage$MaxCoverage>=max)
     }
     else{
-      keepMorePos <- (nbPositive>nbNegative)*(nbPositive>=max)
-      keepMoreNeg <- (nbPositive<nbNegative)*(nbNegative>=max)
+      keepMorePos <- (pos>neg)*(pos>=max)
+      keepMoreNeg <- (pos<neg)*(neg>=max)
     }
     keptProbaPosWin <- keepMorePos+(!keepMorePos)*keptProbaPosWin
     keptProbaNegWin <- keepMoreNeg+(!keepMoreNeg)*keptProbaNegWin
