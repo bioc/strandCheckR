@@ -2,21 +2,21 @@
 % Please edit documentation in R/plotWin.R
 \name{plotWin}
 \alias{plotWin}
-\title{Plot the number of reads vs positive proportion of the input windows data frame.}
+\title{Plot the Proportion of + Stranded Reads}
 \usage{
 plotWin(windows, breaks = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
-  0.9), pvalue = 0.05, save = FALSE, file = "win.pdf",
-  facet_wrap_chromosomes = FALSE, useCoverage = FALSE, ...)
+  0.9), save = FALSE, file = "win.pdf", facet_wrap_chromosomes = FALSE,
+  useCoverage = FALSE, ...)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding windows.
-Windows can be obtained using the function \code{getWinFromBamFile}.}
+Windows should be obtained using the function \code{\link{getWinFromBamFile}} to ensure the correct data structure.}
 
-\item{breaks}{an integer vector that specifies how you want to partition the windows based on the coverage. By default \code{breaks} = c(10,100,1000), which means that your windows will be paritionned into 4 groups, those have coverage < 10, from 10 to 100, from 100 to 1000, and > 1000}
+\item{breaks}{an integer vector that specifies how you want to partition the windows based on coverage. 
+By default \code{breaks} = c(10,100,1000), partition windows into 4 groups based on these values.}
 
-\item{threshold}{a real vector that specifies which threshold lines you want to draw on the plot. The positive windows above the threshold line (or negative windows below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.}
-
-\item{pvalue}{0.05 by default, any window has pvalue below that in the test comparing with a given threshold will be kept.}
+\item{threshold}{a \code{numeric} vector between 0.5 & 1 that specifies which threshold lines to draw on the plot. 
+The positive windows above the threshold line (or negative windows below the threshold line) will be kept when using \code{\link{filterDNA}}.}
 
 \item{save}{if TRUE, then the plot will be save into the file given by \code{file} parameter}
 
@@ -26,17 +26,32 @@ Windows can be obtained using the function \code{getWinFromBamFile}.}
 
 \item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
 
-\item{...}{used to pass parameters to facet_wrap}
+\item{...}{used to pass parameters to facet_wrap during plotting}
 }
 \description{
-Plot the number of reads vs positive proportion of the input windows data frame.
+Plot the number of reads vs the proportion of '+' stranded reads.
+}
+\details{
+This function will plot the proportion of '+' stranded reads for each window,
+ against the number of reads in each window.
+ The threshold lines indicate the hypothetical boundary where windows will contain reads to kept or discarded
+ using the filtering methods of \code{\link{filterDNA}}.
+ 
+ Any plot can be easily modified using standard ggplot2 syntax (see Examples).
+ 
+ @return The plot will be returned as a standard ggplot2 object
 }
 \examples{
 \dontrun{
 bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
-plotWin(windows)}
+plotWin(windows)
+
+# Change point colour using ggplot2
+library(ggplot2)
+plotWin(bamWindows) + scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))}
+
 }
 \seealso{
-getWinFromBamFile,  plotHist
+\code{\link{getWinFromBamFile}},  \code{\link{plotHist}}
 }

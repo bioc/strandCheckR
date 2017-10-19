@@ -1,21 +1,28 @@
-#' @title Plot the number of reads vs positive proportion of the input windows data frame.
+#' @title Plot the Proportion of + Stranded Reads
 #'
-#' @description Plot the number of reads vs positive proportion of the input windows data frame.
-
+#' @description Plot the number of reads vs the proportion of '+' stranded reads.
+#' 
+#' @details This function will plot the proportion of '+' stranded reads for each window,
+#'  against the number of reads in each window.
+#'  The threshold lines indicate the hypothetical boundary where windows will contain reads to kept or discarded
+#'  using the filtering methods of \code{\link{filterDNA}}.
+#'  
+#'  Any plot can be easily modified using standard ggplot2 syntax (see Examples).
+#'  
+#'  @return The plot will be returned as a standard ggplot2 object
+#' 
 #' @param windows data frame containing the strand information of the sliding windows.
-#' Windows can be obtained using the function \code{getWinFromBamFile}.
-#'
-#' @param breaks an integer vector that specifies how you want to partition the windows based on the coverage. By default \code{breaks} = c(10,100,1000), which means that your windows will be paritionned into 4 groups, those have coverage < 10, from 10 to 100, from 100 to 1000, and > 1000
-#'
-#' @param threshold a real vector that specifies which threshold lines you want to draw on the plot. The positive windows above the threshold line (or negative windows below the threshold line) will be kept if we use that threshold to filter the data. By default, the thresholds 0.6, 0.7, 0.8, 0.9 will be plotted.
-#'
-#' @param pvalue 0.05 by default, any window has pvalue below that in the test comparing with a given threshold will be kept.
+#' Windows should be obtained using the function \code{\link{getWinFromBamFile}} to ensure the correct data structure.
+#' @param breaks an integer vector that specifies how you want to partition the windows based on coverage. 
+#' By default \code{breaks} = c(10,100,1000), partition windows into 4 groups based on these values.
+#' @param threshold a \code{numeric} vector between 0.5 & 1 that specifies which threshold lines to draw on the plot. 
+#' The positive windows above the threshold line (or negative windows below the threshold line) will be kept when using \code{\link{filterDNA}}. 
 #' @param save if TRUE, then the plot will be save into the file given by \code{file} parameter
 #' @param file the file name to save to plot
 #' @param facet_wrap_chromosomes if TRUE, then the plots will be splitted by chromosomes. FALSE by default
 #' @param useCoverage if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default
-#' @param ... used to pass parameters to facet_wrap
-#' @seealso getWinFromBamFile,  plotHist
+#' @param ... used to pass parameters to facet_wrap during plotting
+#' @seealso \code{\link{getWinFromBamFile}},  \code{\link{plotHist}}
 #'
 #' @importFrom dplyr select mutate distinct one_of starts_with
 #' @importFrom stats pnorm
@@ -26,11 +33,16 @@
 #' \dontrun{
 #' bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 #' windows <- getWinFromBamFile(file = bamfilein)
-#' plotWin(windows)}
+#' plotWin(windows)
+#' 
+#' # Change point colour using ggplot2
+#' library(ggplot2)
+#' plotWin(bamWindows) + scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))}
+#' 
 #' @export
 #'
-
-plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),pvalue=0.05,save=FALSE,file="win.pdf",facet_wrap_chromosomes=FALSE,useCoverage=FALSE,...){
+plotWin <- function(windows, breaks=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9), 
+                    save=FALSE, file="win.pdf", facet_wrap_chromosomes=FALSE, useCoverage=FALSE, ...){
   
   # The initial checks for appropriate input
   reqWinCols <- c("Chr", "Start", "NbPositive", "NbNegative", "CovPositive", "CovNegative", "MaxCoverage")
@@ -67,39 +79,37 @@ plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),p
     windows$group <- cut(windows$MaxCoverage, breaks = covBreaks, include.lowest = TRUE, labels = covLabels)
   }
   
-  #Remove duplicated points for lightening the plots
-  windowsReduced <- windows %>% mutate(NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2))
+  # Remove duplicated points for faster plotting
+  windows <- mutate(windows, NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2))
   if (facet_wrap_chromosomes){
-    windowsReduced <- distinct(windowsReduced,Chr,Type,NbReads,PositiveProportion,group) 
+    windows <- distinct(windows, Chr, Type, NbReads, PositiveProportion, group) 
   }
   else {
-    windowsReduced <- distinct(windowsReduced,Type,NbReads,PositiveProportion,group) 
+    windows <- distinct(windows, Type, NbReads, PositiveProportion, group) 
   }
-  rm(windows)
   
   # Generating the threshold lines
+  maxReads <- max(windows$NbReads)
   ThresholdP <- data.frame("NbReads" = c(), "PositiveProportion" = c(), "Threshold"= c())
   ThresholdN <- data.frame("NbReads" = c(), "PositiveProportion" = c(), "Threshold"= c())
-  nbSampling <- 10000
+  nbSampling <- 1000
   for (t in threshold){
     tP = log(t/(1-t))
-    positiveReadsT <- sapply(1:nbSampling,function(N){
-      p = seq(round(N*t),N,1)
-      pP = p/N
-      mP = log(pP/(1-pP))
-      sdP = sqrt(1/(N*pP*(1-pP)))
+    # x <- 1:nbSampling
+    x <- floor(seq(1, sqrt(maxReads), length.out = nbSampling)^2)
+    positiveReadsT <- sapply(x,function(N){
+      p = seq(round(N*t),N,1) # Number of positive reads
+      pP = p/N # Proportion of positive reads
+      mP = log(pP/(1-pP)) # Mean prop-pos-reads (logit scale)
+      sdP = sqrt(1/(N*pP*(1-pP))) # SD prop-pos-reads
       pNorm <- pnorm(tP,mean = mP, sd = sdP)#pBinom <- pbinom(t*N,size = N, prob = pP)
-      aNorm <- which(pNorm <= pvalue)[1]
+      aNorm <- which(pNorm <= 0.05)[1]
       return(p[aNorm])
     })
-    tP <- data.frame("NbReads" = 1:nbSampling, "PositiveProportion" = positiveReadsT/(1:nbSampling), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositive"=max(windowsReduced$NbPositive),"NbNegative"=round(max(windowsReduced $NbPositive)/t)-max(windowsReduced $NbPositive),"Threshold"=paste0(t)))
+    tP <- data.frame("NbReads" = x, "PositiveProportion" = positiveReadsT/(x), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositive"=max(windows$NbPositive),"NbNegative"=round(max(windows $NbPositive)/t)-max(windows $NbPositive),"Threshold"=paste0(t)))
     ThresholdP <- rbind(ThresholdP,tP)
-    tN <- data.frame("NbReads" = 1:nbSampling, "PositiveProportion" = 1-positiveReadsT/(1:nbSampling), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositive"=round(max(windowsReduced $NbNegative)/t)-max(windowsReduced $NbNegative),"NbNegative"=max(windowsReduced $NbNegative),"Threshold"=paste0(t)))
+    tN <- data.frame("NbReads" = x, "PositiveProportion" = 1-positiveReadsT/(x), "Threshold"= paste0(t)) #%>% rbind(data.frame("NbPositive"=round(max(windows $NbNegative)/t)-max(windows $NbNegative),"NbNegative"=max(windows $NbNegative),"Threshold"=paste0(t)))
     ThresholdN <- rbind(ThresholdN,tN)
-  }
-  if (max(windowsReduced$NbReads) > nbSampling){
-    ThresholdP <- rbind(ThresholdP,data.frame("NbReads" = max(windowsReduced$NbReads), "PositiveProportion" = threshold, "Threshold"=paste0(threshold)))
-    ThresholdN <- rbind(ThresholdN,data.frame("NbReads" = max(windowsReduced$NbReads), "PositiveProportion" = (1-threshold), "Threshold"=paste0(threshold)))
   }
   
   # Organise the faceting
@@ -114,14 +124,16 @@ plotWin <- function(windows,breaks=c(10,100,1000),threshold=c(0.6,0.7,0.8,0.9),p
     facets <- ~Chr
   }
   
+  # Make the basic plot
+  xlab <- c("Number of reads", "Number of aligned bases")[useCoverage + 1]
   g <- ggplot() +
-    geom_point(data = windowsReduced, aes_string(x = "NbReads", y = "PositiveProportion", colour = "group")) +
+    geom_point(data = windows, aes_string(x = "NbReads", y = "PositiveProportion", colour = "group")) +
     geom_line(data = ThresholdP, aes_string(x = "NbReads", y = "PositiveProportion", linetype = "Threshold")) +
     geom_line(data = ThresholdN, aes_string(x = "NbReads", y = "PositiveProportion", linetype = "Threshold")) +
-    labs(y = "Proportion of Reads on '+' Strand", colour = "Max Coverage") 
-    if (useCoverage) {g <- g + labs(x = "Number of aligned bases")}
-    else {g <- g + labs(x = "Number of reads")}
-  g <- g + theme_bw() +
+    labs(x = xlab,
+         y = "Proportion of Reads on '+' Strand", 
+         colour = "Max Coverage") + 
+    theme_bw() +
     theme(plot.margin = unit(c(0.02,0.04,0.03,0.02), "npc"))
   
   if (!is.null(facets)) {
