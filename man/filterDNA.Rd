@@ -2,7 +2,7 @@
 % Please edit documentation in R/filterDNA.R
 \name{filterDNA}
 \alias{filterDNA}
-\title{Filter Single End Bam File}
+\title{Filter Double Strand Sequences from a Bam File}
 \usage{
 filterDNA(file, fileout, statfile, chromosomes, mapqFilter = 0,
   partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, winWidth = 1000,
@@ -11,7 +11,7 @@ filterDNA(file, fileout, statfile, chromosomes, mapqFilter = 0,
   paired)
 }
 \arguments{
-\item{file}{the input single end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.}
+\item{file}{the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path.}
 
 \item{fileout}{the output filtered bam file}
 
@@ -25,7 +25,8 @@ filterDNA(file, fileout, statfile, chromosomes, mapqFilter = 0,
 
 \item{mustKeepRanges}{a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.}
 
-\item{getWin}{if TRUE, the function will return a data frame containing the information of all windows. It's FALSE by default.}
+\item{getWin}{if TRUE, the function will return a data frame containing the information of all windows, which can also be obtained using \code{\link{getWinFromBamFile}}. 
+It's FALSE by default.}
 
 \item{winWidth}{the length of the sliding window, 1000 by default.}
 
@@ -51,10 +52,10 @@ If 0 then it doesn't have effect on selecting window. 0 by default.}
 \item{paired}{if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.}
 }
 \description{
-Filter putative double strand DNA from a strand specific single-end RNA-seq using a window sliding across the genome.
+Filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
 }
 \details{
-filterDNA reads a single end bam file containing strand specific RNA reads, and filter putative double strand DNA.
+filterDNA reads a bam file containing strand specific RNA reads, and filter putative double strand DNA.
 Using a window sliding across the genome, we calculate the positive/negative proportion of reads in that window.
 For each window, we use logistic regression to estimate the proportion of reads in the window derived from
 stranded RNA (positive or negative).

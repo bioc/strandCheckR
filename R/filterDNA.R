@@ -1,16 +1,17 @@
-#' @title Filter Single End Bam File
+#' @title Filter Double Strand Sequences from a Bam File
 #'
-#' @description Filter putative double strand DNA from a strand specific single-end RNA-seq using a window sliding across the genome.
+#' @description Filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
 
 #'
-#' @param file the input single end bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path as well.
+#' @param file the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path.
 #' @param mapqFilter every read that has mapping quality below \code{mapqFilter} will be removed before any analysis
 #' @param fileout the output filtered bam file
 #' @param statfile the file to write the summary of the results
 #' @param chromosomes the list of chromosomes to be filtered
 #' @param partitionSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
 #' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.
-#' @param getWin if TRUE, the function will return a data frame containing the information of all windows. It's FALSE by default.
+#' @param getWin if TRUE, the function will return a data frame containing the information of all windows, which can also be obtained using \code{\link{getWinFromBamFile}}. 
+#' It's FALSE by default.
 #' @param winWidth the length of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
 #' @param threshold the threshold upper which we keep the windows. 0.7 by default
@@ -25,7 +26,7 @@
 #' @param useCoverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
 #' @param paired if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.
 #'
-#' @details filterDNA reads a single end bam file containing strand specific RNA reads, and filter putative double strand DNA.
+#' @details filterDNA reads a bam file containing strand specific RNA reads, and filter putative double strand DNA.
 #' Using a window sliding across the genome, we calculate the positive/negative proportion of reads in that window.
 #' For each window, we use logistic regression to estimate the proportion of reads in the window derived from
 #' stranded RNA (positive or negative).

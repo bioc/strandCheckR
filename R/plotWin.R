@@ -93,10 +93,9 @@ plotWin <- function(windows, breaks=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9)
   ThresholdP <- data.frame("NbReads" = c(), "PositiveProportion" = c(), "Threshold"= c())
   ThresholdN <- data.frame("NbReads" = c(), "PositiveProportion" = c(), "Threshold"= c())
   nbSampling <- 1000
+  x <- floor(seq(1, sqrt(maxReads), length.out = nbSampling)^2)
   for (t in threshold){
     tP = log(t/(1-t))
-    # x <- 1:nbSampling
-    x <- floor(seq(1, sqrt(maxReads), length.out = nbSampling)^2)
     positiveReadsT <- sapply(x,function(N){
       p = seq(round(N*t),N,1) # Number of positive reads
       pP = p/N # Proportion of positive reads

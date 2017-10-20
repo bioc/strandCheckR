@@ -12,13 +12,13 @@
 \details{
  The package has some following main functions:
  
- - getWinFromBamFile: calculate positive/negative proprortion and sum of reads over all sliding windows from a bam file
+ - \code{\link{getWinFromBamFile}}: calculate positive/negative proprortion and sum of reads over all sliding windows from a bam file
  
- - plotHist: plot histogram of positive proportion of windows calculated from getWinFromBamFile method
+ - \code{\link{plotHist}}: plot histogram of positive proportion of windows calculated from \code{\link{getWinFromBamFile}} method
  
- - plotWin: plot positive proportion vs number of reads of windows calculated from getWinFromBamFile method
+ - \code{\link{plotWin}}: plot positive proportion vs number of reads of windows calculated from \code{\link{getWinFromBamFile}} method
  
- - filterDNA: filter a bam file
+ - \code{\link{filterDNA}}: filter a bam file
 }
 \author{
 Thu-Hien To & Steve Pederson
