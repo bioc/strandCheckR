@@ -133,6 +133,7 @@ getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8
         }
       }
     }
+    allWin[[n]]$Start <- (allWin[[n]]$Start-1)*winStep+1
   }
   # rbind all Partitions
   do.call(rbind, allWin)
