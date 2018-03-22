@@ -24,9 +24,8 @@ getWinInChromosome <- function(Win, chromosomes, chromosomeInfo, winWidth = 1000
       idLast <- ceiling((chromosomeInfo$LastBaseInPartition[id] - winWidth+1) / winStep)# id of the last window of the chromosome
       idRows <- which(Win$Start >= idFirst & Win$Start <= idLast) #get the windows of the chromosome
       Win$Chr[idRows] <- Rle(currentChr)
-      Win$Start[idRows] <- (Win$Start[idRows] - idFirst)*winStep +1
+      Win$Start[idRows] <- (Win$Start[idRows] - idFirst)+1
     }
   }
-  
-  return(Win)
+  return(Win[Win$Chr!="",])
 }
