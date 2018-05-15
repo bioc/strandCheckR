@@ -7,8 +7,6 @@
 #' @param chromosomeInfo a data frame that contains some key information of the alignments
 #' @param winWidth The width of each window
 #' @param winStep The step size for sliding the window
-#' @param readProp A read is considered to be included in a window if more than \code{readProp} of it is in the window. 
-#' Specified as a proportion.
 #' @return A list of two logical vectors (for positive and negative strand) defining which windows that overlap the given Granges objects
 #' 
 #' @importFrom GenomicRanges start<-

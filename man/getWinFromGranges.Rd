@@ -14,9 +14,6 @@ getWinFromGranges(x, chromosomeInfo, winWidth = 1000, winStep = 100)
 \item{winWidth}{The width of each window}
 
 \item{winStep}{The step size for sliding the window}
-
-\item{readProp}{A read is considered to be included in a window if more than \code{readProp} of it is in the window. 
-Specified as a proportion.}
 }
 \value{
 A list of two logical vectors (for positive and negative strand) defining which windows that overlap the given Granges objects
