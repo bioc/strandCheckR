@@ -10,7 +10,7 @@
 #' @param x an IRanges object containing the start and end position of each fragment
 #' @param winWidth The width of each window
 #' @param winStep The step size for sliding the window
-#' @param readProp A read is considered to be included in a window if at least \code{readProp} of it is in the window. 
+#' @param readProp A read is considered to be included in a window if more than \code{readProp} of it is in the window. 
 #' Specified as a proportion.
 #' @param maxWin The maximum window ID
 #' 
@@ -22,7 +22,7 @@
 getWinFromIRanges <- function(x, winWidth = 1000L, winStep = 100L, readProp = 0, maxWin = Inf){
   
   readProp <- readProp[1]
-  if (readProp < 0 || readProp > 1) stop("readProp must be within the range [0, 1]")
+  if (readProp < 0 || readProp >= 1) stop("readProp must be within the range [0, 1)")
   
   stopifnot(is.numeric(maxWin))
   

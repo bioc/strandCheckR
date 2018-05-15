@@ -2,11 +2,10 @@
 #' @description get the number of positive/negative reads of all windows from a single end bam file
 #' @param file the input bam file. Your bamfile should be sorted and have an index file located at the same path as well.
 #' @param chromosomes the list of chromosomes to be read
-#' @param mapqFilter very read that has mapping quality below \code{mapqFilter} will be removed before any analysis
-#' @param partitionSize by default is 1e8, i.e. the bam file is read by blocks of chromosomes 
-#' such that the total length of each block is at least 1e8
+#' @param mapqFilter every read that has mapping quality below \code{mapqFilter} will be removed before any analysis
+#' @param partitionSize by default is 1e8, i.e. the bam file is read by blocks of chromosomes such that the total length of each block is at least 1e8
 #' @param winWidth the width of the sliding window, 1000 by default.
-#' @param winStep the winStep length to sliding the window, 100 by default.
+#' @param winStep the step length to sliding the window, 100 by default.
 #' @param paired if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.
 #' @seealso filterDNA, getWinFromPairedBamFile, plotHist, plotWin
 #' @export

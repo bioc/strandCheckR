@@ -1,8 +1,5 @@
-#' @title Filter Double Strand Sequences from a Bam File
-#'
-#' @description Filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
-
-#'
+#' @title filter Double Strand Sequences from a Bam File
+#' @description filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
 #' @param file the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path.
 #' @param mapqFilter every read that has mapping quality below \code{mapqFilter} will be removed before any analysis
 #' @param fileout the output filtered bam file
@@ -10,37 +7,36 @@
 #' @param chromosomes the list of chromosomes to be filtered
 #' @param partitionSize by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8
 #' @param mustKeepRanges a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.
-#' @param getWin if TRUE, the function will return a data frame containing the information of all windows, which can also be obtained using \code{\link{getWinFromBamFile}}. 
+#' @param getWin if TRUE, the function will not only filter the bam file but also return a data frame containing the information of all windows. This data frame can also be obtained using \code{\link{getWinFromBamFile}}. 
 #' It's FALSE by default.
 #' @param winWidth the length of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
-#' @param threshold the threshold upper which we keep the windows. 0.7 by default
-#' @param pvalueThreshold the threshold for the p-value. 0.05 by default
-#' @param min In the case that \code{useCoverage=FALSE}, if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 
-#'        For the case that \code{useCoverage=TRUE}, if a window has max coverage least than \code{min}, then it will be rejected. 0 by default
-#' @param max In the case that \code{useCoverage=FALSE},if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. 
-#'        For the case that \code{useCoverage=TRUE}, if a window has max coverage more than \code{max}, then it will be kept. 
-#'        If 0 then it doesn't have effect on selecting window. 0 by default.
-#' @param errorRate the probability that an RNA read takes the false strand. 0.01 by default
-#' @param readProp a read is considered to be included in a window if and only if at least \code{readProp} percent of it is in the window. 0.75 by default
+#' @param threshold if a window has strand proportion greater than \code{threshold}, then the reads in that window will be kept. 0.7 by default
+#' @param pvalueThreshold the threshold for the p-value in the test of keeping windows. 0.05 by default
 #' @param useCoverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
+#' @param min if \code{useCoverage=FALSE}, every window has least than \code{min} reads will be rejected regardless the strand proportion. 
+#'        If \code{useCoverage=TRUE}, every window has max coverage least than \code{min} will be rejected. 0 by default
+#' @param max if \code{useCoverage=FALSE}, every window has more than \code{max} reads will be kept regardless the strand proportion. 
+#'        If \code{useCoverage=TRUE}, every window has max coverage more than \code{max} will be kept. 
+#'        If 0 then it doesn't have effect on selecting window. 0 by default.
+#' @param errorRate the probability that an RNA read takes the false strand. 0.01 by default.
+#' @param readProp A read is considered to be included in a window if more than \code{readProp} of it is in the window. 
+#' Specified as a proportion.
 #' @param paired if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.
 #'
 #' @details filterDNA reads a bam file containing strand specific RNA reads, and filter putative double strand DNA.
-#' Using a window sliding across the genome, we calculate the positive/negative proportion of reads in that window.
-#' For each window, we use logistic regression to estimate the proportion of reads in the window derived from
-#' stranded RNA (positive or negative).
-#'
-#' Let \eqn{\pi} be the proportion of reads in the window derived from stranded RNA (positive or negative)
-#'
-#' Null hypothesis: \eqn{\pi < {\pi}_{0}} where \eqn{{\pi}_{0}} is the given threshold.
-#'
-#' Only windows with p-value <= 0.05 are kept. For a positive window that is kept, let P be its number of positive reads, and let M
-#' be its number of negative reads. Since these M negative reads should come from double-strand DNA, then there should be also M postive reads among the
+#' Using a window sliding across the genome, we calculate the positive/negative proportion of reads in each window.
+#' We then use logistic regression to estimate the strand proportion of reads in each window, and calculate the p-value when compare that to the given threshold.
+#' Let \eqn{\pi} be the strand proportion of reads in a window.
+#' 
+#' Null hypothesis for positive window: \eqn{\pi \le threshold}.
+#' 
+#' Null hypothesis for negative window: \eqn{\pi \ge 1-threshold}.
+#' 
+#' Only windows with p-value <= \code{pvalueThreshold} are kept. For a kept positive window, let P be its number of positive reads, and let M
+#' be its number of negative reads. These M negative reads are supposed to come from double-strand DNA, then there should be also M postive reads among the
 #' P positive reads come from double-strand DNA. In other words, there are only (P-M) positive reads come from RNA. Hence, each positive read in this window is kept
-#' with the probability equalling (P-M)/P. Each negative read is kept with the probability equalling the given \code{errorRate} which is the rate that
-#' an RNA read of your sample has wrong strand.
-#'
+#' with the probability (P-M)/P. Each negative read is kept with the probability equalling the rate that an RNA read of your sample has wrong strand, which is \code{errorRate}.
 #' Since each alignment can be belonged to several windows, then the probability of keeping an alignment is the maximum probability defined by
 #' all windows that contain it.
 #'
@@ -62,7 +58,7 @@
 #' @import S4Vectors
 #'
 #' @export
-filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSize = 1e8, mustKeepRanges,getWin=FALSE,winWidth=1000,winStep=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,readProp=0.75,useCoverage=FALSE,paired){
+filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSize = 1e8, mustKeepRanges,getWin=FALSE,winWidth=1000,winStep=100,threshold=0.7,pvalueThreshold=0.05,min=0,max=0,errorRate=0.01,readProp=0.5,useCoverage=FALSE,paired){
   startTime <- proc.time()
   
   # Check the input is a BamFile. Convert if necessary
@@ -102,12 +98,15 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
   # Logit of the given threshold
   logitThreshold <- log(threshold/(1-threshold))
   
+  # Define the file to write the summary of the results
   if (missing(statfile)){
     statfile <- "out.stat"
-    message("Summary will be written to the file out.stat")
+    message(paste0("Summary will be written to the file ",statfile))
   }
 
+  # Get the chromosome list of the ranges must be kept
   if (!missing(mustKeepRanges)){
+    stopifnot (class(mustKeepRanges) == "GRanges")
     allChromosomesMustKeep <- levels(seqnames(mustKeepRanges))
   }
   
@@ -125,6 +124,7 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
                                LastReadInPartition = rep(NA, nChr),
                                stringsAsFactors = FALSE)
   
+  # append to the stat file
   append <- FALSE
   
   # Define what to scan from bam file
@@ -132,7 +132,7 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
   if (mapqFilter) scanWhat <- c(scanWhat,"mapq")
   if (paired) scanWhat <- c(scanWhat,"flag")
   
-  # Step through each set of partitions
+  # Step through each part of partitions
   for (n in seq_along(partition)){
     
     # Set the required values for this section
@@ -159,6 +159,9 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
                            integer(1))
     chromosomeInfo$NbOriginalReads[idPart] <- nReadsInPart
     
+    # Calculate the first/last bases/reads of each chromosome in the partition
+    chromosomeInfo[idPart,] <- chromosomeInfoInPartition(chromosomeInfo[idPart,], winStep)
+    
     if (sum(nReadsInPart) > 0){
       # Calculate the windows that overlap mustKeepRanges
       mustKeepWin <- list()
@@ -168,8 +171,6 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
         }
       }
       
-      # Calculate the first/last bases/reads of each chromosome in the partition
-      chromosomeInfo[idPart,] <- chromosomeInfoInPartition(chromosomeInfo[idPart,], winStep)
       
       # Concatenate several lists of the chromosome partition into one list
       readInfo <- concatenateAlignments(readInfo,chromosomeInfo[idPart,])
@@ -184,14 +185,20 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
       }
       for (s in seq_along(subset)){
         
-        # Get the strand information of "+"/"-" reads in each sliding windows
+        # Get the ids of sliding windows containing each "+"/"-" read fragment
         winPositiveAlignments <- getWinOfAlignments(readInfo, "+", winWidth, winStep, readProp = readProp, useCoverage = (useCoverage || getWin), subset[[s]])
         winNegativeAlignments <- getWinOfAlignments(readInfo, "-", winWidth, winStep, readProp = readProp, useCoverage = (useCoverage || getWin),  subset[[s]])
         
         # Calculate the keeping probability of each sliding window
         probaWin <- keptProbaWin(winPositiveAlignments,winNegativeAlignments,winWidth,winStep,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin = getWin, useCoverage=useCoverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
         
-        # If getWin=TRUE, then get the strand information of sliding windows
+        # Calculate the positive read fragments to be kept
+        keptPositiveAlignment <- keptReadFragment(winPositiveAlignments$Win,probaWin$Positive,errorRate) 
+        
+        # Calculate the negative read fragments to be kept
+        keptNegativeAlignment <- keptReadFragment(winNegativeAlignments$Win,probaWin$Negative,errorRate) 
+       
+        # If getWin=TRUE, then return the strand information of sliding windows
         if (getWin){
           win <- getWinInChromosome(probaWin$Win,part,chromosomeInfo[idPart,],winWidth,winStep)
           if (s==1){
@@ -203,12 +210,6 @@ filterDNA <- function(file,fileout,statfile,chromosomes,mapqFilter=0,partitionSi
           }
         }
         
-        # Calculate the positive read fragments to be kept
-        keptPositiveAlignment <- keptReadFragment(winPositiveAlignments$Win,probaWin$Positive,errorRate) 
-        
-        # Calculate the negative read fragments to be kept
-        keptNegativeAlignment <- keptReadFragment(winNegativeAlignments$Win,probaWin$Negative,errorRate) 
-       
         rm(probaWin)
         
         # Infer the index of kept alignments within the partition

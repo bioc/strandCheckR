@@ -7,7 +7,8 @@
 #' @param chromosomeInfo a data frame that contains some key information of the alignments
 #' @param winWidth The width of each window
 #' @param winStep The step size for sliding the window
-#' 
+#' @param readProp A read is considered to be included in a window if more than \code{readProp} of it is in the window. 
+#' Specified as a proportion.
 #' @return A list of two logical vectors (for positive and negative strand) defining which windows that overlap the given Granges objects
 #' 
 #' @importFrom GenomicRanges start<-
@@ -19,10 +20,6 @@
 #' @export
 getWinFromGranges <- function(x, chromosomeInfo, winWidth = 1000, winStep = 100){
   
-  # Check for correct chromosomes 
-  if (!all(chromosomes %in% seqlevels(x))) stop("Invalid specification of chromosomes.\nMust be in the set", seqlevels(x))
-  # Handle missing chromsosomeInfo
-  if (missing(chromosomes)) chromosomes <- seqlevels(x)
   # Check the correct columns are in the chromosomeInfo df
   reqCols <- c("FirstBaseInPartition")
   if (!all(reqCols %in% names(chromosomeInfo))) stop("chromosomeInfo must contain the column ", reqCols)
@@ -38,11 +35,11 @@ getWinFromGranges <- function(x, chromosomeInfo, winWidth = 1000, winStep = 100)
   }
   
   # Calculate the windows that overlap the "+" ranges of x
-  mustKeepPos <- getWinFromIRanges(ranges(x)[strand(x)!="-",], winWidth, winStep, 1) 
+  mustKeepPos <- getWinFromIRanges(ranges(x)[strand(x)!="-",], winWidth, winStep, 0) 
   mustKeepPos <- coverage(mustKeepPos) > 0
   
   # Calculate the windows that overlap the "-" ranges of x
-  mustKeepNeg <- getWinFromIRanges(ranges(x)[strand(x)!="+",], winWidth, winStep, 1) 
+  mustKeepNeg <- getWinFromIRanges(ranges(x)[strand(x)!="+",], winWidth, winStep, 0) 
   mustKeepNeg <- coverage(mustKeepNeg) > 0
   
   list(Positive = mustKeepPos, Negative = mustKeepNeg)

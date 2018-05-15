@@ -12,14 +12,13 @@ getWinFromBamFile(file, chromosomes, mapqFilter = 0, partitionSize = 1e+08,
 
 \item{chromosomes}{the list of chromosomes to be read}
 
-\item{mapqFilter}{very read that has mapping quality below \code{mapqFilter} will be removed before any analysis}
+\item{mapqFilter}{every read that has mapping quality below \code{mapqFilter} will be removed before any analysis}
 
-\item{partitionSize}{by default is 1e8, i.e. the bam file is read by blocks of chromosomes 
-such that the total length of each block is at least 1e8}
+\item{partitionSize}{by default is 1e8, i.e. the bam file is read by blocks of chromosomes such that the total length of each block is at least 1e8}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 
-\item{winStep}{the winStep length to sliding the window, 100 by default.}
+\item{winStep}{the step length to sliding the window, 100 by default.}
 
 \item{paired}{if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.}
 }
