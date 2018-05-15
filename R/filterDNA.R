@@ -83,8 +83,6 @@
 #' @importFrom GenomicRanges GRanges ranges
 #' @importFrom GenomeInfoDb seqinfo seqnames seqlengths
 #' @importFrom IRanges IRanges
-#' @importFrom magrittr %>%
-#' @importFrom dplyr mutate
 #' @import S4Vectors
 #'
 #' @export
@@ -96,6 +94,10 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
   startTime <- proc.time()
   
   # Check the input is a BamFile. Convert if necessary
+  if (length(file) > 1) {
+    message("Multiple files provided. Only the first will be filtered")
+    file <- file[1]
+  }
   if (class(file) != "BamFile") tryCatch(file <- BamFile(file))
   
   # Check the destination path exists & has the suffix bam
