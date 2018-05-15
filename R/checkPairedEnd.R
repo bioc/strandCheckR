@@ -12,7 +12,7 @@ checkPairedEnd <- function(file, yieldSize = 100000){
   checkFile <- BamFile(file, yieldSize = yieldSize)
   flag <- scanBam(checkFile, param = ScanBamParam(what = "flag"))[[1]]$flag
   paired <- any(flag %% 2 == 1)
-  if (paired) message("Your bam file is paired end") else message("Your bam file is singe end")  
+  if (paired) message("Your bam file is paired end") else message("Your bam file is single end")  
   return(paired)
 }
 

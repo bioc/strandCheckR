@@ -21,7 +21,7 @@
 #' }
 getWinFromBamFile <- function(file, chromosomes, mapqFilter=0, partitionSize=1e8, winWidth=1000, winStep=100, paired){
   # Check the input is a BamFile. Convert if necessary
-  if (class(file) != "BamFile") file <- BamFile(file)
+  if (class(file) != "BamFile") tryCatch(file <- BamFile(file))
   
   # Check valid mapqFilter value
   if(mapqFilter < 0 || !is.numeric(mapqFilter)) stop("Invalid value for mapqFilter. Must be positive & numeric.")

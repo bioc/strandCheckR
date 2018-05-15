@@ -23,35 +23,33 @@
 
 \section{Introduction}
 
-\textit{strandCheckR} is a package used to quantify and remove contaimination from genomic DNA within a stranded RNA-seq experiment.
-It takes  one  bam file as input and uses a sliding window across each chromosome to assess whether the window contains reads mainly from one strand, as would be expected from RNA molecules, or from both strands as weould be expected from contaiminating DNA.
+\textit{strandCheckR} is a package used to quantify and remove contamination from genomic DNA within a stranded RNA-seq experiment.
+It takes  one  bam file as input and uses a sliding window across each chromosome to assess whether the window contains reads mainly from one strand, as would be expected from RNA molecules, or from both strands as would be expected from contaminating DNA.
 For each window, it considers the proportion of +/- stranded reads comparing to a given threshold, to decide if a window contains reads derived from single strand RNA or double stranded DNA.
 Then each read fragment is assigned to a probability of being kept or not, based on the proportion of +/- stranded of the windows that contain that fragment.
 
 \section{Get windows information}
 
 The function \textit{getWinFromBamFile} can be used to get the number of +/- stranded reads from all sliding windows throughout the bam file.
-The bamfile should be sorted and have an index file located at the same path as well.
+The bam file should be sorted and have an index file located at the same path as well.
 
 
-<<getwin,eval=FALSE>>=
+<<getwin,eval=TRUE>>=
 library(strandCheckR)
 file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
 win <- getWinFromBamFile(file)
 @
 
 
-With these windows, you can have some plots via \textit{plotHist} and \textit{plotWin} functions.
+With these windows, you can have some plots via \textit{plotHist} and \textit{plotWin} functions which can be saved to an appropriate location.
 
 <<plot,eval=FALSE>>=
 plotHist(win,save=TRUE,file="hist.pdf")
 plotWin(win,save=TRUE,file="win.pdf")
 @
 
-\textit{plotHist} creates a histogram on the frequency of positive proportion over all windows, which give you an idea on how much double-strand DNA is contained in your sample. In perfectly clear ss-RNA-seq, the positive proportion of every window should be either around 0$\%$ or 100$\%$. The more amount of windows have this proportion around 50$\%$, the more the sample was contaminated by DNA.
 
-\textit{plotWin} creates a plot on the number of reads vs positive proportion of each window. There are also $4$ lines correspond to $4$ representative thresholds ($0.6$, $0.7$, $0.8$, $0.9$). Threshold is a parameter that is used when filtering a bam file.
-Given a threshold, a positive (resp. negative) window is kept if and only if it is above (resp. below) the corresponding threshold line on this plot. This plot would suggest which threshold to be used for filtering DNA from your sample.
+\textit{plotHist} creates a histogram on the frequency of positive proportion over all windows, which give you an idea on how much double-strand DNA is contained in your sample. In perfectly clear ss-RNA-seq, the positive proportion of every window should be either around 0$\%$ or 100$\%$. The more amount of windows have this proportion around 50$\%$, the more the sample was contaminated by DNA.
 
 \begin{figure}[!ht]
   \centering
@@ -60,6 +58,9 @@ Given a threshold, a positive (resp. negative) window is kept if and only if it 
   \label{fig:hist}
 \end{figure}
 
+
+\textit{plotWin} creates a plot on the number of reads vs positive proportion of each window. There are also $4$ lines correspond to $4$ representative thresholds ($0.6$, $0.7$, $0.8$, $0.9$). Threshold is a parameter that is used when filtering a bam file.
+Given a threshold, a positive (resp. negative) window is kept if and only if it is above (resp. below) the corresponding threshold line on this plot. This plot would suggest which threshold to be used for filtering DNA from your sample.
 
 
 \begin{figure}[!ht]
@@ -77,6 +78,6 @@ The functions \textit{filterDNA} removes potential double strand DNA from a bam 
 filterDNA(bamfilein = file,bamfileout = "filter.bam", threshold = 0.7)
 @
 
-Other parameters can be specified for more flexible filtering: define the ranges that you want to always keep, the mininum number of reads under which you want to ignore, the rate that an RNA read has false strand etc.
+Other parameters can be specified for more flexible filtering: define the ranges that you want to always keep, the minimum number of reads under which you want to ignore, the rate that an RNA read has false strand etc.
 
 \end{document}

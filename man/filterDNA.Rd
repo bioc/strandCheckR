@@ -2,80 +2,110 @@
 % Please edit documentation in R/filterDNA.R
 \name{filterDNA}
 \alias{filterDNA}
-\title{filter Double Strand Sequences from a Bam File}
+\title{Filter Double Strand Sequences from a Bam File}
 \usage{
-filterDNA(file, fileout, statfile, chromosomes, mapqFilter = 0,
+filterDNA(file, destination, statfile, chromosomes, mapqFilter = 0,
   partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, winWidth = 1000,
   winStep = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
   max = 0, errorRate = 0.01, readProp = 0.5, useCoverage = FALSE,
   paired)
 }
 \arguments{
-\item{file}{the input bam file to be filterd. Your bamfile should be sorted and have an index file located at the same path.}
+\item{file}{the input bam file to be filterd. Your bamfile should be sorted
+and have an index file located at the same path.}
 
-\item{fileout}{the output filtered bam file}
+\item{destination}{The file path where the filtered output will be written}
 
 \item{statfile}{the file to write the summary of the results}
 
 \item{chromosomes}{the list of chromosomes to be filtered}
 
-\item{mapqFilter}{every read that has mapping quality below \code{mapqFilter} will be removed before any analysis}
+\item{mapqFilter}{every read that has mapping quality below \code{mapqFilter}
+will be removed before any analysis}
 
-\item{partitionSize}{by default is 1e8, i.e. the bam file is read by block of chromosomes such that the total length of each block is at least 1e8}
+\item{partitionSize}{by default is 1e8, i.e. the bam file is read by block of
+chromosomes such that the total length of each block is at least 1e8}
 
-\item{mustKeepRanges}{a GRanges object defines the ranges such that every read maps to those ranges must be always kept regardless the strand proportion of the windows containing them.}
+\item{mustKeepRanges}{a GRanges object defines the ranges such that every
+read mapping to those ranges is always kept regardless the strand proportion
+of the windows containing them.}
 
-\item{getWin}{if TRUE, the function will not only filter the bam file but also return a data frame containing the information of all windows. This data frame can also be obtained using \code{\link{getWinFromBamFile}}. 
-It's FALSE by default.}
+\item{getWin}{if TRUE, the function will not only filter the bam file but
+also return a data frame containing the information of all windows. This
+ data frame can also be obtained using \code{\link{getWinFromBamFile}}.
+  FALSE by default.}
 
 \item{winWidth}{the length of the sliding window, 1000 by default.}
 
 \item{winStep}{the step length to sliding the window, 100 by default.}
 
-\item{threshold}{if a window has strand proportion greater than \code{threshold}, then the reads in that window will be kept. 0.7 by default}
+\item{threshold}{if a window has strand proportion greater than \code{threshold},
+then the reads in that window will be kept. 0.7 by default}
 
-\item{pvalueThreshold}{the threshold for the p-value in the test of keeping windows. 0.05 by default}
+\item{pvalueThreshold}{the threshold for the p-value in the test of keeping
+windows. 0.05 by default}
 
-\item{min}{if \code{useCoverage=FALSE}, every window has least than \code{min} reads will be rejected regardless the strand proportion. 
-If \code{useCoverage=TRUE}, every window has max coverage least than \code{min} will be rejected. 0 by default}
+\item{min}{if \code{useCoverage=FALSE}, every window that has less than
+\code{min} reads will be rejected regardless the strand proportion. 
+      If \code{useCoverage=TRUE}, every window has max coverage least
+       than \code{min} will be rejected. 0 by default}
 
-\item{max}{if \code{useCoverage=FALSE}, every window has more than \code{max} reads will be kept regardless the strand proportion. 
-If \code{useCoverage=TRUE}, every window has max coverage more than \code{max} will be kept. 
+\item{max}{if \code{useCoverage=FALSE}, every window that has more than
+\code{max} reads will be kept regardless the strand proportion. 
+If \code{useCoverage=TRUE}, every window with coverage more than 
+\code{max} will be kept. 
 If 0 then it doesn't have effect on selecting window. 0 by default.}
 
-\item{errorRate}{the probability that an RNA read takes the false strand. 0.01 by default.}
+\item{errorRate}{the probability that an RNA read takes the false strand.
+0.01 by default.}
 
-\item{readProp}{A read is considered to be included in a window if more than \code{readProp} of it is in the window. 
+\item{readProp}{A read is considered to be included in a window if more than
+ \code{readProp} of it is in the window. 
 Specified as a proportion.}
 
-\item{useCoverage}{if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.}
+\item{useCoverage}{if TRUE, then the strand information in each window
+corresponds to the sum of coverage coming from positive/negative reads;
+ and not the number of positive/negative reads as default.}
 
-\item{paired}{if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.}
+\item{paired}{if TRUE then the input bamfile will be considered as paired end
+reads. If missing, 100 thousands first reads will be inspected to test if
+ the input bam file in paired end or single end.}
 }
 \description{
-filter putative double strand DNA from a strand specific RNA-seq using a window sliding across the genome.
+Filter putative double strand DNA from a strand specific RNA-seq
+ using a window sliding across the genome.
 }
 \details{
-filterDNA reads a bam file containing strand specific RNA reads, and filter putative double strand DNA.
-Using a window sliding across the genome, we calculate the positive/negative proportion of reads in each window.
-We then use logistic regression to estimate the strand proportion of reads in each window, and calculate the p-value when compare that to the given threshold.
+filterDNA reads a bam file containing strand specific RNA reads, and
+ filter putative double strand DNA.
+Using a window sliding across the genome, we calculate the positive/negative
+ proportion of reads in each window.
+We then use logistic regression to estimate the strand proportion of reads in
+ each window, and calculate the p-value when compare that to the given threshold.
 Let \eqn{\pi} be the strand proportion of reads in a window.
 
 Null hypothesis for positive window: \eqn{\pi \le threshold}.
 
 Null hypothesis for negative window: \eqn{\pi \ge 1-threshold}.
 
-Only windows with p-value <= \code{pvalueThreshold} are kept. For a kept positive window, let P be its number of positive reads, and let M
-be its number of negative reads. These M negative reads are supposed to come from double-strand DNA, then there should be also M postive reads among the
-P positive reads come from double-strand DNA. In other words, there are only (P-M) positive reads come from RNA. Hence, each positive read in this window is kept
-with the probability (P-M)/P. Each negative read is kept with the probability equalling the rate that an RNA read of your sample has wrong strand, which is \code{errorRate}.
-Since each alignment can be belonged to several windows, then the probability of keeping an alignment is the maximum probability defined by
-all windows that contain it.
+Only windows with p-value <= \code{pvalueThreshold} are kept. For a kept
+ positive window, let P be its number of positive reads, and let M
+be its number of negative reads. These M negative reads are supposed to come
+ from double-strand DNA, then there should be also M postive reads among the
+P positive reads come from double-strand DNA. In other words, there are only
+ (P-M) positive reads come from RNA. Hence, each positive read in this window
+  is kept
+with the probability (P-M)/P. Each negative read is kept with the probability
+ equalling the rate that an RNA read of your sample has wrong strand, which 
+ is \code{errorRate}.
+Since each alignment can be belonged to several windows, then the probability
+ of keeping an alignment is the maximum probability defined by all windows
+  that contain it.
 }
 \examples{
 \dontrun{
 file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
-filterDNA(file,fileout="out.bam",statfile = "out.stat")
+filterDNA(file,destination="out.bam",statfile = "out.stat")
 }
 
 }
