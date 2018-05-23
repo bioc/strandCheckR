@@ -2,45 +2,36 @@
 % Please edit documentation in R/plotHist.R
 \name{plotHist}
 \alias{plotHist}
-\title{Plot the histogram of positive proportions of the input windows data frame}
+\title{Plot the histogram of positive proportions of the input histogram data frame}
 \usage{
-plotHist(windows, breaks = c(10, 100, 1000), save = FALSE,
-  file = "hist.pdf", facet_wrap_chromosomes = FALSE, useCoverage = FALSE,
-  ...)
+plotHist(histWin, save = FALSE, file = "hist.pdf", facets = NULL,
+  heatmap = FALSE, ...)
 }
 \arguments{
-\item{windows}{data frame containing the strand information of the sliding windows.
-Windows can be obtained using the function \code{getWinFromBamFile}.}
-
-\item{breaks}{an integer vector that specifies how you want to partition the windows based on the coverage. By default \code{breaks} = c(10,100,1000), which means that your windows will be partitionned into 4 groups, those have coverage < 10, from 10 to 100, from 100 to 1000, and > 1000}
+\item{histWin}{data frame obtained from \code{summarizeHist} function}
 
 \item{save}{if TRUE, then the plot will be save into the file given by \code{file} parameter}
 
 \item{file}{the file name to save to plot}
 
-\item{facet_wrap_chromosomes}{if TRUE, then the plots will be splitted by chromosomes. FALSE by default}
+\item{facets}{colnames of \code{histWin} which will be used to split the plot}
 
-\item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
+\item{heatmap}{if TRUE, then use heat map to plot the histogram, otherwise use barplot. FALSE by default.}
 
 \item{...}{used to pass parameters to facet_wrap}
 }
 \description{
-Plot the histogram of positive proportions of the input windows data frame
+Plot the histogram of positive proportions of the input histogram  data frame
 }
 \examples{
 \dontrun{
 #for single end bam file
-bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
-windows <- getWinFromBamFile(file = bamfilein)
-plotHist(windows)
-
-#for paired end bamfile
-bamfilepair = system.file("extdata","120.bam",package = "strandCheckR")
-windowsP <- getWinFromBamFile(file = bamfilepair)
-plotHist(windowsP)
-}
+bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
+windows  <- getWinFromBamFile(file = bamfilein)
+histWin <- summarizeHist(windows)
+plotHist(histWin)}
 
 }
 \seealso{
-getWinFromBamFile, plotWin
+summarizeHist, getWinFromBamFile, plotWin
 }

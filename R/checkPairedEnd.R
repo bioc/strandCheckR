@@ -8,7 +8,7 @@
 #' @importFrom Rsamtools ScanBamParam
 
 checkPairedEnd <- function(file, yieldSize = 100000){
-  message("Testing paired end bam file by checking the first ", yieldSize," reads")
+  message("Testing paired end by checking the first ", yieldSize," reads of file ",file)
   checkFile <- BamFile(file, yieldSize = yieldSize)
   flag <- scanBam(checkFile, param = ScanBamParam(what = "flag"))[[1]]$flag
   paired <- any(flag %% 2 == 1)

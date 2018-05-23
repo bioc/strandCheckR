@@ -74,7 +74,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
+#' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' filterDNA(file,destination="out.bam",statfile = "out.stat")
 #' }
 #' 
@@ -244,7 +244,8 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
       if (paired){
         firstReadIndex <- ((floor(readInfo$flag/64) %% 2) == 1)
         secondReadIndex <- !firstReadIndex
-        subset <- list("R1"=firstReadIndex,"R2"=secondReadIndex)
+        if (sum(firstReadIndex)==0 || sum(secondReadIndex)==0) subset <- list(NULL) 
+        else subset <- list("R1"=firstReadIndex,"R2"=secondReadIndex)
       } 
       else{
         subset <- list(NULL)

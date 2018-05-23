@@ -104,7 +104,7 @@ Since each alignment can be belonged to several windows, then the probability
 }
 \examples{
 \dontrun{
-file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
+file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 filterDNA(file,destination="out.bam",statfile = "out.stat")
 }
 

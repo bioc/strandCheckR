@@ -4,16 +4,16 @@
 \alias{plotWin}
 \title{Plot the Proportion of + Stranded Reads}
 \usage{
-plotWin(windows, breaks = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
-  0.9), save = FALSE, file = "win.pdf", facet_wrap_chromosomes = FALSE,
+plotWin(windows, split = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
+  0.9), save = FALSE, file = "win.pdf", facets = NULL,
   useCoverage = FALSE, ...)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding windows.
 Windows should be obtained using the function \code{\link{getWinFromBamFile}} to ensure the correct data structure.}
 
-\item{breaks}{an integer vector that specifies how you want to partition the windows based on coverage. 
-By default \code{breaks} = c(10,100,1000), partition windows into 4 groups based on these values.}
+\item{split}{an integer vector that specifies how you want to partition the windows based on coverage. 
+By default \code{split} = c(10,100,1000), partition windows into 4 groups based on these values.}
 
 \item{threshold}{a \code{numeric} vector between 0.5 & 1 that specifies which threshold lines to draw on the plot. 
 The positive windows above the threshold line (or negative windows below the threshold line) will be kept when using \code{\link{filterDNA}}.}
@@ -22,7 +22,7 @@ The positive windows above the threshold line (or negative windows below the thr
 
 \item{file}{the file name to save to plot}
 
-\item{facet_wrap_chromosomes}{if TRUE, then the plots will be splitted by chromosomes. FALSE by default}
+\item{facets}{colnames of \code{windows} which will be used to split the plot}
 
 \item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
 
@@ -43,7 +43,7 @@ This function will plot the proportion of '+' stranded reads for each window,
 }
 \examples{
 \dontrun{
-bamfilein = system.file("extdata","s1.chr1.bam",package = "strandCheckR")
+bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
 plotWin(windows)
 

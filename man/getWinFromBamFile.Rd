@@ -2,13 +2,13 @@
 % Please edit documentation in R/getWinFromBamFile.R
 \name{getWinFromBamFile}
 \alias{getWinFromBamFile}
-\title{get the strand information of all windows from a single end bam file}
+\title{get the strand information of all windows from bam files}
 \usage{
-getWinFromBamFile(file, chromosomes, mapqFilter = 0, partitionSize = 1e+08,
+getWinFromBamFile(files, chromosomes, mapqFilter = 0, partitionSize = 1e+08,
   winWidth = 1000, winStep = 100, paired)
 }
 \arguments{
-\item{file}{the input bam file. Your bamfile should be sorted and have an index file located at the same path as well.}
+\item{files}{the input bam files. Your bamfiles should be sorted and have their index files located at the same path.}
 
 \item{chromosomes}{the list of chromosomes to be read}
 
@@ -23,14 +23,14 @@ getWinFromBamFile(file, chromosomes, mapqFilter = 0, partitionSize = 1e+08,
 \item{paired}{if TRUE then the input bamfile will be considered as paired end reads. If missing, 100 thousands first reads will be inspected to test if the input bam file in paired end or single end.}
 }
 \description{
-get the number of positive/negative reads of all windows from a single end bam file
+get the number of positive/negative reads of all windows from bam files
 }
 \examples{
 \dontrun{
-file <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
+file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 win <- getWinFromBamFile(file)
 }
 }
 \seealso{
-filterDNA, getWinFromPairedBamFile, plotHist, plotWin
+filterDNA, summarizeHist, plotHist, plotWin
 }
