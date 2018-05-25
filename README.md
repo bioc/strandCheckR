@@ -14,6 +14,6 @@ library(strandCheckR)
 
 # Vignette
 
-The vignette for usage is [here](https://github.com/UofABioinformaticsHub/strandCheckR/blob/master/vignettes/strandCheckR.Rmd)
+The vignette for usage is [here](https://uofabioinformaticshub.github.io/strandCheckR/vignettes/strandCheckR.html)
 
 
