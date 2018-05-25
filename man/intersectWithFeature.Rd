@@ -15,8 +15,10 @@ Windows can be obtained using the function \code{getWinFromBamFile}.}
 It can have mcols which contains the information or features that could be able to integrate into the input windows}
 
 \item{getFeatureInfo}{whether to get the information of features in the mcols of annotation data. 
-If FALSE the return windows will have an additional column OverlapAnnot indicating wheather each window overlaps with any range in the annotion data.
+If FALSE the return windows will have an additional column OverlapAnnot indicating whether each window overlaps with any range in the annotion data.
 If TRUE the return windows will contain the information of features that overlap each window}
+
+\item{overlapCol}{the columnn name of the return windows indicating whether each window overlaps with any range in the annotion data.}
 
 \item{mcolsAnnot}{the column names of the mcols of annotation that you want to get information}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/checkPairedEnd.R
 \name{checkPairedEnd}
 \alias{checkPairedEnd}
-\title{Test wheather a bam file if single end or paired end}
+\title{Test whether a bam file if single end or paired end}
 \usage{
 checkPairedEnd(file, yieldSize = 1e+05)
 }
@@ -12,5 +12,5 @@ checkPairedEnd(file, yieldSize = 1e+05)
 \item{yieldSize}{the number of reads to be checked, 100000 by default.}
 }
 \description{
-Check the first 100000 first reads of the bam file to see wheather it is single end or paired end
+Check the first 100000 first reads of the bam file to see whether it is single end or paired end
 }
