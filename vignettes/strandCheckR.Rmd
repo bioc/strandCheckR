@@ -62,7 +62,7 @@ hist <- summarizeHist(windows = win,group_by = c("File","OverlapFeature"), norma
 plotHist(hist, facets = c("File","OverlapFeature"), save=TRUE,file="hist.png",width=10,height=7)
 ```
 
-![Histogram of positive proportion across all windows. For this file, all windows with a combination of +/- reads were noted to be low coverage.](hist.png)
+![Histogram of positive proportion across all windows. In this example, file s1.sorted.bam is heavily contaminated with double strand DNA, while file s2.sorted.bam is cleaner](hist.png)
 
 Heatmap can be used instead of classic barplot for histogram when specifying *heatmap=TRUE*. It would be usefull to visualize mutliple files in the same plot.
 
@@ -70,7 +70,7 @@ Heatmap can be used instead of classic barplot for histogram when specifying *he
 plotHist(hist, facets = c("OverlapFeature"), heatmap = TRUE, save=TRUE,file="histHeat.png",width=16,height=8)
 ```
 
-![Heatmap of positive proportion across all windows on 2 files.](histHeat.png)
+![Heatmap of positive proportion across all windows on the 2 files.](histHeat.png)
 
 *plotWin* creates a plot on the number of reads vs positive proportion of each window. There are also 4 lines correspond to 4 representative thresholds (0.6, 0.7, 0.8, 0.9). Threshold is a parameter that is used when filtering a bam file using *filterDNA*.
 Given a threshold, a positive (resp. negative) window is kept if and only if it is above (resp. below) the corresponding threshold line on this plot. This plot would suggest which threshold to be used for filtering DNA from your sample.
