@@ -2,8 +2,5 @@
 ^\.Rproj\.user$
 ^TODO.md$
 ^check$
-^out.stat$
-^test.bam$
-^vignettes_test$
 ^\.travis\.yml$
 ^inst/extdata$

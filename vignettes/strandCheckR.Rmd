@@ -49,6 +49,8 @@ win$Chr <- paste0("chr",win$Chr) #add chr before the chromosome names to be cons
 win <- intersectWithFeature(windows = win,annotation = annot,overlapCol = "OverlapFeature")
 ```
 
+If you have a gtf or gff file, you can use the function *gffReadGR* of the *ballgown* package to read it as a GRanges object.
+
 # Plot histogram and windows information
 
 With these windows, you can have some plots via *plotHist* and *plotWin* functions which can be saved to an appropriate location.
