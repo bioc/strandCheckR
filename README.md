@@ -2,7 +2,7 @@
 
 # strandCheckR
 
-An R Package for checking strandedness of RNA-Seq data.
+An R Package for checking strandedness of RNA-Seq data by sliding windows across a bam file.
 Applicable to stranded RNA-Seq only!
 
 # Installation

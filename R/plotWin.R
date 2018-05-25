@@ -62,7 +62,7 @@ plotWin <- function(windows, split=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9),
   # Calculate the proportion of reads for the + strand, based on either coverage or the number of reads
   keepCols <- c("Nb", "Cov")[useCoverage + 1]
   windows <- as.data.frame(windows)
-  windows <- select(windows, one_of(c("MaxCoverage", facets)), starts_with(keepCols))
+  windows <- dplyr::select(windows, one_of(c("MaxCoverage", facets)), starts_with(keepCols))
   names(windows) <- str_extract(names(windows),paste0(c("MaxCoverage",facets,"Pos","Neg"),collapse = "|"))
   windows$NbReads <- windows$Pos + windows$Neg
   windows$PositiveProportion <- windows$Pos / windows$NbReads
@@ -82,7 +82,7 @@ plotWin <- function(windows, split=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9),
   
   # Remove duplicated points for faster plotting
   windows <- mutate(windows, NbReads = round(NbReads, -1), PositiveProportion = round(PositiveProportion, 2))
-  windows <- distinct(select(windows,c("NbReads","PositiveProportion","group",facets)))
+  windows <- distinct(dplyr::select(windows,c("NbReads","PositiveProportion","group",facets)))
   
   
   # Generating the threshold lines
