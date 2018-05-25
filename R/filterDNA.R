@@ -3,9 +3,9 @@
 #'  using a window sliding across the genome.
 #' @param file the input bam file to be filterd. Your bamfile should be sorted
 #'  and have an index file located at the same path.
+#' @param destination The file path where the filtered output will be written
 #' @param mapqFilter every read that has mapping quality below \code{mapqFilter}
 #'  will be removed before any analysis
-#' @param destination The file path where the filtered output will be written
 #' @param statfile the file to write the summary of the results
 #' @param chromosomes the list of chromosomes to be filtered
 #' @param partitionSize by default is 1e8, i.e. the bam file is read by block of

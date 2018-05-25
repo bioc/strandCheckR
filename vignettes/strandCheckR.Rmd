@@ -25,41 +25,66 @@ Then each read fragment is assigned to a probability of being kept or not, based
 
 # Get windows information
 
-The function \textit{getWinFromBamFile} can be used to get the number of +/- stranded reads from all sliding windows throughout the bam file.
-The bam file should be sorted and have an index file located at the same path as well.
+The function *getWinFromBamFile* can be used to get the number of +/- stranded reads from all sliding windows throughout a list of bam files.
+The bam files should be sorted and have their index files located at the same path as well.
 
 
 ```{r getWin, eval=FALSE}
 library(strandCheckR)
-file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
-win <- getWinFromBamFile(file)
+files <- system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),package = "strandCheckR")
+win <- getWinFromBamFile(files)
+win$File <- basename(win$File)
 ```
 
+# Intersect with an annotation GRanges object
+
+If you have an annotation data, you can integrate it with the sliding windows obtained from the previous step using the function *intersectWithFeature*. The annotation must be a GRanges object, with or without mcols.
+Make sure that the chromosome names in windows and annotation data are consistent.
+By default, you will have an additional column in the windows dataframe which indicates wheather a window overlap with any feature in the annotation object. You can also get details of the overlapped features in the mcols of the annotation object by setting *getFeatureInfo=TRUE* and specifying which mcols you'd like to extract details in *mcolsAnnnot* parameter.
+
+```{r intersect, eval=FALSE}
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+annot <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
+win$Chr <- paste0("chr",win$Chr) #add chr before the chromosome names to be consistent with the annot data
+win <- intersectWithFeature(windows = win,annotation = annot,overlapCol = "OverlapFeature")
+```
+
+# Plot histogram and windows information
 
 With these windows, you can have some plots via *plotHist* and *plotWin* functions which can be saved to an appropriate location.
 
-```{r plot, eval=FALSE}
-plotHist(win,save=TRUE,file="hist.png",width=8,height=5)
-plotWin(win,save=TRUE,file="win.png",width=8,height=5)
+To plot the histogram of positive proportion of the sliding windows, we need to summarize them first using *summarizeHist*. This function creates a histogram on the frequency of positive proportion over all windows, and also to group/normalize them based on given column names. The obtained dataframe can be used to plot the histogram using function *plotHist*. The plot gives you an idea on how much double-strand DNA is contained in your sample. In perfectly clear ss-RNA-seq, the positive proportion of every window should be either around 0\% or 100\%. The more amount of windows have this proportion around 50\%, the more the sample was contaminated by DNA. 
+
+```{r plotHist, eval=FALSE}
+hist <- summarizeHist(windows = win,group_by = c("File","OverlapFeature"), normalize_by = "File")
+plotHist(hist, facets = c("File","OverlapFeature"), save=TRUE,file="hist.png",width=10,height=7)
 ```
 
+![Histogram of positive proportion across all windows. For this file, all windows with a combination of +/- reads were noted to be low coverage.](hist.png)
 
-*plotHist* creates a histogram on the frequency of positive proportion over all windows, which give you an idea on how much double-strand DNA is contained in your sample. In perfectly clear ss-RNA-seq, the positive proportion of every window should be either around 0\% or 100\%. The more amount of windows have this proportion around 50\%, the more the sample was contaminated by DNA.
+Heatmap can be used instead of classic barplot for histogram when specifying *heatmap=TRUE*. It would be usefull to visualize mutliple files in the same plot.
 
-![Histogram of positive proportion across all windows. For this file, all windows with a combination of +/- reads were noted to be low coverage and this file would be considered as a *clean* bam file.](hist.png)
+```{r heatMap,eval=FALSE}
+plotHist(hist, facets = c("OverlapFeature"), heatmap = TRUE, save=TRUE,file="histHeat.png",width=16,height=8)
+```
 
+![Heatmap of positive proportion across all windows on 2 files.](histHeat.png)
 
-*plotWin* creates a plot on the number of reads vs positive proportion of each window. There are also 4 lines correspond to 4 representative thresholds (0.6, 0.7, 0.8, 0.9). Threshold is a parameter that is used when filtering a bam file.
+*plotWin* creates a plot on the number of reads vs positive proportion of each window. There are also 4 lines correspond to 4 representative thresholds (0.6, 0.7, 0.8, 0.9). Threshold is a parameter that is used when filtering a bam file using *filterDNA*.
 Given a threshold, a positive (resp. negative) window is kept if and only if it is above (resp. below) the corresponding threshold line on this plot. This plot would suggest which threshold to be used for filtering DNA from your sample.
+
+```{r plotwin,eval=FALSE}
+plotWin(win, facets = c("File","OverlapFeature"), save=TRUE,file="win.png",width=10,height=7)
+```
 
 ![Number of reads vs positive proportion across all windows. This can be used to give guidance as to the best threshold to choose when filtering windows.](win.png)
 
 # Filter bam files
 
-The functions \textit{filterDNA} removes potential double strand DNA from a bam file.
+The functions *filterDNA* removes potential double strand DNA from a bam file using a given threshold.
 
 ```{r filteDNA, eval=FALSE}
-filterDNA(bamfilein = file,bamfileout = "filter.bam", threshold = 0.7)
+filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)
 ```
 
-Other parameters can be specified for more flexible filtering: define the ranges that you want to always keep, the minimum number of reads under which you want to ignore, the rate that an RNA read has false strand etc.
+Other parameters can be specified for more flexible filtering: define the ranges that you want to always keep, the minimum number of reads under which you want to ignore, the pvalue threshold for keeping a windows etc.

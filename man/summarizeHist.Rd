@@ -5,7 +5,7 @@
 \title{Summarize the histogram of positive proportions of the input windows data frame}
 \usage{
 summarizeHist(windows, split = c(10, 100, 1000), breaks = 100,
-  useCoverage = FALSE, group_by = NULL)
+  useCoverage = FALSE, group_by = NULL, normalize_by = NULL)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding windows.
@@ -18,6 +18,8 @@ Windows can be obtained using the function \code{getWinFromBamFile}.}
 \item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
 
 \item{group_by}{the column names of windows that will be used to grouped the data}
+
+\item{normalize_by}{column names of windows that will be used to normalize the read count into proportion}
 }
 \description{
 Summarize the histogram of positive proportions of the input windows data frame

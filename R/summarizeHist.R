@@ -8,6 +8,7 @@
 #' @param breaks an integer giving the number of bins for the histogram
 #' @param useCoverage if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default
 #' @param group_by the column names of windows that will be used to grouped the data
+#' @param normalize_by column names of windows that will be used to normalize the read count into proportion
 #' @seealso getWinFromBamFile, plotHist, plotWin
 #'
 #' @examples
@@ -23,7 +24,7 @@
 #' @importFrom stringr str_extract
 #' @importFrom reshape2 dcast melt
 #' @export
-summarizeHist <- function(windows, split=c(10,100,1000), breaks = 100, useCoverage=FALSE, group_by = NULL){
+summarizeHist <- function(windows, split=c(10,100,1000), breaks = 100, useCoverage=FALSE, group_by = NULL, normalize_by = NULL){
   
   # The initial checks for appropriate input
   reqWinCols <- c("NbPositive", "NbNegative", "CovPositive", "CovNegative", "MaxCoverage")
@@ -35,7 +36,7 @@ summarizeHist <- function(windows, split=c(10,100,1000), breaks = 100, useCovera
   readType <- ifelse("Type" %in% colnames(windows), "PE", "SE")
   if (readType == "SE") windows$Type <- "R1"
   
-  allows_group_by <- setdiff(colnames(windows),c(reqWinCols,"Start"))
+  allows_group_by <- setdiff(colnames(windows),c(reqWinCols,"Start","End"))
   group_by <- intersect(group_by,allows_group_by)
   
   # Make sure we don't facet if we only have one chromosome
@@ -44,7 +45,7 @@ summarizeHist <- function(windows, split=c(10,100,1000), breaks = 100, useCovera
   # Calculate the proportion of reads for the + strand, based on either coverage or the number of reads
   keepCols <- c("Nb", "Cov")[useCoverage + 1]
   windows <- as.data.frame(windows)
-  windows <- select(windows, one_of(c("MaxCoverage", group_by)), starts_with(keepCols))
+  windows <- dplyr::select(windows, one_of(c("MaxCoverage", group_by)), starts_with(keepCols))
   names(windows) <- str_extract(names(windows), paste0(c("MaxCoverage","Pos","Neg",group_by),collapse = "|"))
   windows$PositiveProportion <- windows$Pos / (windows$Pos + windows$Neg)
   
@@ -71,9 +72,9 @@ summarizeHist <- function(windows, split=c(10,100,1000), breaks = 100, useCovera
   windows <- melt(windows, id.vars = c(group_by, "PosStrandProp"), variable.name = "Coverage", value.name = "ReadCountProp")
   windows$PosStrandProp <- (as.integer(windows$PosStrandProp) - 1) / breaks
   # Convert the numbers of windows into proportions keeping R1 & R2 separate
-  normalize_by <- setdiff(group_by,"Chr")
+  normalize_by <- intersect(normalize_by,group_by)  
   if (length(normalize_by)>0){
-    windows <- lapply(split(windows, f = windows[,setdiff(group_by,"Chr")]), function(x){
+    windows <- lapply(split(windows, f = windows[,normalize_by]), function(x){
       x$ReadCountProp <- x$ReadCountProp / sum(x$ReadCountProp)
       x
     })  

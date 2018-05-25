@@ -78,7 +78,7 @@ plotHist <- function(histWin, save=FALSE, file = "hist.pdf", facets = NULL, heat
       l <- filter(histWin,Coverage==cov[i]) 
       p[[i]] <- ggplot(l,aes_string(x="PosStrandProp",y="File",fill="ReadCountProp")) + 
         geom_tile() +
-        scale_fill_gradient(low="white",high="red")
+        scale_fill_gradient(low="white",high="red",na.value = "white")
       if (length(facets)>0){
         p[[i]] <- p[[i]] + myFacets
       }

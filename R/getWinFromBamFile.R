@@ -27,7 +27,7 @@ getWinFromBamFile <- function(files, chromosomes, mapqFilter=0, partitionSize=1e
   # Check valid mapqFilter value
   if(mapqFilter < 0 || !is.numeric(mapqFilter)) stop("Invalid value for mapqFilter. Must be positive & numeric.")
   
-  # Initialize the return windows
+  # Create a list to store the windows for each file
   allWin <- list(length(files))
   
   # Read through each bam file
@@ -109,9 +109,11 @@ getWinFromBamFile <- function(files, chromosomes, mapqFilter=0, partitionSize=1e
           if (sum(firstReadIndex)==0){
             message("Only R2 reads are found")
             subset <- list(NULL) 
+            type <- "R2"
           } else if (sum(secondReadIndex)==0){
             message("Only R1 reads are found")
             subset <- list(NULL)
+            type <- "R1"
           } else {
             subset <- list("R1"=firstReadIndex,"R2"=secondReadIndex)
           }
@@ -145,6 +147,9 @@ getWinFromBamFile <- function(files, chromosomes, mapqFilter=0, partitionSize=1e
           win <- getWinInChromosome(win,part,chromosomeInfo[idPart,],winWidth,winStep)
           if (s==1){
             allWin[[b]][[n]] <- win
+            if (paired && length(subset)==0){
+              allWin[[b]][[n]]$Type <- type
+            }
           } 
           else{
             allWin[[b]][[n]]$Type <- Rle("R1")
@@ -158,6 +163,7 @@ getWinFromBamFile <- function(files, chromosomes, mapqFilter=0, partitionSize=1e
     # rbind all Partitions
     allWin[[b]] <- do.call(rbind, allWin[[b]])
     allWin[[b]]$File <- file$path
+    allWin[[b]]$End <- allWin[[b]]$Start + winWidth
   }
   return(do.call(rbind,allWin))
 }

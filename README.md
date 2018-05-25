@@ -4,3 +4,16 @@
 
 An R Package for checking strandedness of RNA-Seq data.
 Applicable to stranded RNA-Seq only!
+
+# Installation
+
+```
+devtools::install_github('UofABioinformaticsHub/strandCheckR', build_vignettes = TRUE)
+library(strandCheckR)
+```
+
+# Vignette
+
+The vignette for usage is [here](https://github.com/UofABioinformaticsHub/strandCheckR/blob/master/vignettes/strandCheckR.Rmd)
+
+
