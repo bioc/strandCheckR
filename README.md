@@ -2,8 +2,7 @@
 
 # strandCheckR
 
-An R Package for checking strandedness of RNA-Seq data by sliding windows across a bam file.
-Applicable to stranded RNA-Seq only!
+An R Package that uses a sliding windows approach to scan a bam file and get the number of positive/negative reads in each window. Applicable to check the strandedness of a stranded RNA-Seq experiment and to filter reads coming from potential double strand DNA if there's any. 
 
 # Installation
 

@@ -45,11 +45,11 @@
 #'  0.01 by default.
 #'
 #' @details filterDNA reads a bam file containing strand specific RNA reads, and
-#'  filter putative double strand DNA.
+#'  filter reads coming from putative double strand DNA.
 #' Using a window sliding across the genome, we calculate the positive/negative
 #'  proportion of reads in each window.
 #' We then use logistic regression to estimate the strand proportion of reads in
-#'  each window, and calculate the p-value when compare that to the given threshold.
+#'  each window, and calculate the p-value when comparing that to a given threshold.
 #' Let \eqn{\pi} be the strand proportion of reads in a window.
 #' 
 #' Null hypothesis for positive window: \eqn{\pi \le threshold}.
@@ -57,18 +57,18 @@
 #' Null hypothesis for negative window: \eqn{\pi \ge 1-threshold}.
 #' 
 #' Only windows with p-value <= \code{pvalueThreshold} are kept. For a kept
-#'  positive window, let P be its number of positive reads, and let M
-#' be its number of negative reads. These M negative reads are supposed to come
+#'  positive window, each positive read in this window is kept with the probability (P-M)/P
+#'  where P be the number of positive reads, and M be the number of negative reads. 
+#'  That is because those M negative reads are supposed to come
 #'  from double-strand DNA, then there should be also M postive reads among the
 #' P positive reads come from double-strand DNA. In other words, there are only
-#'  (P-M) positive reads come from RNA. Hence, each positive read in this window
-#'   is kept
-#' with the probability (P-M)/P. Each negative read is kept with the probability
+#'  (P-M) positive reads come from RNA. Each negative read is kept with the probability
 #'  equalling the rate that an RNA read of your sample has wrong strand, which 
-#'  is \code{errorRate}.
+#'  is \code{errorRate}. Similar for kept negative windows.
+#'  
 #' Since each alignment can be belonged to several windows, then the probability
 #'  of keeping an alignment is the maximum probability defined by all windows
-#'   that contain it.
+#'   that contain it. 
 #'
 #' @seealso getWinFromBamFile, plotHist, plotWin
 #'
