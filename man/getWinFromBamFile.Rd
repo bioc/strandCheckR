@@ -4,17 +4,17 @@
 \alias{getWinFromBamFile}
 \title{get the strand information of all windows from bam files}
 \usage{
-getWinFromBamFile(files, chromosomes, mapqFilter = 0, partitionSize = 1e+08,
+getWinFromBamFile(files, sequences, mapqFilter = 0, partitionSize = 1e+08,
   winWidth = 1000, winStep = 100, paired)
 }
 \arguments{
 \item{files}{the input bam files. Your bamfiles should be sorted and have their index files located at the same path.}
 
-\item{chromosomes}{the list of chromosomes to be read}
+\item{sequences}{the list of sequences to be read}
 
 \item{mapqFilter}{every read that has mapping quality below \code{mapqFilter} will be removed before any analysis}
 
-\item{partitionSize}{by default is 1e8, i.e. the bam file is read by blocks of chromosomes such that the total length of each block is at least 1e8}
+\item{partitionSize}{by default is 1e8, i.e. the bam file is read by blocks of sequences such that the total length of each block is at least 1e8}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 

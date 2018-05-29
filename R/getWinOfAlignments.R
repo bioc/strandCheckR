@@ -2,7 +2,7 @@
 #' 
 #' @description calculate the windows that contain each read fragment
 #' 
-#' @param readInfo a list contains the read information of one chromosome
+#' @param readInfo a list contains the read information of one sequence
 #' @param strand the considering strand
 #' @param winWidth the window size
 #' @param winStep the window winStep

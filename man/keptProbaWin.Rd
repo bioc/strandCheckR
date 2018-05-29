@@ -5,8 +5,8 @@
 \title{get the probability of begin kept for each window}
 \usage{
 keptProbaWin(winPositiveAlignments, winNegativeAlignments, winWidth, winStep,
-  logitThreshold, pvalueThreshold, errorRate, mustKeepWin, min, max, getWin,
-  useCoverage = FALSE)
+  logitThreshold, pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov,
+  getWin, useCoverage = FALSE)
 }
 \arguments{
 \item{winPositiveAlignments}{an object returned by getWinOfAlignments for positive reads}
@@ -25,11 +25,11 @@ keptProbaWin(winPositiveAlignments, winNegativeAlignments, winWidth, winStep,
 
 \item{mustKeepWin}{the windows that must be kept regardless their strand proportion}
 
-\item{min}{In the case that \code{useCoverage=FALSE}, if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 
-For the case that \code{useCoverage=TRUE}, if a window has max coverage least than \code{min}, then it will be rejected. 0 by default}
+\item{minCov}{In the case that \code{useCoverage=FALSE}, if a window has least than \code{minCov} reads, then it will be rejected regardless the strand proportion. 
+For the case that \code{useCoverage=TRUE}, if a window has max coverage least than \code{minCov}, then it will be rejected. 0 by default}
 
-\item{max}{In the case that \code{useCoverage=FALSE},if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. 
-For the case that \code{useCoverage=TRUE}, if a window has max coverage more than \code{max}, then it will be kept. 
+\item{maxCov}{In the case that \code{useCoverage=FALSE},if a window has more than \code{maxCov} reads, then it will be kept regardless the strand proportion. 
+For the case that \code{useCoverage=TRUE}, if a window has max coverage more than \code{maxCov}, then it will be kept. 
 If 0 then it doesn't have effect on selecting window. 0 by default.}
 
 \item{getWin}{if TRUE, the function will return a data frame containing the information of all windows. It's FALSE by default.}

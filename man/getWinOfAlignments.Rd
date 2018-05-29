@@ -8,7 +8,7 @@ getWinOfAlignments(readInfo, strand, winWidth, winStep, readProp,
   useCoverage = FALSE, subset = NULL)
 }
 \arguments{
-\item{readInfo}{a list contains the read information of one chromosome}
+\item{readInfo}{a list contains the read information of one sequence}
 
 \item{strand}{the considering strand}
 

@@ -56,9 +56,6 @@ plotWin <- function(windows, split=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9),
   readType <- ifelse("Type" %in% colnames(windows), "PE", "SE")
   if (readType == "SE") windows$Type <- "R1"
   
-  # Make sure we don't facet if we only have one chromosome
-  nChr <- length(unique(windows$Chr))
-  
   # Calculate the proportion of reads for the + strand, based on either coverage or the number of reads
   keepCols <- c("Nb", "Cov")[useCoverage + 1]
   windows <- as.data.frame(windows)
@@ -137,5 +134,5 @@ plotWin <- function(windows, split=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9),
     argList <- c(list(filename = file, plot = g), dotArgs[keepArgs])
     do.call(ggsave,argList)
   }
-  g
+  return(g)
 }

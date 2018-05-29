@@ -4,7 +4,7 @@
 #' 
 #' 
 #' @param x a GRanges object
-#' @param chromosomeInfo a data frame that contains some key information of the alignments
+#' @param sequenceInfo a data frame that contains some key information of the alignments
 #' @param winWidth The width of each window
 #' @param winStep The step size for sliding the window
 #' @return A list of two logical vectors (for positive and negative strand) defining which windows that overlap the given Granges objects
@@ -16,19 +16,19 @@
 #' @importFrom GenomeInfoDb seqlevels
 #' 
 #' @export
-getWinFromGranges <- function(x, chromosomeInfo, winWidth = 1000, winStep = 100){
+getWinFromGranges <- function(x, sequenceInfo, winWidth = 1000, winStep = 100){
   
-  # Check the correct columns are in the chromosomeInfo df
+  # Check the correct columns are in the sequenceInfo df
   reqCols <- c("FirstBaseInPartition")
-  if (!all(reqCols %in% names(chromosomeInfo))) stop("chromosomeInfo must contain the column ", reqCols)
+  if (!all(reqCols %in% names(sequenceInfo))) stop("sequenceInfo must contain the column ", reqCols)
   stopifnot(is.numeric(winWidth) || is.numeric(winStep))
   
-  # Calculate start/end position of each chromosome in the partition
-  for (i in seq_along(chromosomeInfo$Sequence)){
-    r <- which(as.vector(seqnames(x)) == chromosomeInfo$Sequence[i])
+  # Calculate start/end position of each sequence in the partition
+  for (i in seq_along(sequenceInfo$Sequence)){
+    r <- which(as.vector(seqnames(x)) == sequenceInfo$Sequence[i])
     if (length(r)>0){
-      start(ranges(x)[r]) <- start(ranges(x)[r]) + chromosomeInfo$FirstBaseInPartition[i] -1
-      end(ranges(x)[r]) <- end(ranges(x)[r]) + chromosomeInfo$FirstBaseInPartition[i] -1  
+      start(ranges(x)[r]) <- start(ranges(x)[r]) + sequenceInfo$FirstBaseInPartition[i] -1
+      end(ranges(x)[r]) <- end(ranges(x)[r]) + sequenceInfo$FirstBaseInPartition[i] -1  
     }
   }
   

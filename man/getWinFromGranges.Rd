@@ -4,12 +4,12 @@
 \alias{getWinFromGranges}
 \title{Get the Sliding Windows from a GRanges object}
 \usage{
-getWinFromGranges(x, chromosomeInfo, winWidth = 1000, winStep = 100)
+getWinFromGranges(x, sequenceInfo, winWidth = 1000, winStep = 100)
 }
 \arguments{
 \item{x}{a GRanges object}
 
-\item{chromosomeInfo}{a data frame that contains some key information of the alignments}
+\item{sequenceInfo}{a data frame that contains some key information of the alignments}
 
 \item{winWidth}{The width of each window}
 

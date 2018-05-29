@@ -4,45 +4,45 @@
 #' @param file the input bam file to be filterd. Your bamfile should be sorted
 #'  and have an index file located at the same path.
 #' @param destination The file path where the filtered output will be written
+#' @param statfile the file to write the summary of the results
+#' @param sequences the list of sequences to be filtered. 
 #' @param mapqFilter every read that has mapping quality below \code{mapqFilter}
 #'  will be removed before any analysis
-#' @param statfile the file to write the summary of the results
-#' @param chromosomes the list of chromosomes to be filtered
+#' If missing, the entire bam file will be read.
+#' @param paired if TRUE then the input bamfile will be considered as paired end
+#'  reads. If missing, 100 thousands first reads will be inspected to test if
+#'   the input bam file in paired end or single end.
 #' @param partitionSize by default is 1e8, i.e. the bam file is read by block of
-#'  chromosomes such that the total length of each block is at least 1e8
-#' @param mustKeepRanges a GRanges object defines the ranges such that every
-#'   read mapping to those ranges is always kept regardless the strand proportion
-#'   of the windows containing them.
-#' @param getWin if TRUE, the function will not only filter the bam file but
-#'  also return a data frame containing the information of all windows. This
-#'   data frame can also be obtained using \code{\link{getWinFromBamFile}}.
-#'    FALSE by default.
+#'  sequences such that the total length of each block is at least 1e8
 #' @param winWidth the length of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
-#' @param threshold if a window has strand proportion greater than \code{threshold},
-#'  then the reads in that window will be kept. 0.7 by default
+#' @param readProp A read is considered to be included in a window if more than
+#'  \code{readProp} of it is in the window. Specified as a proportion.
+#'  0.5 by default.
+#' @param threshold the strand proportion threshold to test whether to keep a window
+#' or not. 0.7 by default
 #' @param pvalueThreshold the threshold for the p-value in the test of keeping
 #'  windows. 0.05 by default
 #' @param useCoverage if TRUE, then the strand information in each window
 #'  corresponds to the sum of coverage coming from positive/negative reads;
 #'   and not the number of positive/negative reads as default.
-#' @param min if \code{useCoverage=FALSE}, every window that has less than
-#'  \code{min} reads will be rejected regardless the strand proportion. 
+#' @param mustKeepRanges a GRanges object; all reads that map to those ranges will be
+#'  kept regardless the strand proportion of the windows containing them.
+#' @param getWin if TRUE, the function will not only filter the bam file but
+#'  also return a data frame containing the information of all windows. This
+#'   data frame can also be obtained using \code{\link{getWinFromBamFile}}.
+#'    FALSE by default.
+#' @param minCov if \code{useCoverage=FALSE}, every window that has less than
+#'  \code{minCov} reads will be rejected regardless the strand proportion. 
 #'        If \code{useCoverage=TRUE}, every window has max coverage least
-#'         than \code{min} will be rejected. 0 by default
-#' @param max if \code{useCoverage=FALSE}, every window that has more than
-#'  \code{max} reads will be kept regardless the strand proportion. 
-#'  If \code{useCoverage=TRUE}, every window with coverage more than 
-#'  \code{max} will be kept. 
+#'         than \code{minCov} will be rejected. 0 by default
+#' @param maxCov if \code{useCoverage=FALSE}, every window that has more than
+#'  \code{maxCov} reads will be kept regardless the strand proportion. 
+#'  If \code{useCoverage=TRUE}, every window with max coverage more than 
+#'  \code{maxCov} will be kept. 
 #'  If 0 then it doesn't have effect on selecting window. 0 by default.
 #' @param errorRate the probability that an RNA read takes the false strand.
 #'  0.01 by default.
-#' @param readProp A read is considered to be included in a window if more than
-#'  \code{readProp} of it is in the window. 
-#' Specified as a proportion.
-#' @param paired if TRUE then the input bamfile will be considered as paired end
-#'  reads. If missing, 100 thousands first reads will be inspected to test if
-#'   the input bam file in paired end or single end.
 #'
 #' @details filterDNA reads a bam file containing strand specific RNA reads, and
 #'  filter putative double strand DNA.
@@ -74,7 +74,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
+#' file <- system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 #' filterDNA(file,destination="out.bam",statfile = "out.stat")
 #' }
 #' 
@@ -86,11 +86,9 @@
 #' @import S4Vectors
 #'
 #' @export
-filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0, 
-                      partitionSize = 1e8, mustKeepRanges, getWin=FALSE, 
-                      winWidth=1000, winStep=100, threshold=0.7, 
-                      pvalueThreshold=0.05, min=0, max=0, errorRate=0.01, 
-                      readProp=0.5, useCoverage=FALSE, paired){
+filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0, paired, partitionSize = 1e8, 
+                      winWidth=1000, winStep=100,readProp=0.5, threshold=0.7,pvalueThreshold=0.05, 
+                      useCoverage=FALSE, mustKeepRanges, getWin=FALSE, minCov=0, maxCov=0, errorRate=0.01){
   startTime <- proc.time()
   
   # Check the input is a BamFile. Convert if necessary
@@ -117,7 +115,7 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
   winStep <- tryCatch(as.integer(winStep))
   stopifnot(threshold > 0 & threshold < 1)
   stopifnot(pvalueThreshold > 0 & pvalueThreshold < 1)
-  stopifnot(all(is.numeric(max), is.numeric(min), is.numeric(errorRate), 
+  stopifnot(all(is.numeric(maxCov), is.numeric(minCov), is.numeric(errorRate), 
                 is.numeric(readProp)))
   stopifnot(is.logical(useCoverage))
   
@@ -126,20 +124,20 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
   
   # Get the seqinfo object & all genomic information
   sq <- seqinfo(file)
-  allRefChromosomes <- seqnames(sq)
+  allRefSequences <- seqnames(sq)
   
-  # Subset chromosomes if required
-  if (!missing(chromosomes)){
-    stopifnot(all(chromosomes %in% allRefChromosomes))
-    sq <- sq[chromosomes]
+  # Subset sequences if required
+  if (!missing(sequences)){
+    stopifnot(all(sequences %in% allRefSequences))
+    sq <- sq[sequences]
   }
   else{
-    chromosomes <- allRefChromosomes
+    sequences <- allRefSequences
   }
-  nChr <- length(chromosomes)
+  nSeq <- length(sequences)
   lengthSeq <- seqlengths(sq)
   
-  # Allocate chromosomes for optimal partition sizes & speed
+  # Allocate sequences for optimal partition sizes & speed
   partition <- partitionSeqinfo(sq, partitionSize = partitionSize)
   # Open a reader of the input bamfile to extract read afterward
   reader <- bamReader(file$path,idx=TRUE) 
@@ -162,25 +160,25 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
   message(paste0("Summary will be written to ",statfile))
   file.create(statfile)
 
-  # Get the chromosome list of the ranges which must be kept
+  # Get the sequence list of the ranges which must be kept
   if (!missing(mustKeepRanges)){
     stopifnot (class(mustKeepRanges) == "GRanges")
-    allChromosomesMustKeep <- levels(seqnames(mustKeepRanges))
+    allSequencesMustKeep <- levels(seqnames(mustKeepRanges))
   }
   
   # Initialise the data frames containing sliding window information to be 
   # returned when getWin=TRUE
   if (getWin) allWin <- vector("list",length(partition))
   
-  # Initialise the data frame containing the chromosome information in each partition
-  chromosomeInfo <- data.frame(Sequence = chromosomes, 
+  # Initialise the data frame containing the sequence information in each partition
+  sequenceInfo <- data.frame(Sequence = sequences, 
                                Length = lengthSeq,
-                               NbOriginalReads = rep(0, nChr),
-                               NbKeptReads = rep(0, nChr),
-                               FirstBaseInPartition = rep(NA, nChr),
-                               LastBaseInPartition = rep(NA, nChr),
-                               FirstReadInPartition = rep(NA, nChr),
-                               LastReadInPartition = rep(NA, nChr),
+                               NbOriginalReads = rep(0, nSeq),
+                               NbKeptReads = rep(0, nSeq),
+                               FirstBaseInPartition = rep(NA, nSeq),
+                               LastBaseInPartition = rep(NA, nSeq),
+                               FirstReadInPartition = rep(NA, nSeq),
+                               LastReadInPartition = rep(NA, nSeq),
                                stringsAsFactors = FALSE)
   
   # Define what to scan from bam file
@@ -193,34 +191,34 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
     
     # Set the required values for each partition
     part <- partition[[n]]
-    idPart <- which(chromosomes %in% part)
-    chrEnd <- lengthSeq[chromosomes %in% part]
+    idPart <- which(sequences %in% part)
+    seqEnd <- lengthSeq[sequences %in% part]
     
     # Get & Summarise the reads
     # Return the reads from the bam file as a list, 
-    # with each element containing reads from a single chr
+    # with each element containing reads from a single seq
     sbp <- ScanBamParam(what = scanWhat,
                         which = GRanges(seqnames = part,
-                                        ranges = IRanges(start = 1,end = chrEnd)))
+                                        ranges = IRanges(start = 1,end = seqEnd)))
     readInfo <- scanBam(file, param = sbp)
     if (mapqFilter > 0){
       # Get only reads that pass the mapping quality filter
       # These need to be identified separately for the writing step
-      mqfilter <- lapply(readInfo,function(chr){which(chr$mapq>=mapqFilter)})
+      mqfilter <- lapply(readInfo,function(seq){which(seq$mapq>=mapqFilter)})
       readInfo <- lapply(seq_along(readInfo),
-                         function(i){chr <- lapply(scanWhat[scanWhat!="mapq"], 
+                         function(i){seq <- lapply(scanWhat[scanWhat!="mapq"], 
                                                   function(field){field=readInfo[[i]][[field]][mqfilter[[i]]]})
-                                    names(chr) <- scanWhat[scanWhat!="mapq"]
-                                    chr})
+                                    names(seq) <- scanWhat[scanWhat!="mapq"]
+                                    seq})
       names(readInfo) <- names(mqfilter)
     } 
     nReadsInPart <- vapply(seq_along(readInfo),
                            function(i){length(readInfo[[i]]$strand)}, 
                            integer(1))
-    chromosomeInfo$NbOriginalReads[idPart] <- nReadsInPart
+    sequenceInfo$NbOriginalReads[idPart] <- nReadsInPart
     
-    # Calculate the first/last bases/reads of each chromosome in the partition
-    chromosomeInfo[idPart,] <- chromosomeInfoInPartition(chromosomeInfo[idPart,], winStep)
+    # Calculate the first/last bases/reads of each sequence in the partition
+    sequenceInfo[idPart,] <- sequenceInfoInPartition(sequenceInfo[idPart,], winStep)
     
     # Initialise parameters
     keptAlignments <- c()
@@ -229,16 +227,16 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
       # Calculate the windows that overlap mustKeepRanges
       mustKeepWin <- list()
       if (!missing(mustKeepRanges)){
-        if (length(intersect(allChromosomesMustKeep,part))>0){
+        if (length(intersect(allSequencesMustKeep,part))>0){
           mustKeepWin <- getWinFromGranges(
             mustKeepRanges[seqnames(mustKeepRanges) %in% part], 
-            chromosomeInfo[idPart,], winWidth, winStep)
+            sequenceInfo[idPart,], winWidth, winStep)
         }
       }
       
       
-      # Concatenate several lists of the chromosome partition into one list
-      readInfo <- concatenateAlignments(readInfo,chromosomeInfo[idPart,])
+      # Concatenate several lists of the sequence partition into one list
+      readInfo <- concatenateAlignments(readInfo,sequenceInfo[idPart,])
       
       # Get the index of R1 and R2 reads and process each subset separately
       if (paired){
@@ -265,7 +263,7 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
         # Calculate the keeping probability of each sliding window
         probaWin <- keptProbaWin(winPositiveAlignments, winNegativeAlignments, 
                                  winWidth, winStep, logitThreshold, pvalueThreshold,
-                                 errorRate, mustKeepWin, min, max,getWin = getWin, 
+                                 errorRate, mustKeepWin, minCov, maxCov,getWin = getWin, 
                                  useCoverage=useCoverage) # the probability of each positive/negative window; this probability will be assigned to every positive/negative read in that window
         
         # Calculate the positive read fragments to be kept
@@ -278,7 +276,7 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
        
         # If getWin=TRUE, then return the strand information of sliding windows
         if (getWin){
-          win <- getWinInChromosome(probaWin$Win,part,chromosomeInfo[idPart,],
+          win <- getWinInSequence(probaWin$Win,part,sequenceInfo[idPart,],
                                     winWidth, winStep)
           if (s==1){
             allWin[[n]] <- win
@@ -302,38 +300,38 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
       rm(readInfo)
       
       # Write the kept alignments into the output bamfile
-      for (i in seq_along(part)){#Run through each chromosome
-        id <- which(chromosomes == part[i])
+      for (i in seq_along(part)){#Run through each sequence
+        id <- which(sequences == part[i])
         
-        if (chromosomeInfo$NbOriginalReads[id]>0){
+        if (sequenceInfo$NbOriginalReads[id]>0){
           # Get the index within the partition of kept alignments coming from 
-          # the current chromosome 
-          index <- keptAlignments[(keptAlignments>=chromosomeInfo$FirstReadInPartition[id]) & 
-                                    (keptAlignments<= chromosomeInfo$LastReadInPartition[id])]
+          # the current sequence 
+          index <- keptAlignments[(keptAlignments>=sequenceInfo$FirstReadInPartition[id]) & 
+                                    (keptAlignments<= sequenceInfo$LastReadInPartition[id])]
            
           if (length(index)>0){
-            chromosomeInfo$NbKeptReads[id] <- length(index)
+            sequenceInfo$NbKeptReads[id] <- length(index)
             
-            # Get the index within the chromosome of the kept alignments coming
-            # from the current chromosome 
-            index <- index - chromosomeInfo$FirstReadInPartition[id]+1
+            # Get the index within the sequence of the kept alignments coming
+            # from the current sequence 
+            index <- index - sequenceInfo$FirstReadInPartition[id]+1
             
-            # Get the index within the initial unfiltered chromosome of the kept
-            # alignments coming from the current chromosome 
+            # Get the index within the initial unfiltered sequence of the kept
+            # alignments coming from the current sequence 
             if (mapqFilter>0) index <- mqfilter[[i]][index]
             
             # Write the kept alignments into the output bam file  
             bamSave(writer, bamRange(reader, 
-                             c(which(allRefChromosomes == part[i]) - 1, 0, 
+                             c(which(allRefSequences == part[i]) - 1, 0, 
                                lengthSeq[id]))[index,])
           }
           rm(index)
         }
       }
       # Add the key information to the statfile
-      cat(paste0("Sequence ",part,", length: ", chromosomeInfo$Length[idPart],
-                 ", number of reads: ", chromosomeInfo$NbOriginalReads[idPart],
-                 ", number of kept reads: ", chromosomeInfo$NbKeptReads[idPart],"\n"), 
+      cat(paste0("Sequence ",part,", length: ", sequenceInfo$Length[idPart],
+                 ", number of reads: ", sequenceInfo$NbOriginalReads[idPart],
+                 ", number of kept reads: ", sequenceInfo$NbKeptReads[idPart],"\n"), 
           file=statfile, append = TRUE)
       rm(keptAlignments)
     }
@@ -342,10 +340,10 @@ filterDNA <- function(file, destination, statfile, chromosomes, mapqFilter=0,
   bamClose(reader)
   
   cat("Summary:\n", file = statfile, append = TRUE)
-  cat(paste0("Number of original reads: ", sum(chromosomeInfo$NbOriginalReads),
-             ", number of kept reads: ", sum(chromosomeInfo$NbKeptReads),
+  cat(paste0("Number of original reads: ", sum(sequenceInfo$NbOriginalReads),
+             ", number of kept reads: ", sum(sequenceInfo$NbKeptReads),
              ", removal proportion: ",
-             (sum(chromosomeInfo$NbOriginalReads)-sum(chromosomeInfo$NbKeptReads))/sum(chromosomeInfo$NbOriginalReads)), 
+             (sum(sequenceInfo$NbOriginalReads)-sum(sequenceInfo$NbKeptReads))/sum(sequenceInfo$NbOriginalReads)), 
       "\n", file = statfile, append = TRUE)
   endTime <- proc.time()
   cat(paste0("Total elapsed time: ", (endTime-startTime)[[3]]/60," minutes\n"), 

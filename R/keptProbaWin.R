@@ -6,10 +6,10 @@
 #' @param winStep the winStep length to sliding the window, 100 by default.
 #' @param logitThreshold logistic value of the threshold
 #' @param pvalueThreshold threshold of p-value
-#' @param min In the case that \code{useCoverage=FALSE}, if a window has least than \code{min} reads, then it will be rejected regardless the strand proportion. 
-#'        For the case that \code{useCoverage=TRUE}, if a window has max coverage least than \code{min}, then it will be rejected. 0 by default
-#' @param max In the case that \code{useCoverage=FALSE},if a window has more than \code{max} reads, then it will be kept regardless the strand proportion. 
-#'        For the case that \code{useCoverage=TRUE}, if a window has max coverage more than \code{max}, then it will be kept. 
+#' @param minCov In the case that \code{useCoverage=FALSE}, if a window has least than \code{minCov} reads, then it will be rejected regardless the strand proportion. 
+#'        For the case that \code{useCoverage=TRUE}, if a window has max coverage least than \code{minCov}, then it will be rejected. 0 by default
+#' @param maxCov In the case that \code{useCoverage=FALSE},if a window has more than \code{maxCov} reads, then it will be kept regardless the strand proportion. 
+#'        For the case that \code{useCoverage=TRUE}, if a window has max coverage more than \code{maxCov}, then it will be kept. 
 #'        If 0 then it doesn't have effect on selecting window. 0 by default.
 #' @param errorRate the probability that an RNA read takes the false strand. 0.01 by default
 #' @param useCoverage if TRUE, then the strand information in each window corresponds to the sum of coverage coming from positive/negative reads; and not the number of positive/negative reads as default.
@@ -20,7 +20,7 @@
 #' @importFrom stats pnorm
 #'
 #' @export
-keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,winWidth,winStep,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,min,max,getWin,useCoverage=FALSE){
+keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,winWidth,winStep,logitThreshold,pvalueThreshold,errorRate,mustKeepWin,minCov,maxCov,getWin,useCoverage=FALSE){
   
   if (getWin || useCoverage){
     fromCoverage <- calculateStrandCoverage(winPositiveAlignments,winNegativeAlignments,winWidth,winStep)
@@ -59,12 +59,12 @@ keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,winWidth,wi
   pvalue <- Rle(pnorm(runValue(toTest)),runLength(toTest))
   rm(toTest)
   pvalue[(pos==0 | neg==0)] <- 0
-  if (min>0){
+  if (minCov>0){
     if (useCoverage){
-      pvalue[fromCoverage$MaxCoverage<min] <- 1
+      pvalue[fromCoverage$MaxCoverage<minCov] <- 1
     }
     else{
-      pvalue[(pos+neg)<min] <- 1
+      pvalue[(pos+neg)<minCov] <- 1
     }
   }
   keptWin <- rep(TRUE,length(runValue(pvalue)))
@@ -82,14 +82,14 @@ keptProbaWin <- function(winPositiveAlignments,winNegativeAlignments,winWidth,wi
     else mustKeepWin$Negative <- c(mustKeepWin$Negative,rep(0,length(keptProbaNegWin)-length(mustKeepWin$Negative)))
     keptProbaNegWin <- mustKeepWin$Negative + (!mustKeepWin$Negative)*keptProbaNegWin
   }
-  if (max>0){
+  if (maxCov>0){
     if (useCoverage){
-      keepMorePos <- (pos>neg)*(fromCoverage$MaxCoverage>=max)
-      keepMoreNeg <- (pos<neg)*(fromCoverage$MaxCoverage>=max)
+      keepMorePos <- (pos>neg)*(fromCoverage$MaxCoverage>=maxCov)
+      keepMoreNeg <- (pos<neg)*(fromCoverage$MaxCoverage>=maxCov)
     }
     else{
-      keepMorePos <- (pos>neg)*(pos>=max)
-      keepMoreNeg <- (pos<neg)*(neg>=max)
+      keepMorePos <- (pos>neg)*(pos>=maxCov)
+      keepMoreNeg <- (pos<neg)*(neg>=maxCov)
     }
     keptProbaPosWin <- keepMorePos+(!keepMorePos)*keptProbaPosWin
     keptProbaNegWin <- keepMoreNeg+(!keepMoreNeg)*keptProbaNegWin

@@ -4,11 +4,11 @@
 \alias{filterDNA}
 \title{Filter Double Strand Sequences from a Bam File}
 \usage{
-filterDNA(file, destination, statfile, chromosomes, mapqFilter = 0,
-  partitionSize = 1e+08, mustKeepRanges, getWin = FALSE, winWidth = 1000,
-  winStep = 100, threshold = 0.7, pvalueThreshold = 0.05, min = 0,
-  max = 0, errorRate = 0.01, readProp = 0.5, useCoverage = FALSE,
-  paired)
+filterDNA(file, destination, statfile, sequences, mapqFilter = 0, paired,
+  partitionSize = 1e+08, winWidth = 1000, winStep = 100, readProp = 0.5,
+  threshold = 0.7, pvalueThreshold = 0.05, useCoverage = FALSE,
+  mustKeepRanges, getWin = FALSE, minCov = 0, maxCov = 0,
+  errorRate = 0.01)
 }
 \arguments{
 \item{file}{the input bam file to be filterd. Your bamfile should be sorted
@@ -18,58 +18,58 @@ and have an index file located at the same path.}
 
 \item{statfile}{the file to write the summary of the results}
 
-\item{chromosomes}{the list of chromosomes to be filtered}
+\item{sequences}{the list of sequences to be filtered.}
 
 \item{mapqFilter}{every read that has mapping quality below \code{mapqFilter}
-will be removed before any analysis}
+ will be removed before any analysis
+If missing, the entire bam file will be read.}
+
+\item{paired}{if TRUE then the input bamfile will be considered as paired end
+reads. If missing, 100 thousands first reads will be inspected to test if
+ the input bam file in paired end or single end.}
 
 \item{partitionSize}{by default is 1e8, i.e. the bam file is read by block of
-chromosomes such that the total length of each block is at least 1e8}
+sequences such that the total length of each block is at least 1e8}
 
-\item{mustKeepRanges}{a GRanges object defines the ranges such that every
-read mapping to those ranges is always kept regardless the strand proportion
-of the windows containing them.}
+\item{winWidth}{the length of the sliding window, 1000 by default.}
+
+\item{winStep}{the step length to sliding the window, 100 by default.}
+
+\item{readProp}{A read is considered to be included in a window if more than
+\code{readProp} of it is in the window. Specified as a proportion.
+0.5 by default.}
+
+\item{threshold}{the strand proportion threshold to test whether to keep a window
+or not. 0.7 by default}
+
+\item{pvalueThreshold}{the threshold for the p-value in the test of keeping
+windows. 0.05 by default}
+
+\item{useCoverage}{if TRUE, then the strand information in each window
+corresponds to the sum of coverage coming from positive/negative reads;
+ and not the number of positive/negative reads as default.}
+
+\item{mustKeepRanges}{a GRanges object; all reads that map to those ranges will be
+kept regardless the strand proportion of the windows containing them.}
 
 \item{getWin}{if TRUE, the function will not only filter the bam file but
 also return a data frame containing the information of all windows. This
  data frame can also be obtained using \code{\link{getWinFromBamFile}}.
   FALSE by default.}
 
-\item{winWidth}{the length of the sliding window, 1000 by default.}
-
-\item{winStep}{the step length to sliding the window, 100 by default.}
-
-\item{threshold}{if a window has strand proportion greater than \code{threshold},
-then the reads in that window will be kept. 0.7 by default}
-
-\item{pvalueThreshold}{the threshold for the p-value in the test of keeping
-windows. 0.05 by default}
-
-\item{min}{if \code{useCoverage=FALSE}, every window that has less than
-\code{min} reads will be rejected regardless the strand proportion. 
+\item{minCov}{if \code{useCoverage=FALSE}, every window that has less than
+\code{minCov} reads will be rejected regardless the strand proportion. 
       If \code{useCoverage=TRUE}, every window has max coverage least
-       than \code{min} will be rejected. 0 by default}
+       than \code{minCov} will be rejected. 0 by default}
 
-\item{max}{if \code{useCoverage=FALSE}, every window that has more than
-\code{max} reads will be kept regardless the strand proportion. 
-If \code{useCoverage=TRUE}, every window with coverage more than 
-\code{max} will be kept. 
+\item{maxCov}{if \code{useCoverage=FALSE}, every window that has more than
+\code{maxCov} reads will be kept regardless the strand proportion. 
+If \code{useCoverage=TRUE}, every window with max coverage more than 
+\code{maxCov} will be kept. 
 If 0 then it doesn't have effect on selecting window. 0 by default.}
 
 \item{errorRate}{the probability that an RNA read takes the false strand.
 0.01 by default.}
-
-\item{readProp}{A read is considered to be included in a window if more than
- \code{readProp} of it is in the window. 
-Specified as a proportion.}
-
-\item{useCoverage}{if TRUE, then the strand information in each window
-corresponds to the sum of coverage coming from positive/negative reads;
- and not the number of positive/negative reads as default.}
-
-\item{paired}{if TRUE then the input bamfile will be considered as paired end
-reads. If missing, 100 thousands first reads will be inspected to test if
- the input bam file in paired end or single end.}
 }
 \description{
 Filter putative double strand DNA from a strand specific RNA-seq
@@ -104,7 +104,7 @@ Since each alignment can be belonged to several windows, then the probability
 }
 \examples{
 \dontrun{
-file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
+file <- system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 filterDNA(file,destination="out.bam",statfile = "out.stat")
 }
 

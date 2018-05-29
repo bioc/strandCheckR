@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarizeHist.R
 \name{summarizeHist}
 \alias{summarizeHist}
-\title{Summarize the histogram of positive proportions of the input windows data frame}
+\title{Summarize the histogram of strand proportions from the input windows data frame}
 \usage{
 summarizeHist(windows, split = c(10, 100, 1000), breaks = 100,
   useCoverage = FALSE, group_by = NULL, normalize_by = NULL)
@@ -17,19 +17,21 @@ Windows can be obtained using the function \code{getWinFromBamFile}.}
 
 \item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
 
-\item{group_by}{the column names of windows that will be used to grouped the data}
+\item{group_by}{the column names of windows that will be used to group the data}
 
-\item{normalize_by}{column names of windows that will be used to normalize the read count into proportion}
+\item{normalize_by}{the column names of windows that will be used to normalize the read count or read coverage into proportion}
 }
 \description{
-Summarize the histogram of positive proportions of the input windows data frame
+Summarize the histogram of positive proportions from the input windows 
+obtained from the function \code{getWinFromBamFile}
 }
 \examples{
 \dontrun{
 #for single end bam file
-bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
+bamfilein = system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
-histWin <- summarizeHist(windows)
+histWin <- summarizeHist(windows,group_by=c("File","Seq"),normalize_by="File")
+plotHist(histWin,facets="File")
 }
 
 }

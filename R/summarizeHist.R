@@ -1,22 +1,24 @@
-#' @title Summarize the histogram of positive proportions of the input windows data frame
+#' @title Summarize the histogram of strand proportions from the input windows data frame
 #'
-#' @description Summarize the histogram of positive proportions of the input windows data frame
+#' @description Summarize the histogram of positive proportions from the input windows 
+#' obtained from the function \code{getWinFromBamFile}
 #'
 #' @param windows data frame containing the strand information of the sliding windows.
 #' Windows can be obtained using the function \code{getWinFromBamFile}.
 #' @param split an integer vector that specifies how you want to partition the windows based on the coverage. By default \code{split} = c(10,100,1000), which means that your windows will be partitionned into 4 groups, those have coverage < 10, from 10 to 100, from 100 to 1000, and > 1000
 #' @param breaks an integer giving the number of bins for the histogram
 #' @param useCoverage if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default
-#' @param group_by the column names of windows that will be used to grouped the data
-#' @param normalize_by column names of windows that will be used to normalize the read count into proportion
+#' @param group_by the column names of windows that will be used to group the data
+#' @param normalize_by the column names of windows that will be used to normalize the read count or read coverage into proportion
 #' @seealso getWinFromBamFile, plotHist, plotWin
 #'
 #' @examples
 #' \dontrun{
 #' #for single end bam file
-#' bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
+#' bamfilein = system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),package = "strandCheckR")
 #' windows <- getWinFromBamFile(file = bamfilein)
-#' histWin <- summarizeHist(windows)
+#' histWin <- summarizeHist(windows,group_by=c("File","Seq"),normalize_by="File")
+#' plotHist(histWin,facets="File")
 #' }
 #' 
 #' @importFrom magrittr set_colnames
@@ -38,9 +40,6 @@ summarizeHist <- function(windows, split=c(10,100,1000), breaks = 100, useCovera
   
   allows_group_by <- setdiff(colnames(windows),c(reqWinCols,"Start","End"))
   group_by <- intersect(group_by,allows_group_by)
-  
-  # Make sure we don't facet if we only have one chromosome
-  nChr <- length(unique(windows$Chr))
   
   # Calculate the proportion of reads for the + strand, based on either coverage or the number of reads
   keepCols <- c("Nb", "Cov")[useCoverage + 1]

@@ -18,7 +18,8 @@ keptReadFragment <- function(fragments,keptProbaW,errorRate){
         id <- which(width(fragments)==m)
         x <- keptProbaW[start(fragments)[id]]
         for (j in seq_along(1:m)[-m]){
-          x <- myMax(x,keptProbaW[j+start(fragments)[id]])
+          y <- keptProbaW[j+start(fragments)[id]]
+          x <-  (x>=y)*x + (y>x)*y 
         }
         suppressWarnings(proba[id] <- rbinom(length(id),1,as.vector(x)))
         rm(id)
