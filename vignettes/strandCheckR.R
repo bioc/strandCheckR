@@ -20,6 +20,6 @@
 ## ----plotwin,eval=FALSE----------------------------------------------------
 #  plotWin(win, facets = c("File","OverlapFeature"), save=TRUE,file="win.png",width=10,height=7)
 
-## ----filteDNA, eval=FALSE--------------------------------------------------
+## ----filterDNA, eval=FALSE-------------------------------------------------
 #  filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)
 

@@ -285,6 +285,7 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0, pair
             win$Type <- Rle("R2")
             allWin[[n]] <- rbind(allWin[[n]],win)
           }
+          allWin[[n]]$Start <- (allWin[[n]]$Start-1)*winStep+1
         }
 
         # Infer the index of kept alignments within the partition
@@ -349,7 +350,10 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0, pair
   cat(paste0("Total elapsed time: ", (endTime-startTime)[[3]]/60," minutes\n"), 
       file = statfile, append = TRUE)
   if (getWin){
-    return(do.call(rbind,allWin))
+    allWin <- do.call(rbind,allWin)
+    allWin$End <- allWin$Start + winWidth -1 
+    allWin <- allWin[c(ncol(allWin)-1,1,ncol(allWin),2:(ncol(allWin)-2))]
+    return(allWin)
   }
 }
 

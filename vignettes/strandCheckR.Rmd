@@ -85,8 +85,8 @@ plotWin(win, facets = c("File","OverlapFeature"), save=TRUE,file="win.png",width
 
 The functions *filterDNA* removes potential double strand DNA from a bam file using a given threshold.
 
-```{r filteDNA, eval=FALSE}
+```{r filterDNA, eval=FALSE}
 filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)
 ```
 
-Other parameters can be specified for more flexible filtering: define the ranges that you want to always keep, the minimum number of reads under which you want to ignore, the pvalue threshold for keeping a windows etc.
+Other parameters can be specified for more flexible filtering: define the ranges that you want to always keep, the minimum number of reads under which you want to ignore, the pvalue threshold for keeping a windows etc. 

@@ -165,7 +165,7 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
     allWin[[b]]$File <- file$path
   }
   allWin <- do.call(rbind,allWin)
-  allWin$End <- allWin$Start + winWidth
+  allWin$End <- allWin$Start + winWidth - 1
   allWin <- allWin[c(1,2,ncol(allWin),3:(ncol(allWin)-1))] #just reorder columns
   return(allWin)
 }
