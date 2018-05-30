@@ -1,24 +1,31 @@
-## ----getWin, eval=FALSE----------------------------------------------------
-#  library(strandCheckR)
-#  files <- system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),package = "strandCheckR")
-#  win <- getWinFromBamFile(files)
-#  win$File <- basename(win$File)
+## ----getWin, message=FALSE,warning=FALSE-----------------------------------
+library(strandCheckR)
+files <- system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),package = "strandCheckR")
+win <- getWinFromBamFile(files)
+win$File <- basename(win$File)
+win
 
-## ----intersect, eval=FALSE-------------------------------------------------
-#  library(TxDb.Hsapiens.UCSC.hg38.knownGene)
-#  annot <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
-#  win$Chr <- paste0("chr",win$Chr) #add chr before the chromosome names to be consistent with the annot data
-#  win <- intersectWithFeature(windows = win,annotation = annot,overlapCol = "OverlapFeature")
+## ----intersect, eval=TRUE, warning=FALSE,message=FALSE---------------------
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+annot <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
+annot <- annot[!duplicated(annot),]
+win$Seq <- paste0("chr",win$Seq) #add chr before the chromosome names to be consistent with the annot data
+win <- intersectWithFeature(windows = win,annotation = annot,overlapCol = "OverlapTranscript")
+win
 
-## ----plotHist, eval=FALSE--------------------------------------------------
-#  hist <- summarizeHist(windows = win,group_by = c("File","OverlapFeature"), normalize_by = "File")
-#  plotHist(hist, facets = c("File","OverlapFeature"), save=TRUE,file="hist.png",width=10,height=7)
+## ----intersectGetFeature, eval=TRUE, warning=FALSE,message=FALSE-----------
+win <- intersectWithFeature(windows = win,annotation = annot,mcolsAnnot = "tx_name",collapse = ",")
+win[order(win$MaxCoverage,decreasing = TRUE),c("Seq","Start","End","MaxCoverage","File","tx_name")]
 
-## ----heatMap,eval=FALSE----------------------------------------------------
-#  plotHist(hist, facets = c("OverlapFeature"), heatmap = TRUE, save=TRUE,file="histHeat.png",width=16,height=8)
+## ----plotHist, eval=TRUE, message=FALSE,warning=FALSE----------------------
+hist <- summarizeHist(windows = win,group_by = c("File","OverlapTranscript"), normalize_by = "File")
+plotHist(hist, facets = c("File","OverlapTranscript"), scales = "free_y")
 
-## ----plotwin,eval=FALSE----------------------------------------------------
-#  plotWin(win, facets = c("File","OverlapFeature"), save=TRUE,file="win.png",width=10,height=7)
+## ----heatMap,eval=TRUE,message=FALSE,warning=FALSE,fig.height = 4, fig.width = 12, fig.align = "cente"----
+plotHist(hist, facets = c("OverlapTranscript"), heatmap = TRUE)
+
+## ----plotwin,eval=TRUE,message=FALSE,warning=FALSE-------------------------
+plotWin(win, facets = c("File","OverlapTranscript"))
 
 ## ----filterDNA, eval=FALSE-------------------------------------------------
 #  filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)

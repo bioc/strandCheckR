@@ -29,11 +29,10 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
   
   # Create a list to store the windows for each file
   allWin <- list(length(files))
-  
+
   # Read through each bam file
   for (b in seq_along(files)){
     file <- files[[b]]
-    
     # Check the paired status
     if (missing(paired)){ 
       paired <- checkPairedEnd(file$path)
@@ -107,11 +106,11 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
           firstReadIndex <- ((floor(readInfo$flag/64) %% 2) == 1)
           secondReadIndex <- !firstReadIndex
           if (sum(firstReadIndex)==0){
-            message("Only R2 reads are found")
+            message("Only R2 reads were found")
             subset <- list(NULL) 
             type <- "R2"
           } else if (sum(secondReadIndex)==0){
-            message("Only R1 reads are found")
+            message("Only R1 reads were found")
             subset <- list(NULL)
             type <- "R1"
           } else {

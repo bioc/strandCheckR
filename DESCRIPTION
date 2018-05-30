@@ -26,6 +26,7 @@ Imports:
   stats, 
   gridExtra,
   knitr,
+  TxDb.Hsapiens.UCSC.hg38.knownGene,
   stringr
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
