@@ -32,7 +32,6 @@ The bam files should be sorted and have their index files located at the same pa
 ```{r getWin, message=FALSE,warning=FALSE}
 library(strandCheckR)
 files <- system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),package = "strandCheckR")
-message(files)
 win <- getWinFromBamFile(files)
 win$File <- basename(win$File)
 win
