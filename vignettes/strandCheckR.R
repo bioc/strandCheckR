@@ -27,7 +27,7 @@ hist <- summarizeHist(windows = win,group_by = c("File","OverlapTranscript"),
                     normalize_by = "File")
 plotHist(hist, facets = c("File","OverlapTranscript"), scales = "free_y")
 
-## ----heatMap, eval=TRUE,message=FALSE,fig.align = "cente"------------------
+## ----heatMap, eval=TRUE,fig.height = 6, fig.width = 14,fig.align = "center"----
 plotHist(hist, facets = c("OverlapTranscript"), heatmap = TRUE)
 
 ## ----plotwin,eval=TRUE,message=FALSE,warning=FALSE-------------------------

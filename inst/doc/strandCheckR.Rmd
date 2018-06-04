@@ -112,7 +112,7 @@ Heatmap can be used instead of classic barplot for histogram when specifying
 *heatmap=TRUE*. This would be usefull to visualize mutliple files in the 
 same plot.
 
-```{r heatMap, eval=TRUE,message=FALSE,fig.align = "cente"}
+```{r heatMap, eval=TRUE,fig.height = 6, fig.width = 14,fig.align = "center"}
 plotHist(hist, facets = c("OverlapTranscript"), heatmap = TRUE)
 ```
 
