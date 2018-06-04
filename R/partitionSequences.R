@@ -45,7 +45,7 @@ partitionSequences <- function(sequences, lengthSeq, partitionSize = 1e8){
 }
 
 
-#' @export
+
 #' @rdname partitionSequences
 partitionSeqinfo <- function(sq, partitionSize = 1e8){
 

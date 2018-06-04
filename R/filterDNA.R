@@ -75,10 +75,8 @@
 #' @seealso getWinFromBamFile, plotHist, plotWin
 #'
 #' @examples
-#' \dontrun{
 #' file <- system.file("extdata","s2.sorted.bam",package = "strandCheckR")
-#' filterDNA(file,destination="out.bam",statfile = "out.stat")
-#' }
+#' filterDNA(file,destination="out.bam")
 #' 
 #' @importFrom rbamtools bamReader getHeader bamWriter bamClose bamSave bamRange
 #' @importFrom Rsamtools BamFile scanBam ScanBamParam

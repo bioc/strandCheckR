@@ -5,7 +5,7 @@
 \title{get the strand information of all windows from bam files}
 \usage{
 getWinFromBamFile(files, sequences, mapqFilter = 0, partitionSize = 1e+08,
-    winWidth = 1000, winStep = 100, paired)
+  winWidth = 1000, winStep = 100, paired)
 }
 \arguments{
 \item{files}{the input bam files. Your bamfiles should be sorted and have 
@@ -36,10 +36,8 @@ get the number of positive/negative reads of all windows from
 bam files
 }
 \examples{
-\dontrun{
 file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 win <- getWinFromBamFile(file)
-}
 }
 \seealso{
 filterDNA, summarizeHist, plotHist, plotWin

@@ -26,10 +26,9 @@
 #' @importFrom Rsamtools ScanBamParam
 #' @importFrom Rsamtools BamFileList
 #' @examples
-#' \dontrun{
 #' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' win <- getWinFromBamFile(file)
-#' }
+
 getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                             winWidth=1000, winStep=100, paired){
     # Check the input is a BamFileList. Convert if necessary

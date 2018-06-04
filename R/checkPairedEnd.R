@@ -12,10 +12,8 @@
 #' @importFrom Rsamtools scanBam
 #' @importFrom Rsamtools ScanBamParam
 #' @examples
-#' \dontrun{
 #' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' checkPairedEnd(file)
-#' }
 #' 
 
 checkPairedEnd <- function(file, yieldSize = 100000){

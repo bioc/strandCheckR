@@ -5,7 +5,7 @@
 \title{Intersect the windows data frame with an annotation data frame}
 \usage{
 intersectWithFeature(windows, annotation, getFeatureInfo = FALSE,
-    overlapCol = "OverlapFeature", mcolsAnnot, collapse, ...)
+  overlapCol = "OverlapFeature", mcolsAnnot, collapse, ...)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 
@@ -42,7 +42,6 @@ Intersect the windows with an annotation data frame to get
 features that overlap with each window
 }
 \examples{
-\dontrun{
 bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
 #add chr before chromosome names to be consistent with the annotation
@@ -57,7 +56,6 @@ windows <- intersectWithFeature(windows,annot,overlapCol="OverlapTranscript")
 h <- summarizeHist(windows,group_by = "OverlapTranscript")
 plotHist(h,facets = "OverlapTranscript")
 plotWin(windows,facets = "OverlapTranscript")
-}
 
 }
 \seealso{

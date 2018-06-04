@@ -5,8 +5,8 @@
 \title{Plot the Proportion of + Stranded Reads}
 \usage{
 plotWin(windows, split = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
-    0.9), save = FALSE, file = "win.pdf", facets = NULL,
-    useCoverage = FALSE, ...)
+  0.9), save = FALSE, file = "win.pdf", facets = NULL,
+  useCoverage = FALSE, ...)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 
@@ -44,15 +44,15 @@ Plot the number of reads vs the proportion of '+'
 }
 \details{
 This function will plot the proportion of '+' stranded reads for 
-each window, against the number of reads in each window.
-The threshold lines indicate the hypothetical boundary where windows will 
-contain reads to kept or discarded
-using the filtering methods of \code{\link{filterDNA}}.
+each window,
+ against the number of reads in each window.
+ The threshold lines indicate the hypothetical boundary where windows will 
+ contain reads to kept or discarded
+ using the filtering methods of \code{\link{filterDNA}}.
  
-Any plot can be easily modified using standard ggplot2 syntax (see Examples)
+ Any plot can be easily modified using standard ggplot2 syntax (see Examples)
 }
 \examples{
-\dontrun{
 bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
 plotWin(windows)
@@ -60,7 +60,7 @@ plotWin(windows)
 # Change point colour using ggplot2
 library(ggplot2)
 plotWin(bamWindows) + 
-    scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))}
+  scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))
 
 }
 \seealso{

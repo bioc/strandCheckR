@@ -5,7 +5,7 @@
 \title{Plot the histogram of positive proportions}
 \usage{
 plotHist(histWin, save = FALSE, file = "hist.pdf", facets = NULL,
-    heatmap = FALSE, ...)
+  heatmap = FALSE, ...)
 }
 \arguments{
 \item{histWin}{data frame obtained from \code{summarizeHist} function}
@@ -30,12 +30,10 @@ Plot the histogram of positive proportions of the input
 histogram data frame
 }
 \examples{
-\dontrun{
-#for single end bam file
 bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 windows  <- getWinFromBamFile(file = bamfilein)
 histWin <- summarizeHist(windows)
-plotHist(histWin)}
+plotHist(histWin)
 
 }
 \seealso{

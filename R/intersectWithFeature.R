@@ -28,7 +28,6 @@
 #' @seealso getWinFromBamFile, summarizeHist, plotHist, plotWin
 #'
 #' @examples
-#' \dontrun{
 #' bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 #' windows <- getWinFromBamFile(file = bamfilein)
 #' #add chr before chromosome names to be consistent with the annotation
@@ -43,11 +42,11 @@
 #' h <- summarizeHist(windows,group_by = "OverlapTranscript")
 #' plotHist(h,facets = "OverlapTranscript")
 #' plotWin(windows,facets = "OverlapTranscript")
-#' }
 #' 
 #' @importFrom IRanges IRanges
 #' @importFrom GenomeInfoDb seqlevels
 #' @importFrom GenomicRanges GRanges mcols findOverlaps
+#' @import TxDb.Hsapiens.UCSC.hg38.knownGene
 #' @export
 
 

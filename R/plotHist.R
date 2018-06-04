@@ -17,12 +17,10 @@
 #' @seealso summarizeHist, getWinFromBamFile, plotWin
 #'
 #' @examples
-#' \dontrun{
-#' #for single end bam file
 #' bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' windows  <- getWinFromBamFile(file = bamfilein)
 #' histWin <- summarizeHist(windows)
-#' plotHist(histWin)}
+#' plotHist(histWin)
 #' 
 #' @importFrom gridExtra grid.arrange
 #' @importFrom ggplot2 ggplot
