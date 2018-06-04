@@ -7,10 +7,17 @@
 calculateStrandNbReads(winPositiveAlignments, winNegativeAlignments)
 }
 \arguments{
-\item{winPositiveAlignments}{a list that has a `Win` field that contains information of sliding windows overalapping positive reads}
+\item{winPositiveAlignments}{a list that has a `Win` field that contains 
+information of sliding windows overalapping positive reads}
 
-\item{winNegativeAlignments}{a a list that has a `Win` field that contains information of sliding windows overalapping negative reads}
+\item{winNegativeAlignments}{a a list that has a `Win` field that contains 
+information of sliding windows overalapping negative reads}
+}
+\value{
+a list of two vectors, containing a positive/negative number of 
+reads of the input positive/negative windows
 }
 \description{
-Calculate the number of reads coming from '+'/'-' strands in all sliding wndows
+Calculate the number of reads coming from '+'/'-' strands in 
+all sliding wndows
 }

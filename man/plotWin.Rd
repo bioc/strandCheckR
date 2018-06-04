@@ -5,41 +5,51 @@
 \title{Plot the Proportion of + Stranded Reads}
 \usage{
 plotWin(windows, split = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
-  0.9), save = FALSE, file = "win.pdf", facets = NULL,
-  useCoverage = FALSE, ...)
+    0.9), save = FALSE, file = "win.pdf", facets = NULL,
+    useCoverage = FALSE, ...)
 }
 \arguments{
-\item{windows}{data frame containing the strand information of the sliding windows.
-Windows should be obtained using the function \code{\link{getWinFromBamFile}} to ensure the correct data structure.}
+\item{windows}{data frame containing the strand information of the sliding 
+windows. Windows should be obtained using the function 
+\code{\link{getWinFromBamFile}} to ensure the correct data structure.}
 
-\item{split}{an integer vector that specifies how you want to partition the windows based on coverage. 
-By default \code{split} = c(10,100,1000), partition windows into 4 groups based on these values.}
+\item{split}{an integer vector that specifies how you want to partition the 
+windows based on coverage. 
+By default \code{split} = c(10,100,1000), partition windows into 4 groups 
+based on these values.}
 
-\item{threshold}{a \code{numeric} vector between 0.5 & 1 that specifies which threshold lines to draw on the plot. 
-The positive windows above the threshold line (or negative windows below the threshold line) will be kept when using \code{\link{filterDNA}}.}
+\item{threshold}{a \code{numeric} vector between 0.5 & 1 that specifies 
+which threshold lines to draw on the plot. 
+The positive windows above the threshold line (or negative windows below the 
+threshold line) will be kept when using \code{\link{filterDNA}}.}
 
-\item{save}{if TRUE, then the plot will be save into the file given by \code{file} parameter}
+\item{save}{if TRUE, then the plot will be save into the file given by 
+\code{file} parameter}
 
 \item{file}{the file name to save to plot}
 
 \item{facets}{colnames of \code{windows} which will be used to split the plot}
 
-\item{useCoverage}{if TRUE then plot the coverage strand information, otherwise plot the number of reads strand information. FALSE by default}
+\item{useCoverage}{if TRUE then plot the coverage strand information, 
+otherwise plot the number of reads strand information. FALSE by default}
 
 \item{...}{used to pass parameters to facet_wrap during plotting}
 }
+\value{
+The plot will be returned as a standard ggplot2 object
+}
 \description{
-Plot the number of reads vs the proportion of '+' stranded reads.
+Plot the number of reads vs the proportion of '+'
+ stranded reads.
 }
 \details{
-This function will plot the proportion of '+' stranded reads for each window,
- against the number of reads in each window.
- The threshold lines indicate the hypothetical boundary where windows will contain reads to kept or discarded
- using the filtering methods of \code{\link{filterDNA}}.
+This function will plot the proportion of '+' stranded reads for 
+each window, against the number of reads in each window.
+The threshold lines indicate the hypothetical boundary where windows will 
+contain reads to kept or discarded
+using the filtering methods of \code{\link{filterDNA}}.
  
- Any plot can be easily modified using standard ggplot2 syntax (see Examples).
- 
- @return The plot will be returned as a standard ggplot2 object
+Any plot can be easily modified using standard ggplot2 syntax (see Examples)
 }
 \examples{
 \dontrun{
@@ -49,7 +59,8 @@ plotWin(windows)
 
 # Change point colour using ggplot2
 library(ggplot2)
-plotWin(bamWindows) + scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))}
+plotWin(bamWindows) + 
+    scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))}
 
 }
 \seealso{

@@ -7,17 +7,23 @@
 concatenateAlignments(bam, sequenceInfo)
 }
 \arguments{
-\item{bam}{a list returned by \code{scanBam} function, each element correspond to a sequence, containing the information of strand, starting position, cigar string, and eventually flag, qname}
+\item{bam}{a list returned by \code{scanBam} function, each element 
+correspond to a sequence, containing the information of strand, starting 
+position, cigar string, and eventually flag, qname}
 
-\item{sequenceInfo}{a data frame that contains some key information of the alignments}
+\item{sequenceInfo}{a data frame that contains some key information of the 
+alignments}
 }
 \value{
 the concatenated alignments of the input list
 }
 \description{
-Concatenate a list of Alignments from multiple sequences into a single object
+Concatenate a list of Alignments from multiple sequences into a 
+single object
 }
 \details{
-This method take a list of alignments across one or more sequences as output by \code{scanBam} 
-and concatenates them into a single set of alignments which may include multiple sequences
+This method take a list of alignments across one or more sequences 
+as output by \code{scanBam} 
+and concatenates them into a single set of alignments which may include 
+multiple sequences
 }

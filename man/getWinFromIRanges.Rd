@@ -5,28 +5,32 @@
 \title{Get the Ranges of Sliding Windows from an IRanges object}
 \usage{
 getWinFromIRanges(x, winWidth = 1000L, winStep = 100L, readProp = 0,
-  maxWin = Inf)
+    maxWin = Inf)
 }
 \arguments{
-\item{x}{an IRanges object containing the start and end position of each fragment}
+\item{x}{an IRanges object containing the start and end position of 
+each read fragment}
 
 \item{winWidth}{The width of each window}
 
 \item{winStep}{The step size for sliding the window}
 
-\item{readProp}{A read is considered to be included in a window if more than \code{readProp} of it is in the window. 
-Specified as a proportion.}
+\item{readProp}{A read is considered to be included in a window if more than 
+\code{readProp} of it is in the window. Specified as a proportion.}
 
 \item{maxWin}{The maximum window ID}
 }
 \value{
-An IRanges object containing the index of the windows containing each fragment
+An IRanges object containing the index of the windows containing 
+each read fragment
 }
 \description{
 Get the Ranges of Sliding Windows from an IRanges object
 }
 \details{
-This finds the windows that overlap each fragment of a read and returns a range containing
+This finds the windows that overlap each fragment of a read and returns a 
+range containing
 this list of windows for each read fragment.
-This allows the total number of read fragments within a window to be calculated simply using \link{coverage}.
+This allows the total number of read fragments within a window to be 
+calculated simply using \link{coverage}.
 }

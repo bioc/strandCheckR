@@ -14,9 +14,14 @@ partitionSeqinfo(sq, partitionSize = 1e+08)
 
 \item{lengthSeq}{the length of each sequence}
 
-\item{partitionSize}{the minimum sum of length of the sequences in each partition}
+\item{partitionSize}{the minimum sum of length of the sequences in 
+each partition}
 
 \item{sq}{a seqinfo object to be partitioned}
+}
+\value{
+a list whose each element is a character vector containing the 
+sequence names of a part
 }
 \description{
 Partition the set of sequences for easier processing
@@ -24,5 +29,6 @@ Partition the set of sequences for easier processing
 \details{
 Partition the set of sequences such that each part contains a 
 subset of sequences whose sum of length is >= \code{partitionSize}.
-This is to enable faster processing by \code{getWinFromBamFile} and \code{filterDNA}
+This is to enable faster processing by \code{getWinFromBamFile} and 
+\code{filterDNA}
 }

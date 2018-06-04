@@ -25,6 +25,7 @@ Imports:
   gridExtra,
   TxDb.Hsapiens.UCSC.hg38.knownGene,
   stringr
+biocViews: RNASeq, Alignment, QualityControl, Coverage
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, testthat

@@ -2,26 +2,32 @@
 % Please edit documentation in R/plotHist.R
 \name{plotHist}
 \alias{plotHist}
-\title{Plot the histogram of positive proportions of the input histogram data frame}
+\title{Plot the histogram of positive proportions}
 \usage{
 plotHist(histWin, save = FALSE, file = "hist.pdf", facets = NULL,
-  heatmap = FALSE, ...)
+    heatmap = FALSE, ...)
 }
 \arguments{
 \item{histWin}{data frame obtained from \code{summarizeHist} function}
 
-\item{save}{if TRUE, then the plot will be save into the file given by \code{file} parameter}
+\item{save}{if TRUE, then the plot will be save into the file given by 
+\code{file} parameter}
 
 \item{file}{the file name to save to plot}
 
 \item{facets}{colnames of \code{histWin} which will be used to split the plot}
 
-\item{heatmap}{if TRUE, then use heat map to plot the histogram, otherwise use barplot. FALSE by default.}
+\item{heatmap}{if TRUE, then use heat map to plot the histogram, otherwise 
+use barplot. FALSE by default.}
 
 \item{...}{used to pass parameters to facet_wrap}
 }
+\value{
+If \code{heatmap=FALSE}: a ggplot object
+}
 \description{
-Plot the histogram of positive proportions of the input histogram  data frame
+Plot the histogram of positive proportions of the input 
+histogram data frame
 }
 \examples{
 \dontrun{

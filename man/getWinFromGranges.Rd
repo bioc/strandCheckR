@@ -9,14 +9,16 @@ getWinFromGranges(x, sequenceInfo, winWidth = 1000, winStep = 100)
 \arguments{
 \item{x}{a GRanges object}
 
-\item{sequenceInfo}{a data frame that contains some key information of the alignments}
+\item{sequenceInfo}{a data frame that contains some key information of 
+the alignments}
 
 \item{winWidth}{The width of each window}
 
 \item{winStep}{The step size for sliding the window}
 }
 \value{
-A list of two logical vectors (for positive and negative strand) defining which windows that overlap the given Granges objects
+A list of two logical vectors (for positive and negative strand) 
+defining which windows that overlap the given Granges objects
 }
 \description{
 Get the positive/negative windows that overlap a GRanges object

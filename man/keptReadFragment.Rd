@@ -2,17 +2,24 @@
 % Please edit documentation in R/keptReadFragment.R
 \name{keptReadFragment}
 \alias{keptReadFragment}
-\title{calculate the read fragments to be kepts}
+\title{calculate the read fragments to be kept}
 \usage{
 keptReadFragment(fragments, keptProbaW, errorRate)
 }
 \arguments{
-\item{fragments}{an IRange object defind the starting, ending position of each fragment}
+\item{fragments}{an IRange object defind the starting, ending position of 
+each fragment}
 
-\item{keptProbaW}{an Rle object define the kept probability of each sliding window}
+\item{keptProbaW}{an Rle object define the kept probability of each 
+sliding window}
 
 \item{errorRate}{the rate that a read has wrong strand}
 }
+\value{
+an integer vector of read fragment indices to be kept
+}
 \description{
-calculate the keeping probability of each read fragment based on the keeping probability of the windows containing it. Then get the list of read fragments to be kept.
+calculate the keeping probability of each read fragment based 
+on the keeping probability of the windows containing it. Then get the list 
+of read fragments to be kept.
 }

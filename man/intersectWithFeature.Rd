@@ -5,33 +5,41 @@
 \title{Intersect the windows data frame with an annotation data frame}
 \usage{
 intersectWithFeature(windows, annotation, getFeatureInfo = FALSE,
-  overlapCol = "OverlapFeature", mcolsAnnot, collapse, ...)
+    overlapCol = "OverlapFeature", mcolsAnnot, collapse, ...)
 }
 \arguments{
-\item{windows}{data frame containing the strand information of the sliding windows.
-Windows can be obtained using the function \code{getWinFromBamFile}.}
+\item{windows}{data frame containing the strand information of the sliding 
+windows. Windows can be obtained using the function \code{getWinFromBamFile}.}
 
-\item{annotation}{a Grange object that you want to intersect with your windows. 
-It can have mcols which contains the information or features that could be able to 
-integrate to the input windows}
+\item{annotation}{a Grange object that you want to intersect with your 
+windows. It can have mcols which contains the information or features that 
+could be able to integrate to the input windows}
 
-\item{getFeatureInfo}{whether to get the information of features in the mcols of annotation data or not. 
-If FALSE the return windows will have an additional column indicating whether a window overlaps with 
-any range of the annotion data.
-If TRUE the return windows will contain the information of features that overlap each window}
+\item{getFeatureInfo}{whether to get the information of features in the 
+mcols of annotation data or not. 
+If FALSE the return windows will have an additional column indicating 
+whether a window overlaps with any range of the annotion data.
+If TRUE the return windows will contain the information of features that 
+overlap each window}
 
-\item{overlapCol}{the columnn name of the return windows indicating whether a window overlaps with 
-any range of the annotion data.}
+\item{overlapCol}{the columnn name of the return windows indicating whether 
+a window overlaps with any range of the annotion data.}
 
-\item{mcolsAnnot}{the column names of the mcols of the annotation data that you want to get information}
+\item{mcolsAnnot}{the column names of the mcols of the annotation data that 
+you want to get information}
 
-\item{collapse}{character which is used collapse multiple features that overlap with a same window into a string.
-If missing then we don't collapse them.}
+\item{collapse}{character which is used collapse multiple features that
+overlap with a same window into a string. If missing then we don't 
+collapse them.}
 
 \item{...}{used to pass parameters to GenomicRanges::findOverlaps}
 }
+\value{
+the input windows DataFrame with some additional columns
+}
 \description{
-Intersect the windows with an annotation data frame to get features that overlap with each window
+Intersect the windows with an annotation data frame to get 
+features that overlap with each window
 }
 \examples{
 \dontrun{
@@ -41,10 +49,11 @@ windows <- getWinFromBamFile(file = bamfilein)
 windows$Seq <- paste0("chr",windows$Seq) 
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 annot <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
-#get the transcript names that overlap with each window
+# get the transcript names that overlap with each window
 windows <- intersectWithFeature(windows,annot,mcolsAnnot="tx_name") 
-#just want to know whether there's any transcript that overlaps with each window
-windows <- intersectWithFeature(windows,annot,overlapCol="OverlapTranscript") 
+# just want to know whether there's any transcript that 
+# overlaps with each window
+windows <- intersectWithFeature(windows,annot,overlapCol="OverlapTranscript")
 h <- summarizeHist(windows,group_by = "OverlapTranscript")
 plotHist(h,facets = "OverlapTranscript")
 plotWin(windows,facets = "OverlapTranscript")

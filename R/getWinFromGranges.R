@@ -4,10 +4,12 @@
 #' 
 #' 
 #' @param x a GRanges object
-#' @param sequenceInfo a data frame that contains some key information of the alignments
+#' @param sequenceInfo a data frame that contains some key information of 
+#' the alignments
 #' @param winWidth The width of each window
 #' @param winStep The step size for sliding the window
-#' @return A list of two logical vectors (for positive and negative strand) defining which windows that overlap the given Granges objects
+#' @return A list of two logical vectors (for positive and negative strand) 
+#' defining which windows that overlap the given Granges objects
 #' 
 #' @importFrom GenomicRanges start<-
 #' @importFrom GenomicRanges end<-
@@ -15,31 +17,37 @@
 #' @importFrom BiocGenerics strand
 #' @importFrom GenomeInfoDb seqlevels
 #' 
-#' @export
+
 getWinFromGranges <- function(x, sequenceInfo, winWidth = 1000, winStep = 100){
-  
-  # Check the correct columns are in the sequenceInfo df
-  reqCols <- c("FirstBaseInPartition")
-  if (!all(reqCols %in% names(sequenceInfo))) stop("sequenceInfo must contain the column ", reqCols)
-  stopifnot(is.numeric(winWidth) || is.numeric(winStep))
-  
-  # Calculate start/end position of each sequence in the partition
-  for (i in seq_along(sequenceInfo$Sequence)){
-    r <- which(as.vector(seqnames(x)) == sequenceInfo$Sequence[i])
-    if (length(r)>0){
-      start(ranges(x)[r]) <- start(ranges(x)[r]) + sequenceInfo$FirstBaseInPartition[i] -1
-      end(ranges(x)[r]) <- end(ranges(x)[r]) + sequenceInfo$FirstBaseInPartition[i] -1  
+
+    # Check the correct columns are in the sequenceInfo df
+    reqCols <- c("FirstBaseInPartition")
+    if (!all(reqCols %in% names(sequenceInfo))){ 
+        stop("sequenceInfo must contain the column ", reqCols)
     }
-  }
-  
-  # Calculate the windows that overlap the "+" ranges of x
-  mustKeepPos <- getWinFromIRanges(ranges(x)[strand(x)!="-",], winWidth, winStep, 0) 
-  mustKeepPos <- coverage(mustKeepPos) > 0
-  
-  # Calculate the windows that overlap the "-" ranges of x
-  mustKeepNeg <- getWinFromIRanges(ranges(x)[strand(x)!="+",], winWidth, winStep, 0) 
-  mustKeepNeg <- coverage(mustKeepNeg) > 0
-  
-  list(Positive = mustKeepPos, Negative = mustKeepNeg)
+    stopifnot(is.numeric(winWidth) || is.numeric(winStep))
+
+    # Calculate start/end position of each sequence in the partition
+    for (i in seq_along(sequenceInfo$Sequence)){
+        r <- which(as.vector(seqnames(x)) == sequenceInfo$Sequence[i])
+        if (length(r)>0){
+            start(ranges(x)[r]) <- start(ranges(x)[r]) + 
+                sequenceInfo$FirstBaseInPartition[i] -1
+            end(ranges(x)[r]) <- end(ranges(x)[r]) + 
+                sequenceInfo$FirstBaseInPartition[i] -1  
+        }
+    }
+
+    # Calculate the windows that overlap the "+" ranges of x
+    mustKeepPos <- getWinFromIRanges(ranges(x)[strand(x)!="-",], 
+                                    winWidth, winStep, 0) 
+    mustKeepPos <- coverage(mustKeepPos) > 0
+
+    # Calculate the windows that overlap the "-" ranges of x
+    mustKeepNeg <- getWinFromIRanges(ranges(x)[strand(x)!="+",], 
+                                    winWidth, winStep, 0) 
+    mustKeepNeg <- coverage(mustKeepNeg) > 0
+
+    list(Positive = mustKeepPos, Negative = mustKeepNeg)
 }
 
