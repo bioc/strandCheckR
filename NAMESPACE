@@ -76,4 +76,8 @@ importFrom(reshape2,melt)
 importFrom(stats,pnorm)
 importFrom(stats,rbinom)
 importFrom(stringr,str_extract)
+<<<<<<< HEAD
 import(TxDb.Hsapiens.UCSC.hg38.knownGene)
+=======
+import(TxDb.Hsapiens.UCSC.hg38.knownGene)
+>>>>>>> 93a2e1556af59ea2b41aef0d17fa70b7f6ccbae0
