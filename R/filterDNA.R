@@ -85,8 +85,8 @@
 #' @importFrom IRanges IRanges
 #' @import S4Vectors
 #'
-#' @return if \code{getWin} is TRUE, then return a dataframe of sliding windows 
-#' that could also be obtained by the function \code{getWinFromBamFile}
+#' @return if \code{getWin} is TRUE: a DataFrame object which could also be 
+#' obtained by the function \code{getWinFromBamFile}
 #' @export
 filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0, 
                     paired, partitionSize = 1e8, winWidth=1000, winStep=100,

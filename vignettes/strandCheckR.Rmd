@@ -1,19 +1,19 @@
 ---
 title: "An Introduction To strandCheckR"
 author:
-- name: Thu-Hien To
-  affiliation: Bioinformatics Hub, University of Adelaide
-  email: hien.to@adelaide.edu.au
-- name: Steve Pederson
-  affiliation: Bioinformatics Hub, University of Adelaide
-  email: stephen.pederson@adelaide.edu.au
+-   name: Thu-Hien To
+    affiliation: Bioinformatics Hub, University of Adelaide
+    email: hien.to@adelaide.edu.au
+-   name: Steve Pederson
+    affiliation: Bioinformatics Hub, University of Adelaide
+    email: stephen.pederson@adelaide.edu.au
 package: strandCheckR
 output:
-  BiocStyle::html_document
+    BiocStyle::html_document
 vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{An Introduction To strandCheckR}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteIndexEntry{An Introduction To strandCheckR}
 ---
 
 # Introduction

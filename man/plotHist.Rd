@@ -5,7 +5,7 @@
 \title{Plot the histogram of positive proportions}
 \usage{
 plotHist(histWin, save = FALSE, file = "hist.pdf", facets = NULL,
-  heatmap = FALSE, ...)
+    heatmap = FALSE, ...)
 }
 \arguments{
 \item{histWin}{data frame obtained from \code{summarizeHist} function}

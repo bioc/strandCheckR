@@ -6,7 +6,7 @@
 data frame}
 \usage{
 summarizeHist(windows, split = c(10, 100, 1000), breaks = 100,
-  useCoverage = FALSE, group_by = NULL, normalize_by = NULL)
+    useCoverage = FALSE, group_by = NULL, normalize_by = NULL)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 
@@ -40,7 +40,7 @@ bamfilein = system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),
                         package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
 histWin <- summarizeHist(windows,group_by=c("File","Seq"),
-                         normalize_by="File")
+                        normalize_by="File")
 plotHist(histWin,facets="File")
 
 }
