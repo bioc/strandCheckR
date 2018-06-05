@@ -19,8 +19,8 @@
 #' @param mcolsAnnot the column names of the mcols of the annotation data that 
 #' you want to get information
 #' @param collapse character which is used collapse multiple features that
-#'  overlap with a same window into a string. If missing then we don't 
-#'  collapse them.
+#' overlap with a same window into a string. If missing then we don't 
+#' collapse them.
 #' @param ... used to pass parameters to GenomicRanges::findOverlaps
 #' 
 #' @return the input windows DataFrame with some additional columns  

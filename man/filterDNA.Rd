@@ -5,10 +5,10 @@
 \title{Filter Double Strand Sequences from a Bam File}
 \usage{
 filterDNA(file, destination, statfile, sequences, mapqFilter = 0, paired,
-    partitionSize = 1e+08, winWidth = 1000, winStep = 100, readProp = 0.5,
-    threshold = 0.7, pvalueThreshold = 0.05, useCoverage = FALSE,
-    mustKeepRanges, getWin = FALSE, minCov = 0, maxCov = 0,
-    errorRate = 0.01)
+  partitionSize = 1e+08, winWidth = 1000, winStep = 100, readProp = 0.5,
+  threshold = 0.7, pvalueThreshold = 0.05, useCoverage = FALSE,
+  mustKeepRanges, getWin = FALSE, minCov = 0, maxCov = 0,
+  errorRate = 0.01)
 }
 \arguments{
 \item{file}{the input bam file to be filterd. Your bamfile should be sorted
@@ -20,13 +20,13 @@ and have an index file located at the same path.}
 
 \item{sequences}{the list of sequences to be filtered.}
 
-\item{mapqFilter}{every read that has mapping quality below \code{mapqFilter} 
-will be removed before any analysis. 
+\item{mapqFilter}{every read that has mapping quality below \code{mapqFilter}
+will be removed before any analysis
 If missing, the entire bam file will be read.}
 
 \item{paired}{if TRUE then the input bamfile will be considered as paired end
-reads. If missing, 100 thousands first reads will be inspected to test if the 
-input bam file in paired end or single end.}
+reads. If missing, 100 thousands first reads will be inspected to test if
+the input bam file in paired end or single end.}
 
 \item{partitionSize}{by default is 1e8, i.e. the bam file is read by block of
 sequences such that the total length of each block is at least 1e8}
@@ -46,15 +46,15 @@ window or not. 0.7 by default}
 windows. 0.05 by default}
 
 \item{useCoverage}{if TRUE, then the strand information in each window
-corresponds to the sum of coverage coming from positive/negative reads; 
+corresponds to the sum of coverage coming from positive/negative reads;
 and not the number of positive/negative reads as default.}
 
 \item{mustKeepRanges}{a GRanges object; all reads that map to those ranges 
 will be kept regardless the strand proportion of the windows containing them.}
 
 \item{getWin}{if TRUE, the function will not only filter the bam file but
-also return a data frame containing the information of all windows. This data 
-frame can also be obtained using \code{\link{getWinFromBamFile}}.
+also return a data frame containing the information of all windows. This
+data frame can also be obtained using \code{\link{getWinFromBamFile}}.
 FALSE by default.}
 
 \item{minCov}{if \code{useCoverage=FALSE}, every window that has less than
@@ -73,19 +73,20 @@ If 0 then it doesn't have effect on selecting window. 0 by default.}
 }
 \value{
 if \code{getWin} is TRUE: a DataFrame object which could also be 
-obtained by the function \code{getWinFromBamFile}}
-
+obtained by the function \code{getWinFromBamFile}
+}
 \description{
-Filter putative double strand DNA from a strand specific RNA-seq using a window 
-sliding across the genome.
+Filter putative double strand DNA from a strand specific RNA-seq
+using a window sliding across the genome.
 }
 \details{
-filterDNA reads a bam file containing strand specific RNA reads, and filter 
-reads coming from putative double strand DNA.
-Using a window sliding across the genome, we calculate the positive/negative 
+filterDNA reads a bam file containing strand specific RNA reads, and
+filter reads coming from putative double strand DNA.
+Using a window sliding across the genome, we calculate the positive/negative
 proportion of reads in each window.
-We then use logistic regression to estimate the strand proportion of reads in 
-each window, and calculate the p-value when comparing that to a given threshold.
+We then use logistic regression to estimate the strand proportion of reads in
+each window, and calculate the p-value when comparing that to a given 
+threshold.
 Let \eqn{\pi} be the strand proportion of reads in a window.
 
 Null hypothesis for positive window: \eqn{\pi \le threshold}.

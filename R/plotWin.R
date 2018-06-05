@@ -1,16 +1,16 @@
 #' @title Plot the Proportion of + Stranded Reads
 #'
 #' @description Plot the number of reads vs the proportion of '+'
-#'  stranded reads.
+#' stranded reads.
 #' 
 #' @details This function will plot the proportion of '+' stranded reads for 
-#' each window,
-#'  against the number of reads in each window.
-#'  The threshold lines indicate the hypothetical boundary where windows will 
-#'  contain reads to kept or discarded
-#'  using the filtering methods of \code{\link{filterDNA}}.
+#' each window, against the number of reads in each window.
 #'  
-#'  Any plot can be easily modified using standard ggplot2 syntax (see Examples)
+#' The threshold lines indicate the hypothetical boundary where windows will 
+#' contain reads to kept or discarded using the filtering methods of 
+#' \code{\link{filterDNA}}.
+#'  
+#' Any plot can be easily modified using standard ggplot2 syntax (see Examples)
 #'  
 #' @param windows data frame containing the strand information of the sliding 
 #' windows. Windows should be obtained using the function 
