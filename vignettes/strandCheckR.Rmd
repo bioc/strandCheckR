@@ -18,22 +18,36 @@ vignette: >
 
 # Introduction
 
-*strandCheckR* is a package used to quantify and remove contamination from 
-genomic DNA within a stranded RNA-seq experiment.
-It takes  one  bam file as input and uses a sliding window across each 
-chromosome to assess whether the window contains reads mainly from one strand, 
-as would be expected from RNA molecules, or from both strands as would be 
-expected from contaminating DNA.
+*strandCheckR* is a package used a window that slides across a bam file and
+gets the count/coverage of reads mapping to +/- strand in each window.
+The returned Data Frame gives information across the whole genome through each
+sliding window. That can be used to quantify the amount of reads coming from 
+double strand genomic DNA. It can be applied to detect DNA contamination within 
+a strand specifc RNA-seq by assessing whether each window contains reads mainly 
+from one strand, as would be expected from RNA molecules, or from both strands 
+as would be expected from contaminating DNA.
+It can also be used to detect regions with specific behavior (eg highest 
+coverage) through the whole genome and not only feature regions.
+
+The window read count function is designed flexibly so that user can filter
+low mapping quality reads, set read proportion to overlap a window, set window 
+length & step etc.
+In a typique example of a human RNA-seq bam file of more than 4GB, it takes
+about 3 minutes to scan the whole file and return a DataFrame of least than 2 
+Gb.
+
+A function to filter out reads coming from double strand DNA is provided.
+This function also uses a sliding window to pick out contaminated reads. 
 For each window, it considers the proportion of +/- stranded reads comparing 
 to a given threshold, to decide if a window contains reads derived from single 
 strand RNA or double stranded DNA.
-Then each read fragment is assigned to a probability of being kept or not, 
+Then each read is assigned to a probability of being kept or not, 
 based on the proportion of +/- stranded of the windows that contain 
-that fragment.
+that read.
 
 # Get windows information
 
-The function *getWinFromBamFile* can be used to get the number of +/- stranded 
+The function *getWinFromBamFile* is used to get the number of +/- stranded 
 reads from all sliding windows throughout a list of bam files.
 The bam files should be sorted and have their index files located at the same 
 path as well.
@@ -44,6 +58,7 @@ library(strandCheckR)
 files <- system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),
                     package = "strandCheckR")
 win <- getWinFromBamFile(files)
+# shorten the file name
 win$File <- basename(win$File)
 win
 ```
@@ -54,11 +69,10 @@ If you have an annotation data, you can integrate it with the sliding windows
 obtained from the previous step using the function *intersectWithFeature*. The 
 annotation must be a GRanges object, with or without mcols. Make sure that the 
 chromosome names in windows and annotation data are consistent.
-By default, you will have an additional column in the windows dataframe which 
+By default, you will have an additional column in the returned windows which 
 indicates wheather a window overlap with any feature in the annotation object. 
 You can also get details of the overlapped features in the mcols of the 
-annotation object by setting *getFeatureInfo=TRUE* and specifying which mcols 
-you'd like to extract details in *mcolsAnnnot* parameter.
+annotation object by specifying it in the *mcolsAnnnot* parameter.
 
 ```{r intersect, eval=TRUE, warning=FALSE,message=FALSE}
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
@@ -134,7 +148,7 @@ plotWin(win, facets = c("File","OverlapTranscript"))
 The functions *filterDNA* removes potential double strand DNA from a bam file 
 using a given threshold.
 
-```{r filterDNA, eval=TRUE}
+```{r filterDNA, eval=TRUE, message=FALSE, warning=FALSE, results=FALSE}
 filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)
 ```
 

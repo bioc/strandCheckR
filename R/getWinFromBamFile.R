@@ -124,11 +124,11 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                     firstReadIndex <- ((floor(readInfo$flag/64) %% 2) == 1)
                     secondReadIndex <- !firstReadIndex
                     if (sum(firstReadIndex)==0){
-                        message("Only R2 reads were found")
+                        #message("Only R2 reads were found")
                         subset <- list(NULL) 
                         type <- "R2"
                     } else if (sum(secondReadIndex)==0){
-                        message("Only R1 reads were found")
+                        #message("Only R1 reads were found")
                         subset <- list(NULL)
                         type <- "R1"
                     } else {

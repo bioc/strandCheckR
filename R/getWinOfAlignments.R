@@ -13,7 +13,7 @@
 #' @param useCoverage either base on coverage or number of reads
 #' 
 #' @return If \code{useCoverage=FALSE}: an IRanges object which contains the 
-#' range of sliding windows that overlap each alignment. 
+#' range of sliding windows that overlap each read fragment. 
 #' If \code{useCoverage=TRUE}: a list of two objects, the first one is the 
 #' later IRanges object, the second one is an integer-Rle object which contains 
 #' the coverage of the input readInfo

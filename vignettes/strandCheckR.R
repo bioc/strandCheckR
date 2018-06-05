@@ -3,6 +3,7 @@ library(strandCheckR)
 files <- system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),
                     package = "strandCheckR")
 win <- getWinFromBamFile(files)
+# shorten the file name
 win$File <- basename(win$File)
 win
 
@@ -33,6 +34,6 @@ plotHist(hist, facets = c("OverlapTranscript"), heatmap = TRUE)
 ## ----plotwin,eval=TRUE,message=FALSE,warning=FALSE-------------------------
 plotWin(win, facets = c("File","OverlapTranscript"))
 
-## ----filterDNA, eval=TRUE--------------------------------------------------
+## ----filterDNA, eval=TRUE, message=FALSE, warning=FALSE, results=FALSE-----
 filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)
 
