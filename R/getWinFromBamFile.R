@@ -10,6 +10,9 @@
 #' of sequences such that the total length of each block is at least 1e8
 #' @param winWidth the width of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
+#' @param readProp A read is considered to be included in a window if at least
+#' \code{readProp} of it is in the window. Specified as a proportion.
+#' 0.5 by default.
 #' @param paired if TRUE then the input bamfile will be considered as paired 
 #' end reads. If missing, 100 thousands first reads will be inspected to test 
 #' if the input bam file in paired end or single end.
@@ -30,15 +33,20 @@
 #' win <- getWinFromBamFile(file)
 
 getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
-                            winWidth=1000, winStep=100, paired){
+                            winWidth=1000, winStep=100, readProp = 0.5, paired){
     # Check the input is a BamFileList. Convert if necessary
     if (class(files) != "BamFileList") tryCatch(files <- BamFileList(files))
 
     # Check valid mapqFilter value
     if(mapqFilter < 0 || !is.numeric(mapqFilter)) {
-    stop("Invalid value for mapqFilter. Must be positive & numeric.")
+        stop("Invalid value for mapqFilter. Must be positive & numeric.")
     }
-
+    
+    # Check valide readProp
+    if (!is.numeric(readProp) || readProp <= 0 || readProp > 1){
+        stop("Invalid value for readProp. Must be numeric and in (0,1].")
+    }
+    
     # Create a list to store the windows for each file
     allWin <- list(length(files))
 
@@ -139,12 +147,18 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                 }
                 for (s in seq_along(subset)){
                     winPositiveAlignments <- getWinOfAlignments(readInfo,"+", 
-                                                winWidth, winStep, readProp = 0,
-                                                useCoverage=TRUE,subset[[s]])
+                                        winWidth, winStep, readProp = readProp,
+                                        useCoverage=TRUE,subset[[s]])
                     winNegativeAlignments <- getWinOfAlignments(readInfo,"-", 
-                                                winWidth, winStep, readProp = 0,
-                                                useCoverage=TRUE,subset[[s]])
+                                        winWidth, winStep, readProp = readProp,
+                                        useCoverage=TRUE,subset[[s]])
     
+                    ######################################################
+                    # calculate strand information based on nbr of reads #
+                    ######################################################
+                    fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
+                                                          winNegativeAlignments)
+                    
                     ##################################################
                     # calculate strand information based on coverage #
                     ##################################################
@@ -153,19 +167,13 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                                         winNegativeAlignments,
                                         winWidth,winStep)
     
-                    ######################################################
-                    # calculate strand information based on nbr of reads #
-                    ######################################################
-                    fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                                        winNegativeAlignments)
-    
                     stopifnot(length(fromCoverage$CovPositive) == 
                                 length(fromNbReads$NbPositive))
     
                     # fill the information of the present window into the data 
                     # frame to be returned
-                    presentWin <- which(as.vector((fromNbReads$NbPositive>0) | 
-                                            (fromNbReads$NbNegative>0))==TRUE)
+                    presentWin <- which(as.vector(fromCoverage$CovPositive>0 |
+                                        fromCoverage$CovNegative>0)==TRUE)
                     win <- DataFrame(Seq = Rle(part[1]),
                             Start = presentWin, 
                             NbPositive = fromNbReads$NbPositive[presentWin], 

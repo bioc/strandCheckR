@@ -12,14 +12,14 @@
 #' @param minCov In the case that \code{useCoverage=FALSE}, if a window has 
 #' least than \code{minCov} reads, then it will be rejected regardless the 
 #' strand proportion. 
-#'    For the case that \code{useCoverage=TRUE}, if a window has max coverage
-#'    least than \code{minCov}, then it will be rejected. 0 by default
+#' For the case that \code{useCoverage=TRUE}, if a window has max coverage
+#' least than \code{minCov}, then it will be rejected. 0 by default
 #' @param maxCov In the case that \code{useCoverage=FALSE}, if a window has 
 #' more than \code{maxCov} reads, then it will be kept regardless the strand 
 #' proportion. 
-#'    For the case that \code{useCoverage=TRUE}, if a window has max coverage 
-#'    more than \code{maxCov}, then it will be kept. If 0 then it doesn't have 
-#'    effect on selecting window. 0 by default.
+#' For the case that \code{useCoverage=TRUE}, if a window has max coverage 
+#' more than \code{maxCov}, then it will be kept. If 0 then it doesn't have 
+#' effect on selecting window. 0 by default.
 #' @param errorRate the probability that an RNA read takes the false strand. 
 #' 0.01 by default
 #' @param useCoverage if TRUE, then the strand information in each window 
@@ -43,43 +43,37 @@ keptProbaWin <- function(winPositiveAlignments, winNegativeAlignments,
                         winWidth, winStep, logitThreshold, pvalueThreshold, 
                         errorRate, mustKeepWin, minCov, maxCov, getWin, 
                         useCoverage=FALSE){
-
-    if (getWin || useCoverage){
+    if (getWin){
         fromCoverage <- calculateStrandCoverage(winPositiveAlignments, 
                                                 winNegativeAlignments, 
                                                 winWidth,winStep)
-    }
-    if (getWin || !useCoverage){
+        stopifnot(length(fromCoverage$CovPositive) == 
+                      length(fromNbReads$NbPositive))
         fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                                winNegativeAlignments)    
+                                              winNegativeAlignments)
+        presentWin <- which(as.vector(fromCoverage$CovPositive>0 | 
+                                        fromCoverage$CovNegative>0) == TRUE)
+        Win <- DataFrame(Start = presentWin,                          
+                         CovPositive = pos[presentWin],
+                         CovNegative = neg[presentWin],
+                         MaxCoverage = fromCoverage$MaxCoverage[presentWin],
+                         NbPositive = fromNbReads$NbPositive[presentWin],
+                         NbNegative = fromNbReads$NbNegative[presentWin])
+    } else if (useCoverage){
+        fromCoverage <- calculateStrandCoverage(winPositiveAlignments, 
+                                                winNegativeAlignments, 
+                                                winWidth,winStep)
+    } else{
+        fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
+                                              winNegativeAlignments)    
     }
-
     if (useCoverage){
         pos <- fromCoverage$CovPositive
         neg <- fromCoverage$CovNegative
-        if (getWin){
-            presentWin <- which(as.vector((pos>0) | (neg>0)) == TRUE)
-            Win <- DataFrame(Start = presentWin,                          
-                            CovPositive = pos[presentWin],
-                            CovNegative = neg[presentWin],
-                            MaxCoverage = fromCoverage$MaxCoverage[presentWin],
-                            NbPositive = fromNbReads$NbPositive[presentWin],
-                            NbNegative = fromNbReads$NbNegative[presentWin])
-        }
     } else{
         pos <- fromNbReads$NbPositive
         neg <- fromNbReads$NbNegative
-        if (getWin){
-            presentWin <- which(as.vector((pos>0) | (neg>0)) == TRUE)
-            Win <- DataFrame(Start = presentWin,                          
-                            NbPositive = pos[presentWin],
-                            NbNegative = neg[presentWin],
-                            CovPositive = fromCoverage$CovPositive[presentWin],
-                            CovNegative = fromCoverage$CovNegative[presentWin],
-                            MaxCoverage = fromCoverage$MaxCoverage[presentWin])
-        }
     }
-
     toTest <- (logitThreshold-abs(log(pos/neg)))/sqrt((pos+neg)/pos/neg)
     pvalue <- Rle(pnorm(runValue(toTest)),runLength(toTest))
     rm(toTest)

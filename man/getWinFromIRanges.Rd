@@ -4,7 +4,7 @@
 \alias{getWinFromIRanges}
 \title{Get the Ranges of Sliding Windows from an IRanges object}
 \usage{
-getWinFromIRanges(x, winWidth = 1000L, winStep = 100L, readProp = 0,
+getWinFromIRanges(x, winWidth = 1000L, winStep = 100L, readProp = 0.5,
   maxWin = Inf)
 }
 \arguments{
@@ -15,7 +15,7 @@ each read fragment}
 
 \item{winStep}{The step size for sliding the window}
 
-\item{readProp}{A read is considered to be included in a window if more than 
+\item{readProp}{A read is considered to be included in a window if at least 
 \code{readProp} of it is in the window. Specified as a proportion.}
 
 \item{maxWin}{The maximum window ID}

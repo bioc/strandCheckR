@@ -7,11 +7,14 @@ win <- getWinFromBamFile(files)
 win$File <- basename(win$File)
 win
 
+## ----highestCoverage-------------------------------------------------------
+head(win[order(win$MaxCoverage,decreasing=TRUE),])
+
 ## ----intersect, eval=TRUE, warning=FALSE,message=FALSE---------------------
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 annot <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
 annot <- annot[!duplicated(annot),]
-#add chr before the chromosome names to be consistent with the annot data
+#add chr before the sequence names to be consistent with the annot data
 win$Seq <- paste0("chr",win$Seq) 
 win <- intersectWithFeature(windows = win, annotation = annot, 
                             overlapCol = "OverlapTranscript")
@@ -20,8 +23,9 @@ win
 ## ----intersectGetFeature, eval=TRUE, warning=FALSE,message=FALSE-----------
 win <- intersectWithFeature(windows = win, annotation = annot,
                             mcolsAnnot = "tx_name",collapse = ",")
-win[order(win$MaxCoverage,decreasing = TRUE),
-    c("Seq","Start","End","MaxCoverage","File","tx_name")]
+winOverlap <- win[win$tx_name!="unknown",]
+winOverlap[order(winOverlap$MaxCoverage,decreasing = TRUE),
+    c("Seq","Start","End","MaxCoverage","File","tx_name")] 
 
 ## ----plotHist, eval=TRUE, message=FALSE,warning=FALSE----------------------
 hist <- summarizeHist(windows = win,group_by = c("File","OverlapTranscript"), 

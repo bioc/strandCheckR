@@ -16,7 +16,7 @@
 #' sequences such that the total length of each block is at least 1e8
 #' @param winWidth the length of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
-#' @param readProp A read is considered to be included in a window if more than
+#' @param readProp A read is considered to be included in a window if at least 
 #' \code{readProp} of it is in the window. Specified as a proportion.
 #' 0.5 by default.
 #' @param threshold the strand proportion threshold to test whether to keep a 
@@ -89,10 +89,10 @@
 #' obtained by the function \code{getWinFromBamFile}
 #' @export
 filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0, 
-paired, partitionSize = 1e8, winWidth=1000, winStep=100,
-readProp=0.5, threshold=0.7,pvalueThreshold=0.05, 
-useCoverage=FALSE, mustKeepRanges, getWin=FALSE, 
-minCov=0, maxCov=0, errorRate=0.01){
+                    paired, partitionSize = 1e8, winWidth=1000, winStep=100,
+                    readProp=0.5, threshold=0.7, pvalueThreshold=0.05, 
+                    useCoverage=FALSE, mustKeepRanges, getWin=FALSE, 
+                    minCov=0, maxCov=0, errorRate=0.01){
     startTime <- proc.time()
 
     # Check the input is a BamFile. Convert if necessary
@@ -295,7 +295,6 @@ minCov=0, maxCov=0, errorRate=0.01){
                         win$Type <- Rle("R2")
                         allWin[[n]] <- rbind(allWin[[n]],win)
                     }
-                    allWin[[n]]$Start <- (allWin[[n]]$Start-1)*winStep+1
                 }
 
                 # Infer the index of kept alignments within the partition
@@ -309,6 +308,9 @@ minCov=0, maxCov=0, errorRate=0.01){
                 # Tidy up the memory a little
                 rm(winPositiveAlignments,winNegativeAlignments)
                 rm(probaWin)
+            }
+            if (getWin){
+                allWin[[n]]$Start <- (allWin[[n]]$Start-1)*winStep+1    
             }
             rm(readInfo)
 

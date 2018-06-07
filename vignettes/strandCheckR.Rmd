@@ -21,29 +21,29 @@ vignette: >
 *strandCheckR* is a package used a window that slides across a bam file and
 gets the count/coverage of reads mapping to +/- strand in each window.
 The returned Data Frame gives information across the whole genome through each
-sliding window. That can be used to quantify the amount of reads coming from 
+sliding window. That helps to quantify the amount of reads coming from 
 double strand genomic DNA. It can be applied to detect DNA contamination within 
 a strand specifc RNA-seq by assessing whether each window contains reads mainly 
 from one strand, as would be expected from RNA molecules, or from both strands 
-as would be expected from contaminating DNA.
-It can also be used to detect regions with specific behavior (eg highest 
-coverage) through the whole genome and not only feature regions.
+as would be expected from contaminating DNA. Hence, it is considered as an
+additional quality checking for strand specific RNA data.
+The package can also be used to detect regions with specific behavior (e.g. 
+highest coverage) through the whole genome and not only feature regions.
 
 The window read count function is designed flexibly so that user can filter
 low mapping quality reads, set read proportion to overlap a window, set window 
-length & step etc.
-In a typique example of a human RNA-seq bam file of more than 4GB, it takes
-about 3 minutes to scan the whole file and return a DataFrame of least than 2 
-Gb.
+length & step etc. It was also implemented in an efficient way to manange big
+bam file. In a typical example of a human RNA-seq bam file of more than *4Gb*, 
+it takes about *3* minutes to scan the whole file and return a Data Frame of 
+least than *2Gb*.
 
-A function to filter out reads coming from double strand DNA is provided.
-This function also uses a sliding window to pick out contaminated reads. 
-For each window, it considers the proportion of +/- stranded reads comparing 
-to a given threshold, to decide if a window contains reads derived from single 
-strand RNA or double stranded DNA.
-Then each read is assigned to a probability of being kept or not, 
-based on the proportion of +/- stranded of the windows that contain 
-that read.
+A function to filter out reads coming from double strand DNA is also provided.
+For each sliding window, it considers the proportion of +/- stranded reads 
+comparing to a given threshold, to decide if a window contains reads derived 
+from single strand RNA or double stranded DNA.
+A read that does not belong to any window coming from RNA will be removed. A
+read that belongs to some windows coming from RNA will be kept with a 
+probability caluclated based on the proportion of +/- stranded of those windows.
 
 # Get windows information
 
@@ -63,22 +63,35 @@ win$File <- basename(win$File)
 win
 ```
 
+The returned DataFrame has 9 columns that corresponds to the sequence name, 
+starting & ending bases of the windows (by default the window length is 1000
+and the window step is 100), number of positive & negative reads that overlap
+each window (*NbPositive*, *NbNegative*), number of positive & negative bases
+that overlap each window (*CovPositive*, *CovNegative*), the maximum coverage
+(*MaxCoverage*) and the file name (*File*).
+
+The regions with highest coverage, for example, can be obtained as follows
+
+```{r highestCoverage}
+head(win[order(win$MaxCoverage,decreasing=TRUE),])
+```
+
 # Intersect with an annotation GRanges object
 
 If you have an annotation data, you can integrate it with the sliding windows 
 obtained from the previous step using the function *intersectWithFeature*. The 
-annotation must be a GRanges object, with or without mcols. Make sure that the 
-chromosome names in windows and annotation data are consistent.
+annotation must be a GRanges object, with or without *mcols*. Make sure that the 
+sequence names in windows and annotation data are consistent.
 By default, you will have an additional column in the returned windows which 
 indicates wheather a window overlap with any feature in the annotation object. 
-You can also get details of the overlapped features in the mcols of the 
+You can also get details of the overlapped features in the *mcols* of the 
 annotation object by specifying it in the *mcolsAnnnot* parameter.
 
 ```{r intersect, eval=TRUE, warning=FALSE,message=FALSE}
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 annot <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
 annot <- annot[!duplicated(annot),]
-#add chr before the chromosome names to be consistent with the annot data
+#add chr before the sequence names to be consistent with the annot data
 win$Seq <- paste0("chr",win$Seq) 
 win <- intersectWithFeature(windows = win, annotation = annot, 
                             overlapCol = "OverlapTranscript")
@@ -90,11 +103,12 @@ An example to get the transcripts with highest coverage:
 ```{r intersectGetFeature, eval=TRUE, warning=FALSE,message=FALSE}
 win <- intersectWithFeature(windows = win, annotation = annot,
                             mcolsAnnot = "tx_name",collapse = ",")
-win[order(win$MaxCoverage,decreasing = TRUE),
-    c("Seq","Start","End","MaxCoverage","File","tx_name")]
+winOverlap <- win[win$tx_name!="unknown",]
+winOverlap[order(winOverlap$MaxCoverage,decreasing = TRUE),
+    c("Seq","Start","End","MaxCoverage","File","tx_name")] 
 ```
 
-If you have a gtf or gff file, you can use the function *gffReadGR* of the 
+If you have a *gtf* or *gff* file, you can use the function *gffReadGR* of the 
 *ballgown* package to read it as a GRanges object.
 
 # Plot histogram and windows information
@@ -110,7 +124,7 @@ the histogram using function *plotHist*. The plot gives you an idea on how much
 double-strand DNA is contained in your sample. In perfectly clear ss-RNA-seq, 
 the positive proportion of every window should be either around 0\% or 100\%. 
 The more amount of windows have this proportion around 50\%, the more the 
-sample was contaminated by DNA. 
+sample was contaminated by DNA. Here is an example.
 
 ```{r plotHist, eval=TRUE, message=FALSE,warning=FALSE}
 hist <- summarizeHist(windows = win,group_by = c("File","OverlapTranscript"), 
@@ -118,15 +132,15 @@ hist <- summarizeHist(windows = win,group_by = c("File","OverlapTranscript"),
 plotHist(hist, facets = c("File","OverlapTranscript"), scales = "free_y")
 ```
 
-In this example, file s1.sorted.bam is heavily contaminated with double strand 
-DNA, while file s2.sorted.bam is cleaner. The windows are splitted in to 4 
-coverage groups <10, 10-100, 100-1000, and >1000
+In this example, file *s1.sorted.bam* is heavily contaminated with double strand 
+DNA, while file *s2.sorted.bam* is cleaner. By default, the windows are 
+splitted in to 4 coverage groups *<10*, *10-100*, *100-1000*, and *>1000*.
 
 Heatmap can be used instead of classic barplot for histogram when specifying 
 *heatmap=TRUE*. This would be usefull to visualize mutliple files in the 
 same plot.
 
-```{r heatMap, eval=TRUE,fig.height = 6, fig.width = 14,fig.align = "center"}
+```{r heatMap, eval=TRUE, fig.width = 25, fig.height=10, warning=FALSE}
 plotHist(hist, facets = c("OverlapTranscript"), heatmap = TRUE)
 ```
 
@@ -155,4 +169,5 @@ filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)
 
 Other parameters can be specified for more flexible filtering: define the 
 ranges that you want to always keep, the minimum number of reads under which 
-you want to ignore, the pvalue threshold for keeping a windows etc. 
+you want to ignore, the *pvalue* threshold for keeping a windows etc. Look at
+the manual page of the function for more options and explanations.

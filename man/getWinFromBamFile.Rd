@@ -5,7 +5,7 @@
 \title{get the strand information of all windows from bam files}
 \usage{
 getWinFromBamFile(files, sequences, mapqFilter = 0, partitionSize = 1e+08,
-  winWidth = 1000, winStep = 100, paired)
+  winWidth = 1000, winStep = 100, readProp = 0.5, paired)
 }
 \arguments{
 \item{files}{the input bam files. Your bamfiles should be sorted and have 
@@ -22,6 +22,10 @@ of sequences such that the total length of each block is at least 1e8}
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 
 \item{winStep}{the step length to sliding the window, 100 by default.}
+
+\item{readProp}{A read is considered to be included in a window if at least
+\code{readProp} of it is in the window. Specified as a proportion.
+0.5 by default.}
 
 \item{paired}{if TRUE then the input bamfile will be considered as paired 
 end reads. If missing, 100 thousands first reads will be inspected to test 

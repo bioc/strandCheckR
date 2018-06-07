@@ -35,7 +35,7 @@ sequences such that the total length of each block is at least 1e8}
 
 \item{winStep}{the step length to sliding the window, 100 by default.}
 
-\item{readProp}{A read is considered to be included in a window if more than
+\item{readProp}{A read is considered to be included in a window if at least 
 \code{readProp} of it is in the window. Specified as a proportion.
 0.5 by default.}
 
