@@ -1,4 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^TODO.md$
+^\.gitignore$
 ^\.travis\.yml$
