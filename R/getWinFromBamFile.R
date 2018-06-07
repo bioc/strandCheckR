@@ -157,7 +157,7 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                     # calculate strand information based on nbr of reads #
                     ######################################################
                     fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                                          winNegativeAlignments)
+                                                        winNegativeAlignments)
                     
                     ##################################################
                     # calculate strand information based on coverage #

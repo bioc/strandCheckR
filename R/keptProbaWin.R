@@ -48,9 +48,9 @@ keptProbaWin <- function(winPositiveAlignments, winNegativeAlignments,
                                                 winNegativeAlignments, 
                                                 winWidth,winStep)
         stopifnot(length(fromCoverage$CovPositive) == 
-                      length(fromNbReads$NbPositive))
+                        length(fromNbReads$NbPositive))
         fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                              winNegativeAlignments)
+                                            winNegativeAlignments)
         presentWin <- which(as.vector(fromCoverage$CovPositive>0 | 
                                         fromCoverage$CovNegative>0) == TRUE)
         Win <- DataFrame(Type = "R1", Seq = "", 
@@ -66,7 +66,7 @@ keptProbaWin <- function(winPositiveAlignments, winNegativeAlignments,
                                                 winWidth,winStep)
     } else{
         fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                              winNegativeAlignments)    
+                                            winNegativeAlignments)
     }
     if (useCoverage){
         pos <- fromCoverage$CovPositive

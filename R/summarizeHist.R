@@ -24,10 +24,10 @@
 #'
 #' @examples
 #' bamfilein = system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),
-#'                         package = "strandCheckR")
+#' package = "strandCheckR")
 #' windows <- getWinFromBamFile(file = bamfilein)
 #' histWin <- summarizeHist(windows,group_by=c("File","Seq"),
-#'                          normalize_by="File")
+#' normalize_by="File")
 #' plotHist(histWin,facets="File")
 #' 
 #' @importFrom magrittr set_colnames

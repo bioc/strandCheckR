@@ -80,8 +80,8 @@ head(win[order(win$MaxCoverage,decreasing=TRUE),])
 
 If you have an annotation data, you can integrate it with the sliding windows 
 obtained from the previous step using the function *intersectWithFeature*. The 
-annotation must be a GRanges object, with or without *mcols*. Make sure that the 
-sequence names in windows and annotation data are consistent.
+annotation must be a GRanges object, with or without *mcols*. Make sure that 
+the sequence names in windows and annotation data are consistent.
 By default, you will have an additional column in the returned windows which 
 indicates wheather a window overlap with any feature in the annotation object. 
 You can also get details of the overlapped features in the *mcols* of the 
@@ -132,8 +132,8 @@ hist <- summarizeHist(windows = win,group_by = c("File","OverlapTranscript"),
 plotHist(hist, facets = c("File","OverlapTranscript"), scales = "free_y")
 ```
 
-In this example, file *s1.sorted.bam* is heavily contaminated with double strand 
-DNA, while file *s2.sorted.bam* is cleaner. By default, the windows are 
+In this example, file *s1.sorted.bam* is heavily contaminated with double 
+strand DNA, while file *s2.sorted.bam* is cleaner. By default, the windows are 
 splitted in to 4 coverage groups *<10*, *10-100*, *100-1000*, and *>1000*.
 
 Heatmap can be used instead of classic barplot for histogram when specifying 

@@ -5,11 +5,9 @@
 #' 
 #' @details This function will plot the proportion of '+' stranded reads for 
 #' each window, against the number of reads in each window.
-#'  
 #' The threshold lines indicate the hypothetical boundary where windows will 
 #' contain reads to kept or discarded using the filtering methods of 
 #' \code{\link{filterDNA}}.
-#'  
 #' Any plot can be easily modified using standard ggplot2 syntax (see Examples)
 #'  
 #' @param windows data frame containing the strand information of the sliding 
@@ -49,7 +47,7 @@
 #' # Change point colour using ggplot2
 #' library(ggplot2)
 #' plotWin(bamWindows) + 
-#'   scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))
+#' scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))
 #' 
 #' @export
 #'
