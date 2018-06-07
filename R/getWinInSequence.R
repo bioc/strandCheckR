@@ -20,7 +20,6 @@ getWinInSequence <- function(Win, sequences, sequenceInfo, winWidth = 1000,
     }
     stopifnot(is.numeric(winWidth) || is.numeric(winStep))
 
-    Win$Seq <- ""
     for (i in seq_along(sequences)){
         if (!is.na(sequenceInfo$FirstBaseInPartition[i])){
             currentChr <- sequences[i]

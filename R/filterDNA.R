@@ -371,7 +371,6 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
     if (getWin){
         allWin <- do.call(rbind,allWin)
         allWin$End <- allWin$Start + winWidth -1 
-        allWin <- allWin[c(ncol(allWin)-1,1,ncol(allWin),2:(ncol(allWin)-2))]
         return(allWin)
     }
 }

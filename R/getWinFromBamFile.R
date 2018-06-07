@@ -174,8 +174,8 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                     # frame to be returned
                     presentWin <- which(as.vector(fromCoverage$CovPositive>0 |
                                         fromCoverage$CovNegative>0)==TRUE)
-                    win <- DataFrame(Seq = Rle(part[1]),
-                            Start = presentWin, 
+                    win <- DataFrame(Type = "R1", Seq = "", 
+                            Start = presentWin, End = 0,
                             NbPositive = fromNbReads$NbPositive[presentWin], 
                             NbNegative = fromNbReads$NbNegative[presentWin],
                             CovPositive = fromCoverage$CovPositive[presentWin], 
@@ -203,7 +203,5 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
     }
     allWin <- do.call(rbind,allWin)
     allWin$End <- allWin$Start + winWidth - 1
-    #just reorder columns
-    allWin <- allWin[c(1,2,ncol(allWin),3:(ncol(allWin)-1))] 
     return(allWin)
 }

@@ -53,12 +53,13 @@ keptProbaWin <- function(winPositiveAlignments, winNegativeAlignments,
                                               winNegativeAlignments)
         presentWin <- which(as.vector(fromCoverage$CovPositive>0 | 
                                         fromCoverage$CovNegative>0) == TRUE)
-        Win <- DataFrame(Start = presentWin,                          
-                         CovPositive = pos[presentWin],
-                         CovNegative = neg[presentWin],
-                         MaxCoverage = fromCoverage$MaxCoverage[presentWin],
-                         NbPositive = fromNbReads$NbPositive[presentWin],
-                         NbNegative = fromNbReads$NbNegative[presentWin])
+        Win <- DataFrame(Type = "R1", Seq = "", 
+                        Start = presentWin, End = 0,
+                        NbPositive = fromNbReads$NbPositive[presentWin], 
+                        NbNegative = fromNbReads$NbNegative[presentWin],
+                        CovPositive = fromCoverage$CovPositive[presentWin], 
+                        CovNegative = fromCoverage$CovNegative[presentWin],
+                        MaxCoverage = fromCoverage$MaxCoverage[presentWin])
     } else if (useCoverage){
         fromCoverage <- calculateStrandCoverage(winPositiveAlignments, 
                                                 winNegativeAlignments, 
