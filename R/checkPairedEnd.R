@@ -14,7 +14,7 @@
 #' @examples
 #' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' checkPairedEnd(file)
-#' 
+#' @export
 
 checkPairedEnd <- function(file, yieldSize = 100000){
     message("Testing paired end by checking the first ", yieldSize,

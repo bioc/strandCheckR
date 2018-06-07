@@ -7,8 +7,8 @@ win <- getWinFromBamFile(files)
 win$File <- basename(win$File)
 win
 
-## ----highestCoverage-------------------------------------------------------
-head(win[order(win$MaxCoverage,decreasing=TRUE),])
+## ----highestCoverage, eval=TRUE, message=FALSE,warning=FALSE---------------
+head(win[order((win$NbPositive+win$NbNegative),decreasing=TRUE),])
 
 ## ----intersect, eval=TRUE, warning=FALSE,message=FALSE---------------------
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
@@ -36,7 +36,7 @@ plotHist(hist, facets = c("File","OverlapTranscript"), scales = "free_y")
 plotHist(hist, facets = c("OverlapTranscript"), heatmap = TRUE)
 
 ## ----plotwin,eval=TRUE,message=FALSE,warning=FALSE-------------------------
-plotWin(win, facets = c("File","OverlapTranscript"))
+plotWin(win, facets = "File")
 
 ## ----filterDNA, eval=TRUE, message=FALSE, warning=FALSE, results=FALSE-----
 filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)

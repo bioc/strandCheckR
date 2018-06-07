@@ -250,13 +250,19 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
             if (paired){
                 firstReadIndex <- ((floor(readInfo$flag/64) %% 2) == 1)
                 secondReadIndex <- !firstReadIndex
-                if (sum(firstReadIndex)==0 || sum(secondReadIndex)==0){ 
+                if (sum(firstReadIndex)==0){
+                    subset <- list(NULL) 
+                    type <- "R2"
+                } else if (sum(secondReadIndex)==0){
                     subset <- list(NULL)
+                    type <- "R1"
                 } else {
                     subset <- list("R1"=firstReadIndex,"R2"=secondReadIndex)
+                    type <- "R1"
                 }
             } else{
                 subset <- list(NULL)
+                type <- "single"
             }
             for (s in seq_along(subset)){
                 # Get the ids of sliding windows containing each "+"/"-" 
@@ -289,10 +295,10 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
                     win <- getWinInSequence(probaWin$Win, part,
                                 sequenceInfo[idPart,], winWidth, winStep)
                     if (s==1){
+                        win$Type <- type
                         allWin[[n]] <- win
                     } else{
-                        allWin[[n]]$Type <- Rle("R1")
-                        win$Type <- Rle("R2")
+                        win$Type <- "R2"
                         allWin[[n]] <- rbind(allWin[[n]],win)
                     }
                 }

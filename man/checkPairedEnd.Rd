@@ -23,5 +23,4 @@ whether it is single end or paired end
 \examples{
 file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 checkPairedEnd(file)
-
 }

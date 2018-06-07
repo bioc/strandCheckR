@@ -141,9 +141,11 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                         type <- "R1"
                     } else {
                         subset <- list("R1"=firstReadIndex,"R2"=secondReadIndex)
+                        type <- "R1"
                     }
                 } else{
                     subset <- list(NULL)
+                    type <- "single"
                 }
                 for (s in seq_along(subset)){
                     winPositiveAlignments <- getWinOfAlignments(readInfo,"+", 
@@ -174,7 +176,7 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                     # frame to be returned
                     presentWin <- which(as.vector(fromCoverage$CovPositive>0 |
                                         fromCoverage$CovNegative>0)==TRUE)
-                    win <- DataFrame(Type = "R1", Seq = "", 
+                    win <- DataFrame(Type = "", Seq = "", 
                             Start = presentWin, End = 0,
                             NbPositive = fromNbReads$NbPositive[presentWin], 
                             NbNegative = fromNbReads$NbNegative[presentWin],
@@ -184,13 +186,10 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                     win <- getWinInSequence(win, part, sequenceInfo[idPart,], 
                                             winWidth,winStep)
                     if (s==1){
+                        win$Type <- type
                         allWin[[b]][[n]] <- win
-                        if (paired && length(subset)==0){
-                            allWin[[b]][[n]]$Type <- type
-                        }
                     } else{
-                        allWin[[b]][[n]]$Type <- Rle("R1")
-                        win$Type <- Rle("R2")
+                        win$Type <- "R2"
                         allWin[[b]][[n]] <- rbind(allWin[[b]][[n]],win)
                     }
                 }

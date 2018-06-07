@@ -63,17 +63,18 @@ win$File <- basename(win$File)
 win
 ```
 
-The returned DataFrame has 9 columns that corresponds to the sequence name, 
-starting & ending bases of the windows (by default the window length is 1000
-and the window step is 100), number of positive & negative reads that overlap
-each window (*NbPositive*, *NbNegative*), number of positive & negative bases
-that overlap each window (*CovPositive*, *CovNegative*), the maximum coverage
-(*MaxCoverage*) and the file name (*File*).
+The returned DataFrame has 10 columns that corresponds to the read type (R1 or
+R2 or single end read), sequence names, starting & ending bases of the windows 
+(by default the window length is 1000 and the window step is 100), number of 
+positive & negative reads that overlap each window (*NbPositive*, 
+*NbNegative*), number of positive & negative bases that overlap each window 
+(*CovPositive*, *CovNegative*), the maximum coverage (*MaxCoverage*) and the 
+file name (*File*). Windows that do not overlap with any read are not reported.
 
-The regions with highest coverage, for example, can be obtained as follows
+The regions with highest read counts, for example, can be obtained as follows.
 
-```{r highestCoverage}
-head(win[order(win$MaxCoverage,decreasing=TRUE),])
+```{r highestCoverage, eval=TRUE, message=FALSE,warning=FALSE}
+head(win[order((win$NbPositive+win$NbNegative),decreasing=TRUE),])
 ```
 
 # Intersect with an annotation GRanges object
@@ -98,7 +99,7 @@ win <- intersectWithFeature(windows = win, annotation = annot,
 win
 ```
 
-An example to get the transcripts with highest coverage:
+An example to get the highest coverage windows that overlap with transcripts:
 
 ```{r intersectGetFeature, eval=TRUE, warning=FALSE,message=FALSE}
 win <- intersectWithFeature(windows = win, annotation = annot,
@@ -154,7 +155,7 @@ threshold line on this plot. This can be used to give guidance as to the best
 threshold to choose when filtering windows.
 
 ```{r plotwin,eval=TRUE,message=FALSE,warning=FALSE}
-plotWin(win, facets = c("File","OverlapTranscript"))
+plotWin(win, facets = "File")
 ```
 
 # Filter bam files

@@ -53,7 +53,7 @@ keptProbaWin <- function(winPositiveAlignments, winNegativeAlignments,
                                             winNegativeAlignments)
         presentWin <- which(as.vector(fromCoverage$CovPositive>0 | 
                                         fromCoverage$CovNegative>0) == TRUE)
-        Win <- DataFrame(Type = "R1", Seq = "", 
+        Win <- DataFrame(Type = "", Seq = "", 
                         Start = presentWin, End = 0,
                         NbPositive = fromNbReads$NbPositive[presentWin], 
                         NbNegative = fromNbReads$NbNegative[presentWin],
