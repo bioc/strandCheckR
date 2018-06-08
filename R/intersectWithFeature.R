@@ -90,7 +90,7 @@ intersectWithFeature <- function(windows, annotation, getFeatureInfo = FALSE,
         windows[[overlapCol]][as.integer(unique(from(ol)))] <- "Overlap"  
     } else {
     ## check collapse
-        stopifnot(!missing(collapse) && is.character(collapse))
+        stopifnot(!missing(collapse) || is.character(collapse))
     
         ## Check mcolsAnnot
         if (missing(mcolsAnnot)){
