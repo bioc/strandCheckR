@@ -4,18 +4,34 @@
 \alias{plotHist}
 \title{Plot the histogram of positive proportions}
 \usage{
-plotHist(histWin, save = FALSE, file = "hist.pdf", facets = NULL,
-  heatmap = FALSE, ...)
+plotHist(windows, save = FALSE, file = "hist.pdf", group_by = NULL,
+  normalize_by = NULL, split = c(10, 100, 1000), breaks = 100,
+  useCoverage = FALSE, heatmap = FALSE, ...)
 }
 \arguments{
-\item{histWin}{data frame obtained from \code{summarizeHist} function}
+\item{windows}{data frame containing the strand information of the sliding 
+windows. Windows can be obtained using the function \code{getWinFromBamFile}.}
 
 \item{save}{if TRUE, then the plot will be save into the file given by 
 \code{file} parameter}
 
 \item{file}{the file name to save to plot}
 
-\item{facets}{colnames of \code{histWin} which will be used to split the plot}
+\item{group_by}{the column names of windows that will be used to group 
+the data}
+
+\item{normalize_by}{the column names of windows that will be used to 
+normalize the read count or read coverage into proportion}
+
+\item{split}{an integer vector that specifies how you want to partition the 
+windows based on the coverage. By default \code{split} = c(10,100,1000), 
+which means that your windows will be partitionned into 4 groups, those have 
+coverage < 10, from 10 to 100, from 100 to 1000, and > 1000}
+
+\item{breaks}{an integer giving the number of bins for the histogram}
+
+\item{useCoverage}{if TRUE then plot the coverage strand information, 
+otherwise plot the number of reads strand information. FALSE by default}
 
 \item{heatmap}{if TRUE, then use heat map to plot the histogram, otherwise 
 use barplot. FALSE by default.}
@@ -31,11 +47,10 @@ histogram data frame
 }
 \examples{
 bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
-windows  <- getWinFromBamFile(file = bamfilein)
-histWin <- summarizeHist(windows)
-plotHist(histWin)
+win  <- getWinFromBamFile(file = bamfilein)
+plotHist(win)
 
 }
 \seealso{
-summarizeHist, getWinFromBamFile, plotWin
+getWinFromBamFile, plotWin
 }

@@ -10,6 +10,12 @@ win
 ## ----highestCoverage, eval=TRUE, message=FALSE,warning=FALSE---------------
 head(win[order((win$NbPositive+win$NbNegative),decreasing=TRUE),])
 
+## ----paired end, eval=TRUE,message=FALSE,warning=FALSE---------------------
+fileP <- system.file("extdata","paired.bam",package = "strandCheckR")
+winP <- getWinFromBamFile(fileP)
+winP$File <- basename(winP$File) #shorten file name
+winP
+
 ## ----intersect, eval=TRUE, warning=FALSE,message=FALSE---------------------
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 annot <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
@@ -28,12 +34,15 @@ winOverlap[order(winOverlap$MaxCoverage,decreasing = TRUE),
     c("Seq","Start","End","MaxCoverage","File","tx_name")] 
 
 ## ----plotHist, eval=TRUE, message=FALSE,warning=FALSE----------------------
-hist <- summarizeHist(windows = win,group_by = c("File","OverlapTranscript"), 
-                    normalize_by = "File")
-plotHist(hist, facets = c("File","OverlapTranscript"), scales = "free_y")
+plotHist(windows = win, group_by = c("File","OverlapTranscript"), 
+         normalize_by = "File", scales = "free_y")
+
+## ----plotHistPaired, eval=TRUE,message=FALSE,warning=FALSE-----------------
+plotHist(windows = winP, group_by = "Type", normalize_by = "Type")
 
 ## ----heatMap, eval=TRUE, fig.width = 25, fig.height=10, warning=FALSE------
-plotHist(hist, facets = c("OverlapTranscript"), heatmap = TRUE)
+plotHist(windows = win, group_by = c("File","OverlapTranscript"), 
+         normalize_by = "File", facets = c("OverlapTranscript"), heatmap = TRUE)
 
 ## ----plotwin,eval=TRUE,message=FALSE,warning=FALSE-------------------------
 plotWin(win, facets = "File")

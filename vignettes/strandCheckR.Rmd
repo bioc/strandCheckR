@@ -77,6 +77,15 @@ The regions with highest read counts, for example, can be obtained as follows.
 head(win[order((win$NbPositive+win$NbNegative),decreasing=TRUE),])
 ```
 
+Here is an example for paired end bam file.
+
+```{r paired end, eval=TRUE,message=FALSE,warning=FALSE}
+fileP <- system.file("extdata","paired.bam",package = "strandCheckR")
+winP <- getWinFromBamFile(fileP)
+winP$File <- basename(winP$File) #shorten file name
+winP
+```
+
 # Intersect with an annotation GRanges object
 
 If you have an annotation data, you can integrate it with the sliding windows 
@@ -117,32 +126,38 @@ If you have a *gtf* or *gff* file, you can use the function *gffReadGR* of the
 With these windows, you can have some plots via *plotHist* and *plotWin* 
 functions which can be saved to an appropriate location.
 
-To plot the histogram of positive proportion of the sliding windows, we need to 
-summarize them first using *summarizeHist*. This function calculates the 
-frequency of positive proportion over all windows, and also group/normalize 
-them based on given column names. The obtained dataframe can be used to plot 
-the histogram using function *plotHist*. The plot gives you an idea on how much 
-double-strand DNA is contained in your sample. In perfectly clear ss-RNA-seq, 
-the positive proportion of every window should be either around 0\% or 100\%. 
+To plot the histogram of positive proportion of the sliding windows, we use
+the function *plotHist*. This function will first calculates the frequency of 
+positive proportion over all windows, and also group/normalize them based on 
+given column names. Then it uses the *geom_bar* function of *ggplot2* to plot
+those frequencies. The plot gives you an idea on how much double-strand DNA is 
+contained in your sample. In perfectly clear ss-RNA-seq, the positive 
+proportion of every window should be either around 0\% or 100\%. 
 The more amount of windows have this proportion around 50\%, the more the 
 sample was contaminated by DNA. Here is an example.
 
 ```{r plotHist, eval=TRUE, message=FALSE,warning=FALSE}
-hist <- summarizeHist(windows = win,group_by = c("File","OverlapTranscript"), 
-                    normalize_by = "File")
-plotHist(hist, facets = c("File","OverlapTranscript"), scales = "free_y")
+plotHist(windows = win, group_by = c("File","OverlapTranscript"), 
+         normalize_by = "File", scales = "free_y")
 ```
 
 In this example, file *s1.sorted.bam* is heavily contaminated with double 
 strand DNA, while file *s2.sorted.bam* is cleaner. By default, the windows are 
 splitted in to 4 coverage groups *<10*, *10-100*, *100-1000*, and *>1000*.
 
+For paired-end data, we can group the Data Frame by read type:
+
+```{r plotHistPaired, eval=TRUE,message=FALSE,warning=FALSE}
+plotHist(windows = winP, group_by = "Type", normalize_by = "Type")
+```
+
 Heatmap can be used instead of classic barplot for histogram when specifying 
 *heatmap=TRUE*. This would be usefull to visualize mutliple files in the 
 same plot.
 
 ```{r heatMap, eval=TRUE, fig.width = 25, fig.height=10, warning=FALSE}
-plotHist(hist, facets = c("OverlapTranscript"), heatmap = TRUE)
+plotHist(windows = win, group_by = c("File","OverlapTranscript"), 
+         normalize_by = "File", facets = c("OverlapTranscript"), heatmap = TRUE)
 ```
 
 

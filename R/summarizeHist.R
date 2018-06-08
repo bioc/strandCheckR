@@ -34,7 +34,7 @@
 #' @importFrom dplyr mutate select one_of starts_with bind_rows
 #' @importFrom stringr str_extract
 #' @importFrom reshape2 dcast melt
-#' @export
+
 summarizeHist <- function(windows, split=c(10,100,1000), breaks = 100, 
                     useCoverage=FALSE, group_by = NULL, normalize_by = NULL){
 
