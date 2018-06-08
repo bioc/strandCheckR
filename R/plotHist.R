@@ -37,8 +37,7 @@
 #' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 geom_bar geom_tile
 #' @importFrom ggplot2 labs
-#' @importFrom ggplot2 theme_bw
-#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 theme_bw theme element_blank
 #' @importFrom grid unit
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 ggsave ggtitle scale_fill_gradient
@@ -82,7 +81,7 @@ plotHist <- function(windows, save=FALSE, file = "hist.pdf", group_by = NULL,
         }
     } else{
         cov <- unique(histWin$Coverage)
-        p <- list()
+        g <- list()
         if (!("File" %in% colnames(histWin))){
             histWin$File <- "File"
         }
@@ -97,18 +96,21 @@ plotHist <- function(windows, save=FALSE, file = "hist.pdf", group_by = NULL,
         }
         for (i in 1:length(cov)){
             l <- filter(histWin,Coverage==cov[i]) 
-            p[[i]] <- ggplot(l, aes_string(x="PosStrandProp", y="File",
+            g[[i]] <- ggplot(l, aes_string(x="PosStrandProp", y="File",
                                         fill="ReadCountProp")) + 
                 geom_tile() +
+                theme_bw() +
+                theme(panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank()) +
                 scale_fill_gradient(low="white",high="red",na.value = "white")
             if (length(group_by)>0){
-                p[[i]] <- p[[i]] + myFacets
+                g[[i]] <- g[[i]] + myFacets
             }
             if (length(cov)>1) {
-                p[[i]] <- p[[i]] + ggtitle(paste0("Coverage ",cov[i]))
+                g[[i]] <- g[[i]] + ggtitle(paste0("Coverage ",cov[i]))
             }
         }
-        g <- grid.arrange(grobs=p, nrow = ceiling(length(cov)/2))
+        g <- grid.arrange(grobs=g, nrow = length(cov))
     }
 
     if (save==TRUE){

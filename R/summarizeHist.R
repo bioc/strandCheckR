@@ -61,6 +61,7 @@ summarizeHist <- function(windows, split=c(10,100,1000), breaks = 100,
     names(windows) <- str_extract(names(windows), 
                                 paste0(c("MaxCoverage","Pos","Neg",group_by),
                                         collapse = "|"))
+    if (useCoverage==FALSE) windows <- filter(windows,Pos+Neg>0)
     windows$PositiveProportion <- windows$Pos / (windows$Pos + windows$Neg)
 
 

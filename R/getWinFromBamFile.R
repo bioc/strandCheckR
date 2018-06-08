@@ -145,7 +145,7 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                     }
                 } else{
                     subset <- list(NULL)
-                    type <- "single"
+                    type <- "SE"
                 }
                 for (s in seq_along(subset)){
                     winPositiveAlignments <- getWinOfAlignments(readInfo,"+", 

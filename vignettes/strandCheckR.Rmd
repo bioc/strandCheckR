@@ -134,30 +134,32 @@ those frequencies. The plot gives you an idea on how much double-strand DNA is
 contained in your sample. In perfectly clear ss-RNA-seq, the positive 
 proportion of every window should be either around 0\% or 100\%. 
 The more amount of windows have this proportion around 50\%, the more the 
-sample was contaminated by DNA. Here is an example.
+sample was contaminated by DNA. 
 
 ```{r plotHist, eval=TRUE, message=FALSE,warning=FALSE}
 plotHist(windows = win, group_by = c("File","OverlapTranscript"), 
          normalize_by = "File", scales = "free_y")
 ```
 
-In this example, file *s1.sorted.bam* is heavily contaminated with double 
-strand DNA, while file *s2.sorted.bam* is cleaner. By default, the windows are 
+In this example, file *s2.sorted.bam* is heavily contaminated with double 
+strand DNA, while file *s1.sorted.bam* is cleaner. By default, the windows are 
 splitted in to 4 coverage groups *<10*, *10-100*, *100-1000*, and *>1000*.
+It can be set via option *split*.
 
 For paired-end data, we can group the Data Frame by read type:
 
 ```{r plotHistPaired, eval=TRUE,message=FALSE,warning=FALSE}
-plotHist(windows = winP, group_by = "Type", normalize_by = "Type")
+plotHist(windows = winP, group_by = "Type", normalize_by = "Type", 
+        scales = "free_y")
 ```
 
 Heatmap can be used instead of classic barplot for histogram when specifying 
 *heatmap=TRUE*. This would be usefull to visualize mutliple files in the 
 same plot.
 
-```{r heatMap, eval=TRUE, fig.width = 25, fig.height=10, warning=FALSE}
+```{r heatMap, eval=TRUE, message = FALSE, warning=FALSE,}
 plotHist(windows = win, group_by = c("File","OverlapTranscript"), 
-         normalize_by = "File", facets = c("OverlapTranscript"), heatmap = TRUE)
+         normalize_by = "File", heatmap = TRUE)
 ```
 
 

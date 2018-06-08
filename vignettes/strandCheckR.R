@@ -38,11 +38,12 @@ plotHist(windows = win, group_by = c("File","OverlapTranscript"),
          normalize_by = "File", scales = "free_y")
 
 ## ----plotHistPaired, eval=TRUE,message=FALSE,warning=FALSE-----------------
-plotHist(windows = winP, group_by = "Type", normalize_by = "Type")
+plotHist(windows = winP, group_by = "Type", normalize_by = "Type", 
+        scales = "free_y")
 
-## ----heatMap, eval=TRUE, fig.width = 25, fig.height=10, warning=FALSE------
+## ----heatMap, eval=TRUE, message = FALSE, warning=FALSE--------------------
 plotHist(windows = win, group_by = c("File","OverlapTranscript"), 
-         normalize_by = "File", facets = c("OverlapTranscript"), heatmap = TRUE)
+         normalize_by = "File", heatmap = TRUE)
 
 ## ----plotwin,eval=TRUE,message=FALSE,warning=FALSE-------------------------
 plotWin(win, facets = "File")

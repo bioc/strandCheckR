@@ -262,7 +262,7 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
                 }
             } else{
                 subset <- list(NULL)
-                type <- "single"
+                type <- "SE"
             }
             for (s in seq_along(subset)){
                 # Get the ids of sliding windows containing each "+"/"-" 
