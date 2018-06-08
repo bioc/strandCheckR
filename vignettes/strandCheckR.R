@@ -35,7 +35,7 @@ winOverlap[order(winOverlap$MaxCoverage,decreasing = TRUE),
 
 ## ----plotHist, eval=TRUE, message=FALSE,warning=FALSE----------------------
 plotHist(windows = win, group_by = c("File","OverlapTranscript"), 
-         normalize_by = "File", scales = "free_y")
+        normalize_by = "File", scales = "free_y")
 
 ## ----plotHistPaired, eval=TRUE,message=FALSE,warning=FALSE-----------------
 plotHist(windows = winP, group_by = "Type", normalize_by = "Type", 
@@ -43,7 +43,7 @@ plotHist(windows = winP, group_by = "Type", normalize_by = "Type",
 
 ## ----heatMap, eval=TRUE, message = FALSE, warning=FALSE--------------------
 plotHist(windows = win, group_by = c("File","OverlapTranscript"), 
-         normalize_by = "File", heatmap = TRUE)
+        normalize_by = "File", heatmap = TRUE)
 
 ## ----plotwin,eval=TRUE,message=FALSE,warning=FALSE-------------------------
 plotWin(win, facets = "File")

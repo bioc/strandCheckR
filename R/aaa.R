@@ -2,4 +2,4 @@
 # As code is changed, these may be removed
 globalVariables(c("group_name", "Coverage", "CovPositive", "CovNegative", 
                 "NbPositive", "NbNegative", "MaxCoverage", "Type","Count",
-                "Seq", "NbReads", "PositiveProportion", "group")) 
+                "Seq", "NbReads", "PositiveProportion", "group","Pos","Neg")) 

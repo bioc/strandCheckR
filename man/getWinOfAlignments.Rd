@@ -5,7 +5,7 @@
 \title{get the window ranges of alignments}
 \usage{
 getWinOfAlignments(readInfo, strand, winWidth, winStep, readProp,
-  useCoverage = FALSE, subset = NULL)
+useCoverage = FALSE, subset = NULL)
 }
 \arguments{
 \item{readInfo}{a list contains the read information of one sequence}

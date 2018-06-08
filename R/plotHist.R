@@ -47,8 +47,8 @@
 #' @importFrom reshape2 dcast melt
 #' @export
 plotHist <- function(windows, save=FALSE, file = "hist.pdf", group_by = NULL, 
-                     normalize_by = NULL, split=c(10,100,1000), breaks = 100,
-                     useCoverage=FALSE, heatmap = FALSE, ...){
+                    normalize_by = NULL, split=c(10,100,1000), breaks = 100,
+                    useCoverage=FALSE, heatmap = FALSE, ...){
     histWin <- summarizeHist(windows, split = split, breaks = breaks, 
                             useCoverage = useCoverage, group_by = group_by,
                             normalize_by = normalize_by)
@@ -101,7 +101,7 @@ plotHist <- function(windows, save=FALSE, file = "hist.pdf", group_by = NULL,
                 geom_tile() +
                 theme_bw() +
                 theme(panel.grid.major = element_blank(),
-                      panel.grid.minor = element_blank()) +
+                    panel.grid.minor = element_blank()) +
                 scale_fill_gradient(low="white",high="red",na.value = "white")
             if (length(group_by)>0){
                 g[[i]] <- g[[i]] + myFacets
