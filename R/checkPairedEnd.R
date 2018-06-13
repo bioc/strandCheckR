@@ -12,6 +12,7 @@
 #' @importFrom Rsamtools scanBam
 #' @importFrom Rsamtools ScanBamParam
 #' @examples
+#' library(strandCheckR)
 #' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' checkPairedEnd(file)
 #' @export
