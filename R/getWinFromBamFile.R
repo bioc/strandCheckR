@@ -20,7 +20,8 @@
 #' @return a DataFrame object containing the number of positive/negative reads 
 #' and coverage of each window sliding across the bam file
 #' 
-#' @seealso filterDNA, summarizeHist, plotHist, plotWin
+#' @seealso \code{\link{filterDNA}}, \code{\link{plotHist}}, 
+#' \code{\link{plotWin}}
 #' @export
 #' @importFrom IRanges Views
 #' @importFrom GenomeInfoDb seqinfo
@@ -31,6 +32,7 @@
 #' @examples
 #' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' win <- getWinFromBamFile(file)
+#' win
 
 getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                             winWidth=1000, winStep=100, readProp = 0.5, paired){

@@ -5,7 +5,7 @@
 \title{Intersect the windows data frame with an annotation data frame}
 \usage{
 intersectWithFeature(windows, annotation, getFeatureInfo = FALSE,
-overlapCol = "OverlapFeature", mcolsAnnot, collapse, ...)
+  overlapCol = "OverlapFeature", mcolsAnnot, collapse, ...)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 
@@ -53,11 +53,11 @@ windows <- intersectWithFeature(windows,annot,mcolsAnnot="tx_name")
 # just want to know whether there's any transcript that 
 # overlaps with each window
 windows <- intersectWithFeature(windows,annot,overlapCol="OverlapTranscript")
-h <- summarizeHist(windows,group_by = "OverlapTranscript")
-plotHist(h,facets = "OverlapTranscript")
+plotHist(windows,facets = "OverlapTranscript")
 plotWin(windows,facets = "OverlapTranscript")
 
 }
 \seealso{
-getWinFromBamFile, summarizeHist, plotHist, plotWin
+\code{\link{getWinFromBamFile}}, \code{\link{plotHist}}, 
+\code{\link{plotWin}}
 }

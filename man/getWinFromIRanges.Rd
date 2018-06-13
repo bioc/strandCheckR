@@ -5,7 +5,7 @@
 \title{Get the Ranges of Sliding Windows from an IRanges object}
 \usage{
 getWinFromIRanges(x, winWidth = 1000L, winStep = 100L, readProp = 0.5,
-maxWin = Inf)
+  maxWin = Inf)
 }
 \arguments{
 \item{x}{an IRanges object containing the start and end position of 

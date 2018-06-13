@@ -5,8 +5,8 @@
 \title{Plot the Proportion of + Stranded Reads}
 \usage{
 plotWin(windows, split = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
-0.9), save = FALSE, file = "win.pdf", facets = NULL,
-useCoverage = FALSE, ...)
+  0.9), save = FALSE, file = "win.pdf", facets = NULL,
+  useCoverage = FALSE, ...)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 

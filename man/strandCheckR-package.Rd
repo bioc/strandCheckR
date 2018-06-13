@@ -44,11 +44,9 @@ Maintainer: Hien To <hien.to@adelaide.edu.au>
 %  Optional links to other man pages
 %}
 \examples{
-\dontrun{
-bamfilein <- system.file("extdata","s1.chr1.bam",package = "strandCheckR")
+bamfilein <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(bamfilein)
 plotWin(windows)
 plotHist(windows)
-filterDNA(file = bamfilein,fileout = "filter.bam")
-}
+filterDNA(file = bamfilein,destination = "filter.bam")
 }

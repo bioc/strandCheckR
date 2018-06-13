@@ -25,7 +25,8 @@
 #' 
 #' @return the input windows DataFrame with some additional columns  
 #' 
-#' @seealso getWinFromBamFile, summarizeHist, plotHist, plotWin
+#' @seealso \code{\link{getWinFromBamFile}}, \code{\link{plotHist}}, 
+#' \code{\link{plotWin}}
 #'
 #' @examples
 #' bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
@@ -39,8 +40,7 @@
 #' # just want to know whether there's any transcript that 
 #' # overlaps with each window
 #' windows <- intersectWithFeature(windows,annot,overlapCol="OverlapTranscript")
-#' h <- summarizeHist(windows,group_by = "OverlapTranscript")
-#' plotHist(h,facets = "OverlapTranscript")
+#' plotHist(windows,facets = "OverlapTranscript")
 #' plotWin(windows,facets = "OverlapTranscript")
 #' 
 #' @importFrom IRanges IRanges

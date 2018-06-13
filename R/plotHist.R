@@ -25,7 +25,7 @@
 #' 
 #' @return If \code{heatmap=FALSE}: a ggplot object
 #' 
-#' @seealso getWinFromBamFile, plotWin
+#' @seealso \code{\link{getWinFromBamFile}}, \code{\link{plotWin}}
 #'
 #' @examples
 #' bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")

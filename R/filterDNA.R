@@ -72,7 +72,8 @@
 #' probability of keeping an alignment is the maximum probability defined by 
 #' all windows that contain it. 
 #'
-#' @seealso getWinFromBamFile, plotHist, plotWin
+#' @seealso \code{\link{getWinFromBamFile}}, \code{\link{plotHist}}, 
+#' \code{\link{plotWin}}
 #'
 #' @examples
 #' file <- system.file("extdata","s2.sorted.bam",package = "strandCheckR")
