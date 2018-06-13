@@ -6,7 +6,7 @@
 data frame}
 \usage{
 summarizeHist(windows, split = c(10, 100, 1000), breaks = 100,
-  useCoverage = FALSE, group_by = NULL, normalize_by = NULL)
+ = FALSE, group_by = NULL, normalize_by = NULL)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 
