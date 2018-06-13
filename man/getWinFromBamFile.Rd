@@ -5,7 +5,7 @@
 \title{get the strand information of all windows from bam files}
 \usage{
 getWinFromBamFile(files, sequences, mapqFilter = 0, partitionSize = 1e+08,
- = 1000, winStep = 100, readProp = 0.5, paired)
+winWidth = 1000, winStep = 100, readProp = 0.5, paired)
 }
 \arguments{
 \item{files}{the input bam files. Your bamfiles should be sorted and have 

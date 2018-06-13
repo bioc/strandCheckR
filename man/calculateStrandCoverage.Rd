@@ -5,7 +5,7 @@
 \title{Calculate the strand information based on coverage}
 \usage{
 calculateStrandCoverage(winPositiveAlignments, winNegativeAlignments,
- = 1000, winStep = 100)
+winWidth = 1000, winStep = 100)
 }
 \arguments{
 \item{winPositiveAlignments}{a list that has a `Coverage` field containing 

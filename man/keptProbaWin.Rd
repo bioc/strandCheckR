@@ -5,8 +5,8 @@
 \title{get the probability of begin kept for each window}
 \usage{
 keptProbaWin(winPositiveAlignments, winNegativeAlignments, winWidth, winStep,
- pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov,
- useCoverage = FALSE)
+logitThreshold, pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov,
+getWin, useCoverage = FALSE)
 }
 \arguments{
 \item{winPositiveAlignments}{an object returned by getWinOfAlignments for 
