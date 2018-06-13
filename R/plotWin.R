@@ -40,13 +40,13 @@
 #' @importFrom ggplot2 theme_bw theme facet_wrap geom_line ggsave
 #' @importFrom grid unit
 #' @examples
-#' bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
+#' bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 #' windows <- getWinFromBamFile(file = bamfilein)
 #' plotWin(windows)
 #' 
 #' # Change point colour using ggplot2
 #' library(ggplot2)
-#' plotWin(bamWindows) + 
+#' plotWin(windows) + 
 #' scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))
 #' 
 #' @export
