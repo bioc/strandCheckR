@@ -51,7 +51,6 @@ contain reads to kept or discarded using the filtering methods of
 Any plot can be easily modified using standard ggplot2 syntax (see Examples)
 }
 \examples{
-library(strandCheckR)
 bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
 plotWin(windows)

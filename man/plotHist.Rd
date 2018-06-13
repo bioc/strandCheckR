@@ -46,7 +46,6 @@ Plot the histogram of positive proportions of the input
 histogram data frame
 }
 \examples{
-library(strandCheckR)
 bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 win  <- getWinFromBamFile(file = bamfilein)
 plotHist(win)

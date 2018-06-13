@@ -44,7 +44,6 @@ Maintainer: Hien To <hien.to@adelaide.edu.au>
 %  Optional links to other man pages
 %}
 \examples{
-library(strandCheckR)
 bamfilein <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(bamfilein)
 plotWin(windows)

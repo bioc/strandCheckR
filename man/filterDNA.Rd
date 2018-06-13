@@ -109,7 +109,6 @@ probability of keeping an alignment is the maximum probability defined by
 all windows that contain it.
 }
 \examples{
-library(strandCheckR)
 file <- system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 filterDNA(file,destination="out.bam")
 

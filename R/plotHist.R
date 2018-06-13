@@ -28,7 +28,6 @@
 #' @seealso \code{\link{getWinFromBamFile}}, \code{\link{plotWin}}
 #'
 #' @examples
-#' library(strandCheckR)
 #' bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' win  <- getWinFromBamFile(file = bamfilein)
 #' plotHist(win)
