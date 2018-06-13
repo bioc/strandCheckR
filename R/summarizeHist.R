@@ -21,14 +21,6 @@
 #' @return a dataframe object
 #' 
 #' @seealso getWinFromBamFile, plotHist, plotWin
-#'
-#' @examples
-#' bamfilein = system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),
-#' package = "strandCheckR")
-#' windows <- getWinFromBamFile(file = bamfilein)
-#' histWin <- summarizeHist(windows,group_by=c("File","Seq"),
-#' normalize_by="File")
-#' plotHist(histWin,facets="File")
 #' 
 #' @importFrom magrittr set_colnames
 #' @importFrom dplyr mutate select one_of starts_with bind_rows
