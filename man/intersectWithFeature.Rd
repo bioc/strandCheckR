@@ -42,6 +42,7 @@ Intersect the windows with an annotation data frame to get
 features that overlap with each window
 }
 \examples{
+library(strandCheckR)
 bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 windows <- getWinFromBamFile(file = bamfilein)
 #add chr before chromosome names to be consistent with the annotation

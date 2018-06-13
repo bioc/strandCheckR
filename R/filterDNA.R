@@ -76,6 +76,7 @@
 #' \code{\link{plotWin}}
 #'
 #' @examples
+#' library(strandCheckR)
 #' file <- system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 #' filterDNA(file,destination="out.bam")
 #' 

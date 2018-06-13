@@ -30,6 +30,7 @@
 #' @importFrom Rsamtools ScanBamParam
 #' @importFrom Rsamtools BamFileList
 #' @examples
+#' library(strandCheckR)
 #' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' win <- getWinFromBamFile(file)
 #' win

@@ -40,6 +40,7 @@
 #' @importFrom ggplot2 theme_bw theme facet_wrap geom_line ggsave
 #' @importFrom grid unit
 #' @examples
+#' library(strandCheckR)
 #' bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
 #' windows <- getWinFromBamFile(file = bamfilein)
 #' plotWin(windows)
