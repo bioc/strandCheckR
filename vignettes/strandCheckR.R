@@ -46,7 +46,7 @@ plotHist(windows = win, group_by = c("File","OverlapTranscript"),
         normalize_by = "File", heatmap = TRUE)
 
 ## ----plotwin,eval=TRUE,message=FALSE,warning=FALSE-------------------------
-plotWin(win, facets = "File")
+plotWin(win, group_by = "File")
 
 ## ----filterDNA, eval=TRUE, message=FALSE, warning=FALSE, results=FALSE-----
 win2 <- filterDNA(file = files[2], destination = "s2.filter.bam", 

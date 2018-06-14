@@ -172,7 +172,7 @@ threshold line on this plot. This can be used to give guidance as to the best
 threshold to choose when filtering windows.
 
 ```{r plotwin,eval=TRUE,message=FALSE,warning=FALSE}
-plotWin(win, facets = "File")
+plotWin(win, group_by = "File")
 ```
 
 # Filter bam files

@@ -32,10 +32,7 @@ read information obtained from \code{\link{scanBam}} function
 \examples{
 library(Rsamtools)
 file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR") 
-file <- BamFile(file)
-readInfo <- scanBam(file, param = ScanBamParam(
-what = c("pos", "cigar", "strand"), which = GRanges(seqnames = "10",
-ranges = IRanges(start = 7100000, end = 7200000))))
+readInfo <- scanBam(file)
 win <- getWinFromReadInfo(readInfo)
 }
 \seealso{
