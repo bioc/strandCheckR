@@ -3,6 +3,7 @@
 export(checkPairedEnd)
 export(filterDNA)
 export(getWinFromBamFile)
+export(getWinFromReadInfo)
 export(intersectWithFeature)
 export(plotHist)
 export(plotWin)

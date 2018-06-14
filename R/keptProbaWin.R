@@ -47,10 +47,8 @@ keptProbaWin <- function(winPositiveAlignments, winNegativeAlignments,
         fromCoverage <- calculateStrandCoverage(winPositiveAlignments, 
                                                 winNegativeAlignments, 
                                                 winWidth,winStep)
-        stopifnot(length(fromCoverage$CovPositive) == 
-                        length(fromNbReads$NbPositive))
         fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                            winNegativeAlignments)
+                                              winNegativeAlignments)
         presentWin <- which(as.vector(fromCoverage$CovPositive>0 | 
                                         fromCoverage$CovNegative>0) == TRUE)
         Win <- DataFrame(Type = "", Seq = "", 
@@ -59,7 +57,8 @@ keptProbaWin <- function(winPositiveAlignments, winNegativeAlignments,
                         NbNegative = fromNbReads$NbNegative[presentWin],
                         CovPositive = fromCoverage$CovPositive[presentWin], 
                         CovNegative = fromCoverage$CovNegative[presentWin],
-                        MaxCoverage = fromCoverage$MaxCoverage[presentWin])
+                        MaxCoverage = fromCoverage$MaxCoverage[presentWin],
+                        File = "")
     } else if (useCoverage){
         fromCoverage <- calculateStrandCoverage(winPositiveAlignments, 
                                                 winNegativeAlignments, 

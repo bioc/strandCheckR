@@ -5,7 +5,7 @@
 \title{Plot the Proportion of + Stranded Reads}
 \usage{
 plotWin(windows, split = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
-0.9), save = FALSE, file = "win.pdf", facets = NULL,
+0.9), save = FALSE, file = "win.pdf", group_by = NULL,
 useCoverage = FALSE, ...)
 }
 \arguments{
@@ -28,7 +28,8 @@ threshold line) will be kept when using \code{\link{filterDNA}}.}
 
 \item{file}{the file name to save to plot}
 
-\item{facets}{colnames of \code{windows} which will be used to split the plot}
+\item{group_by}{colnames of \code{windows} which will be used to split 
+the plot}
 
 \item{useCoverage}{if TRUE then plot the coverage strand information, 
 otherwise plot the number of reads strand information. FALSE by default}

@@ -53,9 +53,8 @@ and not the number of positive/negative reads as default.}
 will be kept regardless the strand proportion of the windows containing them.}
 
 \item{getWin}{if TRUE, the function will not only filter the bam file but
-also return a data frame containing the information of all windows. This
-data frame can also be obtained using \code{\link{getWinFromBamFile}}.
-FALSE by default.}
+also return a data frame containing the information of all windows of the
+original and filtered bam file.}
 
 \item{minCov}{if \code{useCoverage=FALSE}, every window that has less than
 \code{minCov} reads will be rejected regardless the strand proportion. 

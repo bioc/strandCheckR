@@ -181,7 +181,8 @@ The functions *filterDNA* removes potential double strand DNA from a bam file
 using a given threshold.
 
 ```{r filterDNA, eval=TRUE, message=FALSE, warning=FALSE, results=FALSE}
-filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)
+win2 <- filterDNA(file = files[2], destination = "s2.filter.bam", 
+                 threshold = 0.7, getWin = TRUE)
 ```
 
 
@@ -189,3 +190,14 @@ Other parameters can be specified for more flexible filtering: define the
 ranges that you want to always keep, the minimum number of reads under which 
 you want to ignore, the *pvalue* threshold for keeping a windows etc. Look at
 the manual page of the function for more options and explanations.
+
+Plotting the windows before and after filering:
+
+```{r compare,eval=TRUE,message=FALSE,warning=FALSE}
+win2$File <- basename(win2$File)
+win2$File <- factor(win2$File,levels = c("s2.sorted.bam","s2.filter.bam"))
+library(ggplot2)
+plotHist(win2,group_by = "File",normalize_by = "File",scales = "free_y") +
+    ggtitle("Histogram of positive proportions over all sliding windows before 
+            and after filtering reads coming from double strand DNA")
+```

@@ -131,8 +131,8 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                 readInfo <- concatenateAlignments(readInfo, 
                                                 sequenceInfo[idPart,])
                 if (paired){
-                    firstReadIndex <- ((floor(readInfo$flag/64) %% 2) == 1)
-                    secondReadIndex <- !firstReadIndex
+                    firstReadIndex <- which (floor(readInfo$flag/64) %% 2 == 1)
+                    secondReadIndex <- which (floor(readInfo$flag/64) %% 2 == 0)
                     if (sum(firstReadIndex)==0){
                         #message("Only R2 reads were found")
                         subset <- list(NULL) 
@@ -150,41 +150,8 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                     type <- "SE"
                 }
                 for (s in seq_along(subset)){
-                    winPositiveAlignments <- getWinOfAlignments(readInfo,"+", 
-                                        winWidth, winStep, readProp = readProp,
-                                        useCoverage=TRUE,subset[[s]])
-                    winNegativeAlignments <- getWinOfAlignments(readInfo,"-", 
-                                        winWidth, winStep, readProp = readProp,
-                                        useCoverage=TRUE,subset[[s]])
-    
-                    ######################################################
-                    # calculate strand information based on nbr of reads #
-                    ######################################################
-                    fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                                        winNegativeAlignments)
-                    
-                    ##################################################
-                    # calculate strand information based on coverage #
-                    ##################################################
-                    fromCoverage <- calculateStrandCoverage(
-                                        winPositiveAlignments,
-                                        winNegativeAlignments,
-                                        winWidth,winStep)
-    
-                    stopifnot(length(fromCoverage$CovPositive) == 
-                                length(fromNbReads$NbPositive))
-    
-                    # fill the information of the present window into the data 
-                    # frame to be returned
-                    presentWin <- which(as.vector(fromCoverage$CovPositive>0 |
-                                        fromCoverage$CovNegative>0)==TRUE)
-                    win <- DataFrame(Type = "", Seq = "", 
-                            Start = presentWin, End = 0,
-                            NbPositive = fromNbReads$NbPositive[presentWin], 
-                            NbNegative = fromNbReads$NbNegative[presentWin],
-                            CovPositive = fromCoverage$CovPositive[presentWin], 
-                            CovNegative = fromCoverage$CovNegative[presentWin],
-                            MaxCoverage = fromCoverage$MaxCoverage[presentWin])
+                    win <- getWinFromReadInfo(readInfo,winWidth,winStep,
+                            readProp, subset[[s]])
                     win <- getWinInSequence(win, part, sequenceInfo[idPart,], 
                                             winWidth,winStep)
                     if (s==1){
@@ -198,7 +165,7 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
             }
             allWin[[b]][[n]]$Start <- (allWin[[b]][[n]]$Start-1)*winStep+1
         }
-        # rbind all Partitions
+        # combind all Partitions
         allWin[[b]] <- do.call(rbind, allWin[[b]])
         allWin[[b]]$File <- file$path
     }

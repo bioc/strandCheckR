@@ -24,7 +24,8 @@
 #' @param save if TRUE, then the plot will be save into the file given by 
 #' \code{file} parameter
 #' @param file the file name to save to plot
-#' @param facets colnames of \code{windows} which will be used to split the plot
+#' @param group_by colnames of \code{windows} which will be used to split 
+#' the plot
 #' @param useCoverage if TRUE then plot the coverage strand information, 
 #' otherwise plot the number of reads strand information. FALSE by default
 #' @param ... used to pass parameters to facet_wrap during plotting
@@ -52,7 +53,7 @@
 #' @export
 #'
 plotWin <- function(windows, split=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9),
-                    save=FALSE, file="win.pdf", facets = NULL, 
+                    save=FALSE, file="win.pdf", group_by = NULL, 
                     useCoverage=FALSE, ...){
 
     # The initial checks for appropriate input
@@ -62,7 +63,7 @@ plotWin <- function(windows, split=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9),
     stopifnot(is.numeric(split))
     stopifnot(is.logical(c(save, useCoverage)))
     allows_facet_wrap <- setdiff(colnames(windows),c(reqWinCols,"Start"))
-    facets <- intersect(facets,allows_facet_wrap) 
+    facets <- intersect(group_by,allows_facet_wrap) 
 
     # Check to see if we have SE or PE
     readType <- ifelse("Type" %in% colnames(windows), "PE", "SE")

@@ -49,5 +49,14 @@ plotHist(windows = win, group_by = c("File","OverlapTranscript"),
 plotWin(win, facets = "File")
 
 ## ----filterDNA, eval=TRUE, message=FALSE, warning=FALSE, results=FALSE-----
-filterDNA(file = files[1], destination = "s1.filter.bam", threshold = 0.7)
+win2 <- filterDNA(file = files[2], destination = "s2.filter.bam", 
+                 threshold = 0.7, getWin = TRUE)
+
+## ----compare,eval=TRUE,message=FALSE,warning=FALSE-------------------------
+win2$File <- basename(win2$File)
+win2$File <- factor(win2$File,levels = c("s2.sorted.bam","s2.filter.bam"))
+library(ggplot2)
+plotHist(win2,group_by = "File",normalize_by = "File",scales = "free_y") +
+    ggtitle("Histogram of positive proportions over all sliding windows before 
+            and after filtering reads coming from double strand DNA")
 

@@ -52,7 +52,7 @@ getWinOfAlignments <- function(readInfo, strand, winWidth, winStep, readProp,
         winrange <- getWinFromIRanges(range, winWidth, winStep, readProp, 
                                     maxWin)
         mcols(winrange) <- data.frame("alignment" = 
-                                        which(subset)[index[position$group]])
+                                        subset[index[position$group]])
     }
     if (useCoverage==TRUE){
         return(list("Win" = winrange, "Coverage" = IRanges::coverage(range)))

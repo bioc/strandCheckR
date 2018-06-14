@@ -29,9 +29,8 @@
 #' @param mustKeepRanges a GRanges object; all reads that map to those ranges 
 #' will be kept regardless the strand proportion of the windows containing them.
 #' @param getWin if TRUE, the function will not only filter the bam file but
-#' also return a data frame containing the information of all windows. This
-#' data frame can also be obtained using \code{\link{getWinFromBamFile}}.
-#' FALSE by default.
+#' also return a data frame containing the information of all windows of the
+#' original and filtered bam file.
 #' @param minCov if \code{useCoverage=FALSE}, every window that has less than
 #' \code{minCov} reads will be rejected regardless the strand proportion. 
 #' If \code{useCoverage=TRUE}, every window has max coverage least than 
@@ -228,9 +227,6 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
         sequenceInfo[idPart,] <- sequenceInfoInPartition(sequenceInfo[idPart,], 
                                                         winStep)
 
-        # Initialise parameters
-        keptAlignments <- c()
-
         if (sum(nReadsInPart) > 0){
             # Calculate the windows that overlap mustKeepRanges
             mustKeepWin <- list()
@@ -249,8 +245,8 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
             # Get the index of R1 and R2 reads and process each 
             # subset separately
             if (paired){
-                firstReadIndex <- ((floor(readInfo$flag/64) %% 2) == 1)
-                secondReadIndex <- !firstReadIndex
+                firstReadIndex <- which(floor(readInfo$flag/64) %% 2 == 1)
+                secondReadIndex <- which(floor(readInfo$flag/64) %% 2 == 0)
                 if (sum(firstReadIndex)==0){
                     subset <- list(NULL) 
                     type <- "R2"
@@ -265,6 +261,9 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
                 subset <- list(NULL)
                 type <- "SE"
             }
+            
+            # Initialise the alignment indices to be kept
+            keptAlignments <- c()
             for (s in seq_along(subset)){
                 # Get the ids of sliding windows containing each "+"/"-" 
                 #read fragment
@@ -282,36 +281,46 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
                                 mustKeepWin,  minCov, maxCov,getWin = getWin, 
                                 useCoverage=useCoverage) 
 
-                # Calculate the positive read fragments to be kept
+                # Calculate the '+'/'-' read fragments to be kept
                 keptPositiveAlignment <- keptReadFragment(
                     winPositiveAlignments$Win, probaWin$Positive, errorRate) 
-
-                # Calculate the negative read fragments to be kept
                 keptNegativeAlignment <- keptReadFragment(
                     winNegativeAlignments$Win, probaWin$Negative, errorRate) 
 
-                # If getWin=TRUE, then return the strand information 
-                # of sliding windows
-                if (getWin){
-                    win <- getWinInSequence(probaWin$Win, part,
-                                sequenceInfo[idPart,], winWidth, winStep)
-                    if (s==1){
-                        win$Type <- type
-                        allWin[[n]] <- win
-                    } else{
-                        win$Type <- "R2"
-                        allWin[[n]] <- rbind(allWin[[n]],win)
-                    }
-                }
-
+                
                 # Infer the index of kept alignments within the partition
                 kept <- c(unique(mcols(winPositiveAlignments$Win)$
                                     alignment[keptPositiveAlignment]),
-                            unique(mcols(winNegativeAlignments$Win)$
+                        unique(mcols(winNegativeAlignments$Win)$
                                     alignment[keptNegativeAlignment])) 
                 # Add the current set to the vector of kept alignments
                 keptAlignments <- sort(c(keptAlignments,kept))
-
+                
+                # If getWin=TRUE, then return the strand information 
+                # of sliding windows from the orignial and filtered files
+                if (getWin){
+                    #get the window information of filtered file
+                    winA <- getWinFromReadInfo(readInfo,winWidth, winStep, 
+                            readProp, subset = keptAlignments)
+                    #get the correct position of windows in each sequence
+                    #of partition
+                    win <- getWinInSequence(probaWin$Win, part,
+                                    sequenceInfo[idPart,], winWidth, winStep)
+                    winA <- getWinInSequence(winA, part, sequenceInfo[idPart,], 
+                                            winWidth,winStep)
+                    #assign appropriate file name to each window data
+                    win$File <- file$path
+                    winA$File <- destination
+                    if (s==1){
+                        win$Type <- type
+                        winA$Type <- type
+                        allWin[[n]] <- rbind(win,winA)
+                    } else{
+                        win$Type <- "R2"
+                        winA$Type <- "R2"
+                        allWin[[n]] <- rbind(allWin[[n]],rbind(win,winA))
+                    }
+                }
                 # Tidy up the memory a little
                 rm(winPositiveAlignments,winNegativeAlignments)
                 rm(probaWin)
@@ -327,7 +336,7 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
 
                 if (sequenceInfo$NbOriginalReads[id]>0){
                     # Get the index within the partition of kept alignments 
-                    #coming from the current sequence 
+                    # coming from the current sequence 
                     index <- keptAlignments[(keptAlignments >= sequenceInfo$
                                                 FirstReadInPartition[id]) & 
                                             (keptAlignments <= sequenceInfo$
