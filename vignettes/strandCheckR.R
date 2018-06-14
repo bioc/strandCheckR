@@ -50,7 +50,7 @@ plotWin(win, facets = "File")
 
 ## ----filterDNA, eval=TRUE, message=FALSE, warning=FALSE, results=FALSE-----
 win2 <- filterDNA(file = files[2], destination = "s2.filter.bam", 
-                 threshold = 0.7, getWin = TRUE)
+                threshold = 0.7, getWin = TRUE)
 
 ## ----compare,eval=TRUE,message=FALSE,warning=FALSE-------------------------
 win2$File <- basename(win2$File)
