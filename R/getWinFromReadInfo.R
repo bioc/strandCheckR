@@ -17,7 +17,7 @@
 #' @examples
 #' library(Rsamtools)
 #' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR") 
-#' readInfo <- scanBam(file)
+#' readInfo <- scanBam(file)[[1]]
 #' win <- getWinFromReadInfo(readInfo)
 
 getWinFromReadInfo <- function(readInfo, winWidth = 1000, winStep = 100, 
