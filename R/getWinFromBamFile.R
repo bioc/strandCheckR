@@ -29,6 +29,7 @@
 #' @importFrom Rsamtools bamMapqFilter
 #' @importFrom Rsamtools ScanBamParam
 #' @importFrom Rsamtools BamFileList
+#' @importFrom methods is
 #' @examples
 #' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
 #' win <- getWinFromBamFile(file)

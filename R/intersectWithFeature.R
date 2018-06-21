@@ -47,6 +47,7 @@
 #' @importFrom GenomeInfoDb seqlevels
 #' @importFrom GenomicRanges GRanges mcols findOverlaps
 #' @import TxDb.Hsapiens.UCSC.hg38.knownGene
+#' @importFrom methods is
 #' @export
 
 

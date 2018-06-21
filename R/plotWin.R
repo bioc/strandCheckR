@@ -114,7 +114,7 @@ plotWin <- function(windows, split=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9),
     x <- floor(seq(1, sqrt(maxReads), length.out = nbSampling)^2)
     for (t in threshold){
         tP = log(t/(1-t))
-        positiveReadsT <- sapply(x,function(N){
+        positiveReadsT <- vapply(x,function(N){
             p = seq(round(N*t),N,1) # Number of positive reads
             pP = p/N # Proportion of positive reads
             mP = log(pP/(1-pP)) # Mean prop-pos-reads (logit scale)
@@ -123,7 +123,7 @@ plotWin <- function(windows, split=c(10,100,1000), threshold=c(0.6,0.7,0.8,0.9),
             pNorm <- pnorm(tP,mean = mP, sd = sdP)
             aNorm <- which(pNorm <= 0.05)[1]
             return(p[aNorm])
-        })
+        },numeric(1))
         tP <- data.frame("NbReads" = x, 
                         "PositiveProportion" = positiveReadsT/(x), 
                         "Threshold"= paste0(t)) 

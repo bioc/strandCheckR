@@ -12,7 +12,7 @@
 #' @param lengthSeq the length of each sequence
 #' @param partitionSize the minimum sum of length of the sequences in 
 #' each partition
-#' 
+#' @importFrom methods is
 #' @return a list whose each element is a character vector containing the 
 #' sequence names of a part
 #' 

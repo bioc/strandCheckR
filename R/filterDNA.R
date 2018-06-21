@@ -84,6 +84,7 @@
 #' @importFrom GenomeInfoDb seqinfo seqnames seqlengths
 #' @importFrom IRanges IRanges
 #' @import S4Vectors
+#' @importFrom methods is
 #'
 #' @return if \code{getWin} is TRUE: a DataFrame object which could also be 
 #' obtained by the function \code{getWinFromBamFile}
@@ -166,7 +167,7 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
 
     # Get the sequence list of the ranges which must be kept
     if (!missing(mustKeepRanges)){
-        stopifnot (class(mustKeepRanges) == "GRanges")
+        stopifnot (is(mustKeepRanges,"GRanges"))
         allSequencesMustKeep <- levels(seqnames(mustKeepRanges))
     }
 
