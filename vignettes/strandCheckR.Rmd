@@ -108,15 +108,6 @@ win <- intersectWithFeature(windows = win, annotation = annot,
 win
 ```
 
-An example to get the highest coverage windows that overlap with transcripts:
-
-```{r intersectGetFeature, eval=TRUE, warning=FALSE,message=FALSE}
-win <- intersectWithFeature(windows = win, annotation = annot,
-                            mcolsAnnot = "tx_name",collapse = ",")
-winOverlap <- win[win$tx_name!="unknown",]
-winOverlap[order(winOverlap$MaxCoverage,decreasing = TRUE),
-    c("Seq","Start","End","MaxCoverage","File","tx_name")] 
-```
 
 If you have a *gtf* or *gff* file, you can use the function *gffReadGR* of the 
 *ballgown* package to read it as a GRanges object.
