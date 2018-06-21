@@ -4,7 +4,7 @@ files <- system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),
                     package = "strandCheckR")
 win <- getWinFromBamFile(files)
 # shorten the file name
-win$File <- basename(win$File)
+# win$File <- basename(win$File)
 win
 
 ## ----highestCoverage, eval=TRUE, message=FALSE,warning=FALSE---------------
