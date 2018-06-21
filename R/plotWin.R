@@ -42,7 +42,7 @@
 #' @importFrom grid unit
 #' @examples
 #' bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
-#' windows <- getWinFromBamFile(file = bamfilein)
+#' windows <- getWinFromBamFile(file = bamfilein,sequences = "10")
 #' plotWin(windows)
 #' 
 #' # Change point colour using ggplot2

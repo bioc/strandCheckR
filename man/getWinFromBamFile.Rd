@@ -41,7 +41,7 @@ bam files
 }
 \examples{
 file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
-win <- getWinFromBamFile(file)
+win <- getWinFromBamFile(file,sequences="10")
 win
 }
 \seealso{

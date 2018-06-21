@@ -47,7 +47,7 @@ histogram data frame
 }
 \examples{
 bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
-win  <- getWinFromBamFile(file = bamfilein)
+win  <- getWinFromBamFile(file = bamfilein,sequences="10")
 plotHist(win)
 
 }

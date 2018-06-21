@@ -109,7 +109,7 @@ all windows that contain it.
 }
 \examples{
 file <- system.file("extdata","s2.sorted.bam",package = "strandCheckR")
-filterDNA(file,destination="out.bam")
+filterDNA(file,sequences="10",destination="out.bam")
 
 }
 \seealso{
