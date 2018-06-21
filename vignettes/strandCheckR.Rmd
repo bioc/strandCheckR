@@ -63,7 +63,7 @@ win$File <- basename(win$File)
 win
 ```
 
-The returned DataFrame has 10 columns that corresponds to the read type (R1 or
+The returned DataFrame has 10 columns that correspond to the read type (R1 or
 R2 or single end read), sequence names, starting & ending bases of the windows 
 (by default the window length is 1000 and the window step is 100), number of 
 positive & negative reads that overlap each window (*NbPositive*, 
