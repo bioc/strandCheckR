@@ -50,7 +50,7 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
     }
     
     # Create a list to store the windows for each file
-    allWin <- list(length(files))
+    allWin <- vector("list",length(files))
 
     # Read through each bam file
     for (b in seq_along(files)){
@@ -162,8 +162,8 @@ getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                         allWin[[b]][[n]] <- rbind(allWin[[b]][[n]],win)
                     }
                 }
+                allWin[[b]][[n]]$Start <- (allWin[[b]][[n]]$Start-1)*winStep+1
             }
-            allWin[[b]][[n]]$Start <- (allWin[[b]][[n]]$Start-1)*winStep+1
         }
         # combind all Partitions
         allWin[[b]] <- do.call(rbind, allWin[[b]])

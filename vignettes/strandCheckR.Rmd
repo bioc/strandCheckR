@@ -28,14 +28,14 @@ from one strand, as would be expected from RNA molecules, or from both strands
 as would be expected from contaminating DNA. Hence, it is considered as an
 additional quality checking for strand specific RNA data.
 The package can also be used to detect regions with specific behavior (e.g. 
-highest coverage) through the whole genome and not only feature regions.
+highest number of reads) through the whole genome and not only feature regions.
 
 The window read count function is designed flexibly so that user can filter
 low mapping quality reads, set read proportion to overlap a window, set window 
 length & step etc. It was also implemented in an efficient way to manange big
 bam file. In a typical example of a human RNA-seq bam file of more than *4Gb*, 
 it takes about *3* minutes to scan the whole file and return a Data Frame of 
-least than *2Gb*.
+about than *1.5Gb*.
 
 A function to filter out reads coming from double strand DNA is also provided.
 For each sliding window, it considers the proportion of +/- stranded reads 
@@ -59,7 +59,7 @@ files <- system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),
                     package = "strandCheckR")
 win <- getWinFromBamFile(files)
 # shorten the file name
-# win$File <- basename(win$File)
+win$File <- basename(win$File)
 win
 ```
 
@@ -71,7 +71,7 @@ positive & negative reads that overlap each window (*NbPositive*,
 (*CovPositive*, *CovNegative*), the maximum coverage (*MaxCoverage*) and the 
 file name (*File*). Windows that do not overlap with any read are not reported.
 
-The regions with highest read counts, for example, can be obtained as follows.
+The windows with highest read counts, for example, can be obtained as follows.
 
 ```{r highestCoverage, eval=TRUE, message=FALSE,warning=FALSE}
 head(win[order((win$NbPositive+win$NbNegative),decreasing=TRUE),])
