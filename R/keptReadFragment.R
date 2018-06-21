@@ -20,9 +20,11 @@ keptReadFragment <- function(fragments,keptProbaW,errorRate){
         for (m in minL:maxL){
             id <- which(width(fragments)==m)
             x <- keptProbaW[start(fragments)[id]]
-            for (j in seq_along(1:m)[-m]){
-                y <- keptProbaW[j+start(fragments)[id]]
-                x <-  (x>=y)*x + (y>x)*y 
+            if (m>1){
+                for (j in 1:(m-1)){
+                    y <- keptProbaW[j+start(fragments)[id]]
+                    x <-  (x>=y)*x + (y>x)*y 
+                }
             }
             suppressWarnings(proba[id] <- rbinom(length(id),1,as.vector(x)))
             rm(id)

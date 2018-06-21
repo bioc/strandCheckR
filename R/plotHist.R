@@ -94,7 +94,7 @@ plotHist <- function(windows, save=FALSE, file = "hist.pdf", group_by = NULL,
             argList <- c(list(facets = group_by), dotArgs[keepArgs])
             myFacets <- do.call(facet_wrap, argList)
         }
-        for (i in 1:length(cov)){
+        for (i in seq_along(cov)){
             l <- filter(histWin,Coverage==cov[i]) 
             g[[i]] <- ggplot(l, aes_string(x="PosStrandProp", y="File",
                                         fill="ReadCountProp")) + 

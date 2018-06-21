@@ -37,7 +37,7 @@
 getWinFromBamFile <- function(files, sequences, mapqFilter=0, partitionSize=1e8,
                             winWidth=1000, winStep=100, readProp = 0.5, paired){
     # Check the input is a BamFileList. Convert if necessary
-    if (class(files) != "BamFileList") tryCatch(files <- BamFileList(files))
+    if (!is(files,"BamFileList")) tryCatch(files <- BamFileList(files))
 
     # Check valid mapqFilter value
     if(mapqFilter < 0 || !is.numeric(mapqFilter)) {

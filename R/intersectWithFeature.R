@@ -54,7 +54,7 @@ intersectWithFeature <- function(windows, annotation, getFeatureInfo = FALSE,
                                 overlapCol = "OverlapFeature", mcolsAnnot, 
                                 collapse, ...){
     #check annotation is a GRanges object
-    stopifnot(class(annotation)=="GRanges")
+    stopifnot(is(annotation,"GRanges"))
     #check if windows contains required column
     reqWinCols <- c("Seq","Start", "End")
     stopifnot(all(reqWinCols %in% colnames(windows)))
@@ -100,9 +100,9 @@ intersectWithFeature <- function(windows, annotation, getFeatureInfo = FALSE,
         featureTo <- mcols(annotation)[to(ol),mcolsAnnot[1]]
         splitTo <- split(featureTo, f = from(ol), drop = TRUE)
         if (!missing(collapse)){
-            splitTo <- sapply(splitTo,function(s){
+            splitTo <- vapply(splitTo,function(s){
             paste0(unique(s),collapse = collapse)
-            })
+            },character(1))
         }
         indexFrom <- as.integer(names(splitTo))
         windows[[mcolsAnnot[1]]] <- "unknown"
@@ -112,8 +112,8 @@ intersectWithFeature <- function(windows, annotation, getFeatureInfo = FALSE,
             featureTo <- mcols(annotation)[to(ol),mcolsAnnot[i]]
             splitTo <- split(featureTo, f = from(ol))
             if (!missing(collapse)){
-                splitTo <- sapply(splitTo,function(s){
-                    paste0(unique(s),collapse = collapse)})
+                splitTo <- vapply(splitTo,function(s){
+                    paste0(unique(s),collapse = collapse)},character(1))
             }
             windows[[mcolsAnnot[i]]] <- "unknown"
             windows[[mcolsAnnot[i]]][indexFrom] <- splitTo 

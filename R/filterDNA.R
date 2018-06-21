@@ -100,7 +100,7 @@ filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0,
         message("Multiple files provided. Only the first will be filtered")
         file <- file[1]
     }
-    if (class(file) != "BamFile") tryCatch(file <- BamFile(file))
+    if (!is(file,"BamFile")) tryCatch(file <- BamFile(file))
 
     # Check the destination path exists & has the suffix bam
     stopifnot(file.exists(dirname(destination)))

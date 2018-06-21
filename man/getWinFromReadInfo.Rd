@@ -29,12 +29,6 @@ and coverage of each window sliding
 get the number of positive/negative reads of all windows from 
 read information obtained from \code{\link{scanBam}} function
 }
-\examples{
-library(Rsamtools)
-file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR") 
-readInfo <- scanBam(file)[[1]]
-win <- getWinFromReadInfo(readInfo)
-}
 \seealso{
 \code{\link{filterDNA}}, \code{\link{getWinFromBamFile}}
 }

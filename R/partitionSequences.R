@@ -49,7 +49,7 @@ partitionSequences <- function(sequences, lengthSeq, partitionSize = 1e8){
 #' @rdname partitionSequences
 partitionSeqinfo <- function(sq, partitionSize = 1e8){
 
-    stopifnot(class(sq) == "Seqinfo")
+    stopifnot(is(sq,"Seqinfo"))
     lengthSeq <- seqlengths(sq)
     sequences <- seqnames(sq)
     sumLength <- cumsum(as.numeric(lengthSeq))
