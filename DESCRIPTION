@@ -1,7 +1,7 @@
 Package: strandCheckR
 Type: Package
 Title: Calculate strandness information of a bam file
-Version: 0.99.8
+Version: 0.99.9
 Author: Thu-Hien To & Steve Pederson
 Maintainer: Thu-Hien To <hien.to@adelaide.edu.au>
 Description: This package aims to quantify and remove putative double strand DNA from a strand-specific RNA sample. There are also options and methods to plot the positive/negative proportions of all sliding windows, which allow users to have an idea of how much the sample was contaminated and the appropriate threshold to be used for filtering.
