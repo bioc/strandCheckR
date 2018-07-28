@@ -15,8 +15,5 @@ devtools::install_github('UofABioinformaticsHub/strandCheckR', build_vignettes =
 library(strandCheckR)
 ```
 
-# Vignette
-
-The vignette for usage is [here](https://uofabioinformaticshub.github.io/strandCheckR/vignettes/strandCheckR.html)
 
 
