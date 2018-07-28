@@ -4,14 +4,14 @@
 \alias{calculateStrandCoverage}
 \title{Calculate the strand information based on coverage}
 \usage{
-calculateStrandCoverage(winPositiveAlignments, winNegativeAlignments,
-winWidth = 1000, winStep = 100)
+calculateStrandCoverage(winPosAlignments, winNegAlignments, winWidth = 1000,
+winStep = 100)
 }
 \arguments{
-\item{winPositiveAlignments}{a list that has a `Coverage` field containing 
+\item{winPosAlignments}{a list that has a `Coverage` field containing 
 coverage coming from positive reads}
 
-\item{winNegativeAlignments}{a list that has a `Coverage` field containing 
+\item{winNegAlignments}{a list that has a `Coverage` field containing 
 coverage coming from negative reads}
 
 \item{winWidth}{the length of the sliding window, 1000 by default.}

@@ -59,7 +59,7 @@ files <- system.file("extdata",c("s1.sorted.bam","s2.sorted.bam"),
                     package = "strandCheckR")
 win <- getWinFromBamFile(files, sequences = "10")
 # shorten the file name
-win$File <- basename(win$File)
+win$File <- basename(as.character(win$File))
 win
 ```
 
@@ -74,7 +74,7 @@ file name (*File*). Windows that do not overlap with any read are not reported.
 The windows with highest read counts, for example, can be obtained as follows.
 
 ```{r highestCoverage, eval=TRUE, message=FALSE,warning=FALSE}
-head(win[order((win$NbPositive+win$NbNegative),decreasing=TRUE),])
+head(win[order((win$NbPos+win$NbNeg),decreasing=TRUE),])
 ```
 
 Here is an example for paired end bam file.
@@ -82,7 +82,7 @@ Here is an example for paired end bam file.
 ```{r paired end, eval=TRUE,message=FALSE,warning=FALSE}
 fileP <- system.file("extdata","paired.bam",package = "strandCheckR")
 winP <- getWinFromBamFile(fileP, sequences = "10")
-winP$File <- basename(winP$File) #shorten file name
+winP$File <- basename(as.character(winP$File)) #shorten file name
 winP
 ```
 
@@ -184,7 +184,7 @@ the manual page of the function for more options and explanations.
 Plotting the windows before and after filering:
 
 ```{r compare,eval=TRUE,message=FALSE,warning=FALSE}
-win2$File <- basename(win2$File)
+win2$File <- basename(as.character(win2$File))
 win2$File <- factor(win2$File,levels = c("s2.sorted.bam","s2.filter.bam"))
 library(ggplot2)
 plotHist(win2,group_by = "File",normalize_by = "File",scales = "free_y") +

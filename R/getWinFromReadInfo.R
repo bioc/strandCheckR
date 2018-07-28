@@ -14,36 +14,40 @@
 #' 
 #' @seealso \code{\link{filterDNA}}, \code{\link{getWinFromBamFile}}
 
-getWinFromReadInfo <- function(readInfo, winWidth = 1000, winStep = 100, 
-                                readProp = 0.5, subset=NULL){
+getWinFromReadInfo <- function(
+    readInfo, winWidth = 1000, winStep = 100, readProp = 0.5, subset = NULL
+    ) 
+{
+    winPosAlignments <- getWinOfAlignments(
+        readInfo, "+", winWidth, winStep, readProp = readProp, 
+        useCoverage = TRUE, subset
+        )
+    winNegAlignments <- getWinOfAlignments(
+        readInfo, "-", winWidth, winStep, readProp = readProp, 
+        useCoverage = TRUE, subset
+        )
     
-    winPositiveAlignments <- getWinOfAlignments(readInfo, "+", winWidth, 
-        winStep, readProp = readProp, useCoverage = TRUE, subset)
-    winNegativeAlignments <- getWinOfAlignments(readInfo, "-", winWidth, 
-        winStep, readProp = readProp, useCoverage = TRUE, subset)
+    # calculate strand information based on nbr of reads 
+    fromNbReads <- calculateStrandNbReads(winPosAlignments, winNegAlignments)
     
-    ######################################################
-    # calculate strand information based on nbr of reads #
-    ######################################################
-    fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                        winNegativeAlignments)
+    # calculate strand information based on coverage 
+    fromCoverage <- calculateStrandCoverage(
+        winPosAlignments, winNegAlignments, winWidth, winStep
+        )
     
-    ##################################################
-    # calculate strand information based on coverage #
-    ##################################################
-    fromCoverage <- calculateStrandCoverage(winPositiveAlignments,
-        winNegativeAlignments,winWidth,winStep)
-    
-    # fill the information of the present window into the data 
-    # frame to be returned
-    presentWin <- which(as.vector(fromCoverage$CovPositive>0 |
-                                fromCoverage$CovNegative>0)==TRUE)
-    return(DataFrame(Type = "", Seq = "", 
-                    Start = presentWin, End = 0,
-                    NbPositive = fromNbReads$NbPositive[presentWin], 
-                    NbNegative = fromNbReads$NbNegative[presentWin],
-                    CovPositive = fromCoverage$CovPositive[presentWin], 
-                    CovNegative = fromCoverage$CovNegative[presentWin],
-                    MaxCoverage = fromCoverage$MaxCoverage[presentWin],
-                    File = ""))
+    # fill the information of the present window into the data frame to 
+    # be returned
+    presentWin <- which(
+        as.vector(fromCoverage$CovPos > 0 | fromCoverage$CovNeg > 0) == TRUE
+        )
+    return(DataFrame(
+        Type = Rle("",length(presentWin)), Seq = Rle("",length(presentWin)), 
+        Start = presentWin, End = Rle(0,length(presentWin)), 
+        NbPos = fromNbReads$NbPos[presentWin], 
+        NbNeg = fromNbReads$NbNeg[presentWin], 
+        CovPos = fromCoverage$CovPos[presentWin], 
+        CovNeg = fromCoverage$CovNeg[presentWin], 
+        MaxCoverage = fromCoverage$MaxCoverage[presentWin], 
+        File = Rle("",length(presentWin))
+        ))    
 }

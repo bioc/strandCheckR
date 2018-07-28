@@ -28,8 +28,8 @@
 #' @seealso \code{\link{getWinFromBamFile}}, \code{\link{plotWin}}
 #'
 #' @examples
-#' bamfilein = system.file("extdata","s1.sorted.bam",package = "strandCheckR")
-#' win  <- getWinFromBamFile(file = bamfilein,sequences="10")
+#' bamfilein = system.file('extdata','s1.sorted.bam',package = 'strandCheckR')
+#' win  <- getWinFromBamFile(file = bamfilein,sequences='10')
 #' plotHist(win)
 #' 
 #' @importFrom gridExtra grid.arrange
@@ -41,36 +41,40 @@
 #' @importFrom grid unit
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 ggsave ggtitle scale_fill_gradient
-#' @importFrom magrittr set_colnames
-#' @importFrom dplyr mutate select one_of starts_with bind_rows filter
-#' @importFrom stringr str_extract
-#' @importFrom reshape2 dcast melt
+#' @importFrom dplyr filter
 #' @export
-plotHist <- function(windows, save=FALSE, file = "hist.pdf", group_by = NULL, 
-                    normalize_by = NULL, split=c(10,100,1000), breaks = 100,
-                    useCoverage=FALSE, heatmap = FALSE, ...){
-    histWin <- summarizeHist(windows, split = split, breaks = breaks, 
-                            useCoverage = useCoverage, group_by = group_by,
-                            normalize_by = normalize_by)
+plotHist <- function(
+    windows, save = FALSE, file = "hist.pdf", group_by = NULL, 
+    normalize_by = NULL, split = c(10, 100, 1000), breaks = 100, 
+    useCoverage = FALSE, heatmap = FALSE, ...
+    ) 
+{
+    histWin <- summarizeHist(
+        windows, split = split, breaks = breaks, useCoverage = useCoverage, 
+        group_by = group_by, normalize_by = normalize_by
+        )
     # The initial checks for appropriate input
-    reqWinCols <- c("PosStrandProp","ReadCountProp")
+    reqWinCols <- c("PosProp", "ReadCountProp")
     stopifnot(all(reqWinCols %in% colnames(histWin)))
     stopifnot(is.logical(save))
-    allows_facet_wrap <- setdiff(colnames(histWin),c(reqWinCols,"Coverage"))
-    group_by <- intersect(group_by,allows_facet_wrap) 
-
+    allows_facet_wrap <- setdiff(colnames(histWin), c(reqWinCols, "Coverage"))
+    group_by <- intersect(group_by, allows_facet_wrap)
+    
     # Make the plot
-    if (heatmap==FALSE){
-        g <- ggplot(histWin, aes_string(x = "PosStrandProp", 
-                                        y = "ReadCountProp", 
-                                        fill = "Coverage")) + 
+    if (heatmap == FALSE) {
+        g <- ggplot(
+            histWin, aes_string(
+                x = "PosProp", y = "ReadCountProp", fill = "Coverage"
+                )
+            ) + 
             geom_bar(stat = "identity") + 
-            labs(x = "Proportion of Reads on '+' Strand",
-                y = "Proportion of Windows") +
-            theme_bw() +
-            theme(plot.margin = unit(c(0.02,0.04,0.03,0.02), "npc"))  
-        if (length(group_by)>0) {
-
+            labs(
+                x = "Proportion of Reads on '+' Strand", 
+                y = "Proportion of Windows"
+                ) + 
+            theme_bw() + 
+            theme(plot.margin = unit(c(0.02, 0.04, 0.03, 0.02), "npc"))
+        if (length(group_by) > 0) {
             # Get any facet arguments from dotArgs that have been set manually
             dotArgs <- list(...)
             allowed <- names(formals(facet_wrap))
@@ -79,14 +83,14 @@ plotHist <- function(windows, save=FALSE, file = "hist.pdf", group_by = NULL,
             myFacets <- do.call(facet_wrap, argList)
             g <- g + myFacets
         }
-    } else{
+    } else {
         cov <- unique(histWin$Coverage)
         g <- list()
-        if (!("File" %in% colnames(histWin))){
+        if (!("File" %in% colnames(histWin))) {
             histWin$File <- "File"
         }
-        group_by <- group_by[group_by!="File"]
-        if (length(group_by)>0) {
+        group_by <- group_by[group_by != "File"]
+        if (length(group_by) > 0) {
             # Get any facet arguments from dotArgs that have been set manually
             dotArgs <- list(...)
             allowed <- names(formals(facet_wrap))
@@ -94,33 +98,37 @@ plotHist <- function(windows, save=FALSE, file = "hist.pdf", group_by = NULL,
             argList <- c(list(facets = group_by), dotArgs[keepArgs])
             myFacets <- do.call(facet_wrap, argList)
         }
-        for (i in seq_along(cov)){
-            l <- filter(histWin,Coverage==cov[i]) 
-            g[[i]] <- ggplot(l, aes_string(x="PosStrandProp", y="File",
-                                        fill="ReadCountProp")) + 
-                geom_tile() +
-                theme_bw() +
-                theme(panel.grid.major = element_blank(),
-                    panel.grid.minor = element_blank()) +
-                scale_fill_gradient(low="white",high="red",na.value = "white")
-            if (length(group_by)>0){
+        for (i in seq_along(cov)) {
+            l <- filter(histWin, Coverage == cov[i])
+            g[[i]] <- ggplot(
+                l, aes_string(x = "PosProp", y = "File", fill = "ReadCountProp")
+                ) + 
+                geom_tile() + theme_bw() + 
+                theme(
+                    panel.grid.major = element_blank(), 
+                    panel.grid.minor = element_blank()
+                    ) + 
+                scale_fill_gradient(
+                    low = "white", high = "red", na.value = "white"
+                    )
+            if (length(group_by) > 0) {
                 g[[i]] <- g[[i]] + myFacets
             }
-            if (length(cov)>1) {
-                g[[i]] <- g[[i]] + ggtitle(paste0("Coverage ",cov[i]))
+            if (length(cov) > 1) {
+                g[[i]] <- g[[i]] + ggtitle(paste0("Coverage ", cov[i]))
             }
         }
-        g <- grid.arrange(grobs=g, nrow = length(cov))
+        g <- grid.arrange(grobs = g, nrow = length(cov))
     }
-
-    if (save==TRUE){
-        message("The plot will be saved to the file ",file)
+    
+    if (save == TRUE) {
+        message("The plot will be saved to the file ", file)
         dotArgs <- list(...)
         allowed <- names(formals(ggsave))
-        keepArgs <- names(dotArgs) %in% setdiff(allowed, c("filename","plot"))
+        keepArgs <- names(dotArgs) %in% setdiff(allowed, c("filename", "plot"))
         argList <- c(list(filename = file, plot = g), dotArgs[keepArgs])
-        do.call(ggsave,argList)
+        do.call(ggsave, argList)
     }
-    if (heatmap==FALSE) return(g)
+    if (heatmap == FALSE) return(g)
 }
 

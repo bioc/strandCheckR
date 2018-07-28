@@ -1,8 +1,8 @@
-
-test_that("GetWinFromBamFile Can Be Run", {
-  file <- system.file("extdata","paired.bam",package = "strandCheckR")
-  win <- getWinFromBamFile(file,sequences="10")
-  require_cols <- c("Seq","Start","End","NbPositive","NbNegative",
-                    "CovPositive","CovNegative","MaxCoverage")
+test_that("GetWinFromBamFile Return Proper DataFrame", {
+  file <- system.file("extdata", "ex1.bam", package="Rsamtools")
+  win <- getWinFromBamFile(file)
+  require_cols <- c(
+      "Seq","Start","End","NbPos","NbNeg","CovPos","CovNeg","MaxCoverage","File"
+      )
   expect_true(all(require_cols %in% colnames(win)))
 })

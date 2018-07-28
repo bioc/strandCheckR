@@ -12,18 +12,22 @@
 #' @importFrom Rsamtools scanBam
 #' @importFrom Rsamtools ScanBamParam
 #' @examples
-#' file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
+#' file <- system.file('extdata','s1.sorted.bam',package = 'strandCheckR')
 #' checkPairedEnd(file)
 #' @export
 
-checkPairedEnd <- function(file, yieldSize = 100000){
-    message("Testing paired end by checking the first ", yieldSize,
-            " reads of file ",file)
+checkPairedEnd <- function(file, yieldSize = 1e+05) 
+{
+    message("Testing paired end by checking the first ", yieldSize, 
+            " reads of file ", file)
     checkFile <- BamFile(file, yieldSize = yieldSize)
     flag <- scanBam(checkFile, param = ScanBamParam(what = "flag"))[[1]]$flag
-    paired <- any(flag %% 2 == 1)
-    if (paired) message("Your bam file is paired end") 
-    else message("Your bam file is single end")  
+    paired <- any(flag%%2 == 1)
+    if (paired) {
+        message("Your bam file is paired end") 
+    } else {
+        message("Your bam file is single end")
+    }
     return(paired)
 }
 

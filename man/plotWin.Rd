@@ -52,8 +52,8 @@ contain reads to kept or discarded using the filtering methods of
 Any plot can be easily modified using standard ggplot2 syntax (see Examples)
 }
 \examples{
-bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
-windows <- getWinFromBamFile(file = bamfilein,sequences = "10")
+bamfilein = system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
+windows <- getWinFromBamFile(file = bamfilein,sequences = '10')
 plotWin(windows)
 
 # Change point colour using ggplot2

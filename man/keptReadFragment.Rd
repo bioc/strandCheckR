@@ -4,7 +4,7 @@
 \alias{keptReadFragment}
 \title{calculate the read fragments to be kept}
 \usage{
-keptReadFragment(fragments, keptProbaW, errorRate)
+keptReadFragment(fragments, keptProbaW)
 }
 \arguments{
 \item{fragments}{an IRange object defind the starting, ending position of 
@@ -12,8 +12,6 @@ each fragment}
 
 \item{keptProbaW}{an Rle object define the kept probability of each 
 sliding window}
-
-\item{errorRate}{the rate that a read has wrong strand}
 }
 \value{
 an integer vector of read fragment indices to be kept

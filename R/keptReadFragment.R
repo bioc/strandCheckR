@@ -6,32 +6,31 @@
 #' each fragment
 #' @param keptProbaW an Rle object define the kept probability of each 
 #' sliding window
-#' @param errorRate the rate that a read has wrong strand
 #' 
 #' @return an integer vector of read fragment indices to be kept
 #' @importFrom stats rbinom
 #' 
 
-keptReadFragment <- function(fragments,keptProbaW,errorRate){
-    if(length(fragments)>0){
+keptReadFragment <- function(fragments, keptProbaW) {
+    if (length(fragments) > 0) {
         minL <- min(width(fragments))
         maxL <- max(width(fragments))
-        proba <- rep(0,length(fragments))
-        for (m in minL:maxL){
-            id <- which(width(fragments)==m)
+        proba <- rep(0, length(fragments))
+        for (m in minL:maxL) {
+            id <- which(width(fragments) == m)
             x <- keptProbaW[start(fragments)[id]]
             j <- 1
-            while (j<=(m-1)){
-                y <- keptProbaW[j+start(fragments)[id]]
-                x <-  (x>=y)*x + (y>x)*y 
-                j <- j+1
+            while (j <= (m - 1)) {
+                y <- keptProbaW[j + start(fragments)[id]]
+                x <- (x >= y) * x + (y > x) * y # x <- pairwise max of x and y
+                j <- j + 1
             }
-            suppressWarnings(proba[id] <- rbinom(length(id),1,as.vector(x)))
+            suppressWarnings(proba[id] <- rbinom(length(id), 1, as.vector(x)))
             rm(id)
             rm(x)
         }
-        return(which(proba==1))
-    } else{
+        return(which(proba == 1))
+    } else {
         return(c())
     }
 }

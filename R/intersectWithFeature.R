@@ -29,19 +29,19 @@
 #' \code{\link{plotWin}}
 #'
 #' @examples
-#' bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
+#' bamfilein = system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
 #' windows <- getWinFromBamFile(file = bamfilein)
 #' #add chr before chromosome names to be consistent with the annotation
-#' windows$Seq <- paste0("chr",windows$Seq) 
+#' windows$Seq <- paste0('chr',windows$Seq) 
 #' library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 #' annot <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
 #' # get the transcript names that overlap with each window
-#' windows <- intersectWithFeature(windows,annot,mcolsAnnot="tx_name") 
+#' windows <- intersectWithFeature(windows,annot,mcolsAnnot='tx_name') 
 #' # just want to know whether there's any transcript that 
 #' # overlaps with each window
-#' windows <- intersectWithFeature(windows,annot,overlapCol="OverlapTranscript")
-#' plotHist(windows,facets = "OverlapTranscript")
-#' plotWin(windows,facets = "OverlapTranscript")
+#' windows <- intersectWithFeature(windows,annot,overlapCol='OverlapTranscript')
+#' plotHist(windows,facets = 'OverlapTranscript')
+#' plotWin(windows,facets = 'OverlapTranscript')
 #' 
 #' @importFrom IRanges IRanges
 #' @importFrom GenomeInfoDb seqlevels
@@ -51,73 +51,82 @@
 #' @export
 
 
-intersectWithFeature <- function(windows, annotation, getFeatureInfo = FALSE, 
-                                overlapCol = "OverlapFeature", mcolsAnnot, 
-                                collapse, ...){
-    #check annotation is a GRanges object
-    stopifnot(is(annotation,"GRanges"))
-    #check if windows contains required column
-    reqWinCols <- c("Seq","Start", "End")
+intersectWithFeature <- function(
+    windows, annotation, getFeatureInfo = FALSE, overlapCol = "OverlapFeature", 
+    mcolsAnnot, collapse, ...
+    ) 
+{
+    # check annotation is a GRanges object
+    stopifnot(is(annotation, "GRanges"))
+    # check if windows contains required column
+    reqWinCols <- c("Seq", "Start", "End")
     stopifnot(all(reqWinCols %in% colnames(windows)))
-    w <- GRanges(seqnames = windows$Seq, 
-                ranges = IRanges(start = windows$Start, end = windows$End))
-    if (length(intersect(seqlevels(w),seqlevels(annotation))) == 0){
+    w <- GRanges(
+        seqnames = windows$Seq, 
+        ranges = IRanges(start = windows$Start, end = windows$End)
+        )
+    if (length(intersect(seqlevels(w), seqlevels(annotation))) == 0) {
         message("Windows do not have any sequence in annotation data.")
         return(windows)
     }
-
-    #check mcolsAnnot parameter
-    if (!missing(mcolsAnnot)){
-        if (length(mcolsAnnot)>0){
-            mcolsAnnot <- intersect(mcolsAnnot,colnames(mcols(annotation)))    
-            if (length(mcolsAnnot)==0){
-                message("mcols of annotation does not contain any column ",
-                    paste0(mcolsAnnot,collapse = ","))
+    
+    # check mcolsAnnot parameter
+    if (!missing(mcolsAnnot)) {
+        if (length(mcolsAnnot) > 0) {
+            mcolsAnnot <- intersect(mcolsAnnot, colnames(mcols(annotation)))
+            if (length(mcolsAnnot) == 0) {
+                message(
+                    "mcols of annotation does not contain any column ", 
+                    paste0(mcolsAnnot, collapse = ",")
+                    )
                 getFeatureInfo <- FALSE
-            } else{
+            } else {
                 getFeatureInfo <- TRUE
             }
-        } else{
+        } else {
             message("No column specified to get from mcols of annotation.")
             getFeatureInfo <- FALSE
         }
-    } 
-
-    #Get overlap between windows and annotation
-    ol <- findOverlaps(w,annotation, select = "all", ...)
-
-    if (!getFeatureInfo){
+    }
+    
+    # Get overlap between windows and annotation
+    ol <- findOverlaps(w, annotation, select = "all", ...)
+    
+    if (!getFeatureInfo) {
         windows[[overlapCol]] <- "NotOverlap"
-        windows[[overlapCol]][as.integer(unique(from(ol)))] <- "Overlap"  
+        windows[[overlapCol]][as.integer(unique(from(ol)))] <- "Overlap"
     } else {
-    ## check collapse
+        ## check collapse
         stopifnot(missing(collapse) || is.character(collapse))
-    
+        
         ## Check mcolsAnnot
-        if (missing(mcolsAnnot)){
+        if (missing(mcolsAnnot)) {
             mcolsAnnot <- mcols(annotation)
-        } 
-    
-        featureTo <- mcols(annotation)[to(ol),mcolsAnnot[1]]
+        }
+        
+        featureTo <- mcols(annotation)[to(ol), mcolsAnnot[1]]
         splitTo <- split(featureTo, f = from(ol), drop = TRUE)
-        if (!missing(collapse)){
-            splitTo <- vapply(splitTo,function(s){
-            paste0(unique(s),collapse = collapse)
-            },character(1))
+        if (!missing(collapse)) {
+            splitTo <- vapply(splitTo, function(s) {
+                paste0(unique(s), collapse = collapse)
+            }, character(1))
         }
         indexFrom <- as.integer(names(splitTo))
         windows[[mcolsAnnot[1]]] <- "unknown"
-        windows[[mcolsAnnot[1]]][indexFrom] <- splitTo 
-    
-        for (i in seq_along(mcolsAnnot)[-1]){
-            featureTo <- mcols(annotation)[to(ol),mcolsAnnot[i]]
+        windows[[mcolsAnnot[1]]][indexFrom] <- splitTo
+        
+        for (i in seq_along(mcolsAnnot)[-1]) {
+            featureTo <- mcols(annotation)[to(ol), mcolsAnnot[i]]
             splitTo <- split(featureTo, f = from(ol))
-            if (!missing(collapse)){
-                splitTo <- vapply(splitTo,function(s){
-                    paste0(unique(s),collapse = collapse)},character(1))
+            if (!missing(collapse)) {
+                splitTo <- vapply(
+                    splitTo, 
+                    function(s) {paste0(unique(s), collapse = collapse)}, 
+                    character(1)
+                    )
             }
             windows[[mcolsAnnot[i]]] <- "unknown"
-            windows[[mcolsAnnot[i]]][indexFrom] <- splitTo 
+            windows[[mcolsAnnot[i]]][indexFrom] <- splitTo
         }
     }
     return(windows)

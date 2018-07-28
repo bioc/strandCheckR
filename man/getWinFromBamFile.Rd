@@ -4,7 +4,7 @@
 \alias{getWinFromBamFile}
 \title{get the strand information of all windows from bam files}
 \usage{
-getWinFromBamFile(files, sequences, mapqFilter = 0, partitionSize = 1e+08,
+getWinFromBamFile(files, sequences, mapqFilter = 0, yieldSize = 1e+06,
 winWidth = 1000, winStep = 100, readProp = 0.5, paired)
 }
 \arguments{
@@ -16,8 +16,9 @@ their index files located at the same path.}
 \item{mapqFilter}{every read that has mapping quality below 
 \code{mapqFilter} will be removed before any analysis}
 
-\item{partitionSize}{by default is 1e8, i.e. the bam file is read by blocks 
-of sequences such that the total length of each block is at least 1e8}
+\item{yieldSize}{by default is 1e6, i.e. the bam file is read by block of
+records whose size is defined by this paramter. It is used to pass to same
+paramter of the scanBam function.}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 
@@ -40,8 +41,8 @@ get the number of positive/negative reads of all windows from
 bam files
 }
 \examples{
-file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
-win <- getWinFromBamFile(file,sequences="10")
+file <- system.file('extdata','s1.sorted.bam',package = 'strandCheckR')
+win <- getWinFromBamFile(file,sequences='10')
 win
 }
 \seealso{

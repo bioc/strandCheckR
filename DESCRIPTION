@@ -16,7 +16,6 @@ Imports:
   IRanges,
   Rsamtools,
   S4Vectors,
-  rbamtools,
   grid,
   BiocGenerics,
   ggplot2,

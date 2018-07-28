@@ -12,8 +12,9 @@
 #' @param paired if TRUE then the input bamfile will be considered as paired end
 #' reads. If missing, 100 thousands first reads will be inspected to test if
 #' the input bam file in paired end or single end.
-#' @param partitionSize by default is 1e8, i.e. the bam file is read by block of
-#' sequences such that the total length of each block is at least 1e8
+#' @param yieldSize by default is 1e6, i.e. the bam file is read by block of
+#' records whose size is defined by this paramter. It is used to pass to same
+#' paramter of the scanBam function.
 #' @param winWidth the length of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
 #' @param readProp A read is considered to be included in a window if at least 
@@ -75,322 +76,310 @@
 #' \code{\link{plotWin}}
 #'
 #' @examples
-#' file <- system.file("extdata","s2.sorted.bam",package = "strandCheckR")
-#' filterDNA(file,sequences="10",destination="out.bam")
+#' file <- system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
+#' filterDNA(file,sequences='10',destination='out.bam')
 #' 
-#' @importFrom rbamtools bamReader getHeader bamWriter bamClose bamSave bamRange
-#' @importFrom Rsamtools BamFile scanBam ScanBamParam
+#' @importFrom Rsamtools BamFile scanBam ScanBamParam filterBam
 #' @importFrom GenomicRanges GRanges ranges
 #' @importFrom GenomeInfoDb seqinfo seqnames seqlengths
 #' @importFrom IRanges IRanges
 #' @import S4Vectors
+#' @import magrittr
 #' @importFrom methods is
 #'
 #' @return if \code{getWin} is TRUE: a DataFrame object which could also be 
 #' obtained by the function \code{getWinFromBamFile}
 #' @export
-filterDNA <- function(file, destination, statfile, sequences, mapqFilter=0, 
-                    paired, partitionSize = 1e8, winWidth=1000, winStep=100,
-                    readProp=0.5, threshold=0.7, pvalueThreshold=0.05, 
-                    useCoverage=FALSE, mustKeepRanges, getWin=FALSE, 
-                    minCov=0, maxCov=0, errorRate=0.01){
+filterDNA <- function(
+    file, destination, statfile, sequences, mapqFilter = 0, paired, 
+    yieldSize = 1e+06, winWidth = 1000, winStep = 100, readProp = 0.5, 
+    threshold = 0.7, pvalueThreshold = 0.05, useCoverage = FALSE, 
+    mustKeepRanges, getWin = FALSE, minCov = 0, maxCov = 0, errorRate = 0.01
+    ) 
+{
     startTime <- proc.time()
-
+    
     # Check the input is a BamFile. Convert if necessary
     if (length(file) > 1) {
         message("Multiple files provided. Only the first will be filtered")
         file <- file[1]
     }
-    if (!is(file,"BamFile")) tryCatch(file <- BamFile(file))
-
+    if (!is(file, "BamFile")) {
+        tryCatch(file <- BamFile(file, yieldSize = yieldSize))
+    }
+    
     # Check the destination path exists & has the suffix bam
     stopifnot(file.exists(dirname(destination)))
-    destination <- ifelse(!grepl("\\.bam$", destination[1]), 
-                        paste0(destination[1], ".bam"), 
-                        destination[1])
-
+    destination <- ifelse(
+        !grepl("\\.bam$", destination[1]), paste0(destination[1], ".bam"), 
+        destination[1]
+        )
+    
     # Check valid mapqFilter value
-    if(mapqFilter < 0 || !is.numeric(mapqFilter)) {
+    if (mapqFilter < 0 || !is.numeric(mapqFilter)) {
         stop("Invalid value for mapqFilter. Must be positive & numeric.")
     }
-
+    
     # More input checks
     stopifnot(is.logical(getWin))
     winWidth <- tryCatch(as.integer(winWidth))
     winStep <- tryCatch(as.integer(winStep))
     stopifnot(threshold > 0 & threshold < 1)
     stopifnot(pvalueThreshold > 0 & pvalueThreshold < 1)
-    stopifnot(all(is.numeric(maxCov), is.numeric(minCov), 
-                is.numeric(errorRate), is.numeric(readProp)))
+    stopifnot(all(
+        is.numeric(maxCov), is.numeric(minCov), is.numeric(errorRate), 
+        is.numeric(readProp)
+        ))
     stopifnot(is.logical(useCoverage))
-
+    
     # Check the paired status
-    if (missing(paired)) paired <- checkPairedEnd(file$path)
-
+    if (missing(paired)) 
+        paired <- checkPairedEnd(file$path)
+    
     # Get the seqinfo object & all genomic information
     sq <- seqinfo(file)
     allRefSequences <- seqnames(sq)
-
+    
     # Subset sequences if required
-    if (!missing(sequences)){
-        stopifnot(all(sequences %in% allRefSequences))
-        sq <- sq[sequences]
-    }
-    else{
+    if (!missing(sequences)) {
+        sequenceId <- which(allRefSequences %in% sequences)
+        stopifnot(length(sequenceId) > 0)
+        sq <- sq[allRefSequences[sequenceId]]
+        sequences <- seqnames(sq)
+    } else {
         sequences <- allRefSequences
     }
-    nSeq <- length(sequences)
     lengthSeq <- seqlengths(sq)
-
-    # Allocate sequences for optimal partition sizes & speed
-    partition <- partitionSeqinfo(sq, partitionSize = partitionSize)
-    # Open a reader of the input bamfile to extract read afterward
-    reader <- bamReader(file$path,idx=TRUE) 
-
-    # Get the header of the input bam file and prepare a writer with the 
-    # same header for the output bamfile.
-    header <- getHeader(reader) 
-    writer <- bamWriter(header,destination) 
-
-    # Logit of the given threshold
-    logitThreshold <- log(threshold/(1-threshold))
-
+    
+    
     # Define the file to write the summary of the results
-    if (missing(statfile)){
+    if (missing(statfile)) {
         statfile <- "out.stat"
-    }
-    else{
+    } else {
         stopifnot(file.exists(dirname(statfile)))
     }
-    message(paste0("Summary will be written to ",statfile))
+    message("Summary will be written to ", statfile)
     file.create(statfile)
-
+    
     # Get the sequence list of the ranges which must be kept
-    if (!missing(mustKeepRanges)){
-        stopifnot (is(mustKeepRanges,"GRanges"))
+    if (!missing(mustKeepRanges)) {
+        stopifnot(is(mustKeepRanges, "GRanges"))
         allSequencesMustKeep <- levels(seqnames(mustKeepRanges))
     }
-
-    # Initialise the data frames containing sliding window information to be 
-    # returned when getWin=TRUE
-    if (getWin) allWin <- vector("list",length(partition))
-
-    # Initialise the data frame containing the sequence information 
-    # in each partition
-    sequenceInfo <- data.frame(Sequence = sequences, 
-                                Length = lengthSeq,
-                                NbOriginalReads = rep(0, nSeq),
-                                NbKeptReads = rep(0, nSeq),
-                                FirstBaseInPartition = rep(NA, nSeq),
-                                LastBaseInPartition = rep(NA, nSeq),
-                                FirstReadInPartition = rep(NA, nSeq),
-                                LastReadInPartition = rep(NA, nSeq),
-                                stringsAsFactors = FALSE)
-
+    
+    # Initialise the data frame containing the sequence information
+    seqInfo <- data.frame(
+        Sequence = sequences, Length = lengthSeq, NbReads = 0, 
+        FirstBaseInPart = 0, LastBaseInPart = 0, FirstReadInPart = 0,
+        LastReadInPart = 0
+        )
+    
     # Define what to scan from bam file
     scanWhat <- c("pos", "cigar", "strand")
-    if (mapqFilter) scanWhat <- c(scanWhat, "mapq")
     if (paired) scanWhat <- c(scanWhat, "flag")
-
-    # Step through each part of partitions
-    for (n in seq_along(partition)){
-
-        # Set the required values for each partition
-        part <- partition[[n]]
-        idPart <- which(sequences %in% part)
-        seqEnd <- lengthSeq[sequences %in% part]
-
-        # Get & Summarise the reads
-        # Return the reads from the bam file as a list, 
-        # with each element containing reads from a single seq
-        sbp <- ScanBamParam(what = scanWhat,
-                            which = GRanges(seqnames = part,
-                                    ranges = IRanges(start = 1, end = seqEnd)))
+    
+    # Create a list to store the results which record to keep for each sequence
+    toKeepRecords <- list()
+    
+    # Initialise the data frames containing sliding window information to 
+    # be returned when getWin=TRUE
+    if (getWin) 
+        allWin <- list()
+    
+    # Read the bam file in block defined by the yieldSize
+    remainSequences <- sequences
+    while (length(remainSequences) > 0) {
+        # Get & Summarise the reads Return the reads from the bam file as a 
+        # list, with each element containing reads from a single seq
+        scanGR <- GRanges(
+            seqnames = remainSequences, 
+            ranges = IRanges(start = 1, end = lengthSeq[remainSequences])
+            )
+        sbp <- ScanBamParam(
+            what = scanWhat,  which = scanGR, mapqFilter = mapqFilter
+            )
         readInfo <- scanBam(file, param = sbp)
-        if (mapqFilter > 0){
-            # Get only reads that pass the mapping quality filter
-            # These need to be identified separately for the writing step
-            mqfilter <- lapply(readInfo,function(seq){
-                                which(seq$mapq>=mapqFilter)})
-            readInfo <- lapply(seq_along(readInfo),function(i){
-                seq <- lapply(scanWhat[scanWhat!="mapq"], function(field){
-                    field=readInfo[[i]][[field]][mqfilter[[i]]]})
-                    names(seq) <- scanWhat[scanWhat!="mapq"]
-                    seq})
-            names(readInfo) <- names(mqfilter)
-        } 
-        nReadsInPart <- vapply(seq_along(readInfo),
-                                function(i){length(readInfo[[i]]$strand)}, 
-                                            integer(1))
-        sequenceInfo$NbOriginalReads[idPart] <- nReadsInPart
-
-        # Calculate the first/last bases/reads of each sequence in the partition
-        sequenceInfo[idPart,] <- sequenceInfoInPartition(sequenceInfo[idPart,], 
-                                                        winStep)
-
-        if (sum(nReadsInPart) > 0){
+        # Get the number of records in each sequence
+        nbReads <- vapply(readInfo, function(seq){length(seq$pos)}, integer(1))
+        # Get the sequences that have been read
+        idReadSeq <- which(nbReads > 0)
+        if (length(idReadSeq)==0){
+            remainSequences <- c()
+        }   
+        else {
+            ind <- seqInfo$Sequence %in% remainSequences
+            seqInfo$NbReads[ind] <- nbReads
+            readSeq <- remainSequences[idReadSeq]
+            message("Read sequences ", paste(readSeq, collapse = " "))
+            idP <- which(sequences %in% readSeq)
+            partName <- readSeq[1]
+            #Calculate the next remainSequences to read
+            idNext <- idReadSeq[length(idReadSeq)] + 1
+            if (idNext <= length(remainSequences)){
+                nextRange <- idNext:length(remainSequences)
+                remainSequences <- remainSequences[nextRange]    
+            } else {
+                remainSequences <- c()
+            }
+            
+            # Calculate First/Last Base/Read in each part of the partition
+            seqInfo[idP, ] <- sequenceInfoInPartition(
+                seqInfo[idP,], winWidth, winStep
+                )
+            
+            # Concatenate lists of mutiple sequences into one list
+            readInfo <- concatenateAlignments(
+                readInfo[idReadSeq], seqInfo[idP,]
+                )
             # Calculate the windows that overlap mustKeepRanges
             mustKeepWin <- list()
-            if (!missing(mustKeepRanges)){
-                if (length(intersect(allSequencesMustKeep,part))>0){
+            if (!missing(mustKeepRanges)) {
+                if (length(intersect(allSequencesMustKeep, readSeq)) > 0) {
                     mustKeepWin <- getWinFromGranges(
-                        mustKeepRanges[seqnames(mustKeepRanges) %in% part], 
-                        sequenceInfo[idPart,], winWidth, winStep)
+                        mustKeepRanges[seqnames(mustKeepRanges) %in% readSeq], 
+                        seqInfo[idP, ], winWidth, winStep
+                        )
                 }
             }
-
-
-            # Concatenate several lists of the sequence partition into one list
-            readInfo <- concatenateAlignments(readInfo,sequenceInfo[idPart,])
-
-            # Get the index of R1 and R2 reads and process each 
-            # subset separately
-            if (paired){
-                firstReadIndex <- which(floor(readInfo$flag/64) %% 2 == 1)
-                secondReadIndex <- which(floor(readInfo$flag/64) %% 2 == 0)
-                if (sum(firstReadIndex)==0){
-                    subset <- list(NULL) 
+            # Get the index of R1 and R2 reads and process 
+            # each subset separately
+            if (paired) {
+                firstReadIndex <- which(floor(readInfo$flag/64)%%2 == 1)
+                secondReadIndex <- which(floor(readInfo$flag/64)%%2 == 0)
+                if (length(firstReadIndex) == 0) {
+                    subset <- list(NULL)
                     type <- "R2"
-                } else if (sum(secondReadIndex)==0){
+                } else if (length(secondReadIndex) == 0) {
                     subset <- list(NULL)
                     type <- "R1"
                 } else {
-                    subset <- list("R1"=firstReadIndex,"R2"=secondReadIndex)
+                    subset <- list(R1 = firstReadIndex, R2 = secondReadIndex)
                     type <- "R1"
                 }
-            } else{
+            } else {
                 subset <- list(NULL)
                 type <- "SE"
             }
             
             # Initialise the alignment indices to be kept
-            keptAlignments <- c()
-            for (s in seq_along(subset)){
-                # Get the ids of sliding windows containing each "+"/"-" 
-                #read fragment
-                winPositiveAlignments <- getWinOfAlignments(readInfo, "+", 
-                            winWidth, winStep, readProp = readProp, 
-                            useCoverage = (useCoverage || getWin), subset[[s]])
-                winNegativeAlignments <- getWinOfAlignments(readInfo, "-", 
-                            winWidth, winStep, readProp = readProp, 
-                            useCoverage = (useCoverage || getWin), subset[[s]])
-
+            keptRecords <- c()
+            for (s in seq_along(subset)) {
+                # Get the ids of sliding windows containing 
+                # each '+'/'-' read fragment
+                winPosRecords <- getWinOfAlignments(
+                    readInfo, "+", winWidth, winStep, readProp = readProp, 
+                    useCoverage = (useCoverage || getWin), subset[[s]]
+                    )
+                winNegRecords <- getWinOfAlignments(
+                    readInfo, "-", winWidth, winStep, readProp = readProp, 
+                    useCoverage = (useCoverage || getWin), subset[[s]]
+                    )
+                
                 # Calculate the keeping probability of each sliding window
-                probaWin <- keptProbaWin(winPositiveAlignments, 
-                                winNegativeAlignments, winWidth, winStep, 
-                                logitThreshold, pvalueThreshold, errorRate, 
-                                mustKeepWin,  minCov, maxCov,getWin = getWin, 
-                                useCoverage=useCoverage) 
-
+                probaWin <- keptProbaWin(
+                    winPosRecords, winNegRecords, winWidth, winStep, 
+                    threshold, pvalueThreshold, errorRate, mustKeepWin, 
+                    minCov, maxCov, getWin = getWin, useCoverage = useCoverage
+                    )
+                
                 # Calculate the '+'/'-' read fragments to be kept
-                keptPositiveAlignment <- keptReadFragment(
-                    winPositiveAlignments$Win, probaWin$Positive, errorRate) 
-                keptNegativeAlignment <- keptReadFragment(
-                    winNegativeAlignments$Win, probaWin$Negative, errorRate) 
-
+                keptPosRecord <- keptReadFragment(
+                    winPosRecords$Win, probaWin$Pos
+                    )
+                keptNegRecord <- keptReadFragment(
+                    winNegRecords$Win, probaWin$Neg
+                    )
+                
                 
                 # Infer the index of kept alignments within the partition
-                kept <- c(unique(mcols(winPositiveAlignments$Win)$
-                                    alignment[keptPositiveAlignment]),
-                        unique(mcols(winNegativeAlignments$Win)$
-                                    alignment[keptNegativeAlignment])) 
-                # Add the current set to the vector of kept alignments
-                keptAlignments <- sort(c(keptAlignments,kept))
+                kept <- c(
+                    unique(mcols(winPosRecords$Win)$alignment[keptPosRecord]), 
+                    unique(mcols(winNegRecords$Win)$alignment[keptNegRecord])
+                    )
                 
-                # If getWin=TRUE, then return the strand information 
-                # of sliding windows from the orignial and filtered files
-                if (getWin){
-                    #get the window information of filtered file
-                    winA <- getWinFromReadInfo(readInfo,winWidth, winStep, 
-                            readProp, subset = keptAlignments)
-                    #get the correct position of windows in each sequence
-                    #of partition
-                    win <- getWinInSequence(probaWin$Win, part,
-                                    sequenceInfo[idPart,], winWidth, winStep)
-                    winA <- getWinInSequence(winA, part, sequenceInfo[idPart,], 
-                                            winWidth,winStep)
-                    #assign appropriate file name to each window data
-                    win$File <- file$path
-                    winA$File <- destination
-                    if (s==1){
-                        win$Type <- type
-                        winA$Type <- type
-                        allWin[[n]] <- rbind(win,winA)
-                    } else{
-                        win$Type <- "R2"
-                        winA$Type <- "R2"
-                        allWin[[n]] <- rbind(allWin[[n]],rbind(win,winA))
+                # If getWin=TRUE, then return the strand information of sliding 
+                # windows from the orignial and filtered files
+                if (getWin) {
+                    # get the window information of filtered file
+                    winA <- getWinFromReadInfo(
+                        readInfo, winWidth, winStep, readProp,subset = kept
+                        )
+                    # get the correct position of windows in each sequence 
+                    # of partition
+                    
+                    win <- getWinInSequence(
+                        probaWin$Win, seqInfo[idP,], winWidth, winStep
+                        )
+                    winA <- getWinInSequence(
+                        winA, seqInfo[idP,], winWidth, winStep
+                        )
+                    # assign appropriate file name to each window data
+                    win$File <- Rle(file$path,nrow(win))
+                    winA$File <- Rle(destination,nrow(winA))
+                    if (s == 1) {
+                        win$Type <- Rle(type,nrow(win))
+                        winA$Type <- Rle(type,nrow(winA))
+                        allWin[[partName]] <- rbind(win, winA)
+                    } else {
+                        win$Type <- Rle("R2",nrow(win))
+                        winA$Type <- Rle("R2",nrow(winA))
+                        allWin[[partName]] <- rbind(
+                            allWin[[partName]], rbind(win, winA)
+                            )
                     }
                 }
+                # Add the current set to the vector of kept records
+                keptRecords <- c(keptRecords, kept)
                 # Tidy up the memory a little
-                rm(winPositiveAlignments,winNegativeAlignments)
+                rm(winPosRecords, winNegRecords)
                 rm(probaWin)
             }
-            if (getWin){
-                allWin[[n]]$Start <- (allWin[[n]]$Start-1)*winStep+1    
-            }
             rm(readInfo)
-
-            # Write the kept alignments into the output bamfile
-            for (i in seq_along(part)){#Run through each sequence
-                id <- which(sequences == part[i])
-
-                if (sequenceInfo$NbOriginalReads[id]>0){
-                    # Get the index within the partition of kept alignments 
-                    # coming from the current sequence 
-                    index <- keptAlignments[(keptAlignments >= sequenceInfo$
-                                                FirstReadInPartition[id]) & 
-                                            (keptAlignments <= sequenceInfo$
-                                                LastReadInPartition[id])]
-
-                    if (length(index)>0){
-                        sequenceInfo$NbKeptReads[id] <- length(index)
-
-                        # Get the index within the sequence of the kept 
-                        # alignments coming from the current sequence 
-                        index <- index - sequenceInfo$FirstReadInPartition[id]+1
-
-                        # Get the index within the initial unfiltered sequence
-                        # of the keptalignments coming from the current sequence
-                        if (mapqFilter>0) index <- mqfilter[[i]][index]
-
-                        # Write the kept alignments into the output bam file  
-                        bamSave(writer, bamRange(reader, 
-                            c(which(allRefSequences == part[i]) - 1, 0, 
-                                lengthSeq[id]))[index,])
-                    }
-                    rm(index)
-                }
-            }
-            # Add the key information to the statfile
-            cat(paste0("Sequence ",part,", length: ", 
-                sequenceInfo$Length[idPart],", number of reads: ", 
-                sequenceInfo$NbOriginalReads[idPart],", number of kept reads: ",
-                sequenceInfo$NbKeptReads[idPart],"\n"),
-                file=statfile, append = TRUE)
-            rm(keptAlignments)
+            toKeepRecords[[partName]] <- rep(FALSE, sum(seqInfo$NbReads[idP]))
+            toKeepRecords[[partName]][keptRecords] <- TRUE
+            cat(
+                "Sequences ",readSeq,", number of reads: ", 
+                sum(seqInfo$NbReads[idP]),", number of kept reads: ", 
+                length(keptRecords),"\n", file=statfile, append = TRUE
+                )
+            rm(keptRecords)
         }
     }
-    bamClose(writer)
-    bamClose(reader)
-
+    # write the kept records into destination file
+    scanGR <- GRanges(
+        seqnames = sequences, IRanges(start = 1, end = seqInfo$Length)
+        )
+    filterBam(
+        file = file, destination = destination, 
+        param = ScanBamParam(
+            what = "rname", mapqFilter = mapqFilter, which = scanGR
+            ),
+        filter = FilterRules(
+            list(
+                Keep = function(x) {
+                    seq <- as.character(x$rname[1])
+                    return(toKeepRecords[[seq]])
+                    }
+                )
+            )
+        )
     cat("Summary:\n", file = statfile, append = TRUE)
-    cat(paste0("Number of original reads: ", sum(sequenceInfo$NbOriginalReads),
-            ", number of kept reads: ", sum(sequenceInfo$NbKeptReads),
-            ", removal proportion: ",
-            (sum(sequenceInfo$NbOriginalReads)-sum(sequenceInfo$NbKeptReads))/
-                sum(sequenceInfo$NbOriginalReads)), 
-            "\n", file = statfile, append = TRUE)
+    nbKepReads <- vapply(toKeepRecords,sum,integer(1))
+    cat(
+        "Number of original reads: ", sum(seqInfo$NbReads),
+        ", number of kept reads: ", sum(nbKepReads), ", removal proportion: ",
+        (sum(seqInfo$NbReads)-sum(nbKepReads))/sum(seqInfo$NbReads), "\n", 
+        file = statfile, append = TRUE
+        )
     endTime <- proc.time()
-    cat(paste0("Total elapsed time: ", 
-                (endTime-startTime)[[3]]/60," minutes\n"), 
-        file = statfile, append = TRUE)
-    if (getWin){
-        allWin <- do.call(rbind,allWin)
-        allWin$End <- allWin$Start + winWidth -1 
+    cat(
+        "Total elapsed time: ", (endTime - startTime)[[3]]/60, " minutes\n", 
+        file = statfile, append = TRUE
+        )
+    if (getWin) {
+        allWin <- do.call(rbind, allWin)
+        allWin$Start <- (allWin$Start - 1) * winStep + 1
+        allWin$End <- allWin$Start + winWidth - 1
         return(allWin)
     }
 }
-
-
-

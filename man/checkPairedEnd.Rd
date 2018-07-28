@@ -21,6 +21,6 @@ Check the first 100000 first reads of the bam file to see
 whether it is single end or paired end
 }
 \examples{
-file <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
+file <- system.file('extdata','s1.sorted.bam',package = 'strandCheckR')
 checkPairedEnd(file)
 }

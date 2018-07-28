@@ -1,13 +1,14 @@
 #' @title get the probability of begin kept for each window
 #' @description calculate the keeping probability of each window based on its 
 #' positive/negative proportion
-#' @param winPositiveAlignments an object returned by getWinOfAlignments for 
+#' @param winPosAlignments an object returned by getWinOfAlignments for 
 #' positive reads
-#' @param winNegativeAlignments an object returned by getWinOfAlignments for 
+#' @param winNegAlignments an object returned by getWinOfAlignments for 
 #' negative reads
 #' @param winWidth the width of the sliding window, 1000 by default.
 #' @param winStep the winStep length to sliding the window, 100 by default.
-#' @param logitThreshold logistic value of the threshold
+#' @param threshold the strand proportion threshold to test whether to keep a 
+#' window or not. 
 #' @param pvalueThreshold threshold of p-value
 #' @param minCov In the case that \code{useCoverage=FALSE}, if a window has 
 #' least than \code{minCov} reads, then it will be rejected regardless the 
@@ -39,96 +40,116 @@
 #' @importFrom stats pnorm
 #'
 
-keptProbaWin <- function(winPositiveAlignments, winNegativeAlignments, 
-                        winWidth, winStep, logitThreshold, pvalueThreshold, 
-                        errorRate, mustKeepWin, minCov, maxCov, getWin, 
-                        useCoverage=FALSE){
-    if (getWin){
-        fromCoverage <- calculateStrandCoverage(winPositiveAlignments, 
-                                                winNegativeAlignments, 
-                                                winWidth,winStep)
-        fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                                winNegativeAlignments)
-        presentWin <- which(as.vector(fromCoverage$CovPositive>0 | 
-                                        fromCoverage$CovNegative>0) == TRUE)
-        Win <- DataFrame(Type = "", Seq = "", 
-                        Start = presentWin, End = 0,
-                        NbPositive = fromNbReads$NbPositive[presentWin], 
-                        NbNegative = fromNbReads$NbNegative[presentWin],
-                        CovPositive = fromCoverage$CovPositive[presentWin], 
-                        CovNegative = fromCoverage$CovNegative[presentWin],
-                        MaxCoverage = fromCoverage$MaxCoverage[presentWin],
-                        File = "")
-    } else if (useCoverage){
-        fromCoverage <- calculateStrandCoverage(winPositiveAlignments, 
-                                                winNegativeAlignments, 
-                                                winWidth,winStep)
-    } else{
-        fromNbReads <- calculateStrandNbReads(winPositiveAlignments,
-                                            winNegativeAlignments)
+keptProbaWin <- function(
+    winPosAlignments, winNegAlignments, winWidth, winStep, threshold, 
+    pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov, getWin, 
+    useCoverage = FALSE
+    ) 
+{
+    if (getWin) {
+        stopifnot(
+            "Coverage" %in% names(winPosAlignments) && 
+                "Coverage" %in% names(winNegAlignments)
+            )
+        fromCoverage <- calculateStrandCoverage(
+            winPosAlignments = winPosAlignments, 
+            winNegAlignments = winNegAlignments, winWidth = winWidth, 
+            winStep = winStep
+            )
+        fromNbReads <- calculateStrandNbReads(
+            winPosAlignments = winPosAlignments, 
+            winNegAlignments = winNegAlignments
+            )
+        presentWin <- which(
+            as.vector(fromCoverage$CovPos > 0 | fromCoverage$CovNeg > 0) == TRUE
+            )
+        Win <- DataFrame(
+            Type = Rle("",length(presentWin)), Seq = Rle("",length(presentWin)),
+            Start = presentWin, End = Rle(0,length(presentWin)), 
+            NbPos = fromNbReads$NbPos[presentWin], 
+            NbNeg = fromNbReads$NbNeg[presentWin], 
+            CovPos = fromCoverage$CovPos[presentWin], 
+            CovNeg = fromCoverage$CovNeg[presentWin], 
+            MaxCoverage = fromCoverage$MaxCoverage[presentWin], 
+            File = Rle("",length(presentWin))
+            )
+    } else if (useCoverage) {
+        fromCoverage <- calculateStrandCoverage(
+            winPosAlignments, winNegAlignments, winWidth, winStep
+            )
+    } else {
+        fromNbReads <- calculateStrandNbReads(
+            winPosAlignments, winNegAlignments
+            )
     }
-    if (useCoverage){
-        pos <- fromCoverage$CovPositive
-        neg <- fromCoverage$CovNegative
-    } else{
-        pos <- fromNbReads$NbPositive
-        neg <- fromNbReads$NbNegative
+    if (useCoverage) {
+        pos <- fromCoverage$CovPos
+        neg <- fromCoverage$CovNeg
+    } else {
+        pos <- fromNbReads$NbPos
+        neg <- fromNbReads$NbNeg
     }
-    toTest <- (logitThreshold-abs(log(pos/neg)))/sqrt((pos+neg)/pos/neg)
-    pvalue <- Rle(pnorm(runValue(toTest)),runLength(toTest))
+    # Logit of the given threshold
+    logitThreshold <- log(threshold/(1 - threshold))
+    toTest <- (logitThreshold - abs(log(pos/neg)))/sqrt((pos + neg)/pos/neg)
+    pvalue <- Rle(pnorm(runValue(toTest)), runLength(toTest))
     rm(toTest)
-    pvalue[(pos==0 | neg==0)] <- 0
-    if (minCov>0){
-        if (useCoverage){
-            pvalue[fromCoverage$MaxCoverage<minCov] <- 1
-        } else{
-            pvalue[(pos+neg)<minCov] <- 1
-        }
-    }
-    keptWin <- rep(TRUE,length(runValue(pvalue)))
-    keptWin[runValue(pvalue)>pvalueThreshold] <- FALSE
-    keptWin <- Rle(keptWin,runLength(pvalue))
-
-    keptProbaPosWin <- keptWin*((pos>neg)*((pos-neg)/pos)+(pos<neg)*errorRate)
-    keptProbaNegWin <- keptWin*((pos<neg)*((neg-pos)/neg)+(pos>neg)*errorRate)
-
-    if (length(mustKeepWin)>0){
-        if (length(mustKeepWin$Positive)>length(keptProbaPosWin)){ 
-            mustKeepWin$Positive <- mustKeepWin$
-                                            Positive[length(keptProbaPosWin)]
+    pvalue[(pos == 0 | neg == 0)] <- 0
+    if (minCov > 0) {
+        if (useCoverage) {
+            pvalue[fromCoverage$MaxCoverage < minCov] <- 1
         } else {
-            mustKeepWin$Positive <- c(mustKeepWin$Positive,
-                    rep(0,length(keptProbaPosWin)-length(mustKeepWin$Positive)))
+            pvalue[(pos + neg) < minCov] <- 1
         }
-        keptProbaPosWin <- mustKeepWin$Positive + 
-            (!mustKeepWin$Positive)*keptProbaPosWin
-        if (length(mustKeepWin$Negative)>length(keptProbaNegWin)){ 
-            mustKeepWin$Negative <- mustKeepWin$
-                                            Negative[length(keptProbaNegWin)]
+    }
+    keptWin <- rep(TRUE, length(runValue(pvalue)))
+    keptWin[runValue(pvalue) > pvalueThreshold] <- FALSE
+    keptWin <- Rle(keptWin, runLength(pvalue))
+    
+    keptProbaPosWin <- keptWin * ((pos > neg) * ((pos - neg)/pos) + 
+        (pos < neg) * errorRate)
+    keptProbaNegWin <- keptWin * ((pos < neg) * ((neg - pos)/neg) + 
+        (pos > neg) * errorRate)
+    keptProbaPosWin[pos==0] <- 0
+    keptProbaNegWin[neg==0] <- 0
+    
+    if (length(mustKeepWin) > 0) {
+        if (length(mustKeepWin$Pos) > length(keptProbaPosWin)) {
+            mustKeepWin$Pos <- mustKeepWin$Pos[length(keptProbaPosWin)]
         } else {
-            mustKeepWin$Negative <- c(mustKeepWin$Negative,
-                    rep(0,length(keptProbaNegWin)-length(mustKeepWin$Negative)))
+            mustKeepWin$Pos <- c(
+                mustKeepWin$Pos, 
+                rep(0, length(keptProbaPosWin) - length(mustKeepWin$Pos))
+                )
         }
-        keptProbaNegWin <- mustKeepWin$Negative + 
-            (!mustKeepWin$Negative)*keptProbaNegWin
+        keptProbaPosWin <- mustKeepWin$Pos + 
+            (!mustKeepWin$Pos) * keptProbaPosWin
+        if (length(mustKeepWin$Neg) > length(keptProbaNegWin)) {
+            mustKeepWin$Neg <- mustKeepWin$Neg[length(keptProbaNegWin)]
+        } else {
+            mustKeepWin$Neg <- c(
+                mustKeepWin$Neg, 
+                rep(0, length(keptProbaNegWin) - length(mustKeepWin$Neg))
+                )
+        }
+        keptProbaNegWin <- mustKeepWin$Neg + 
+            (!mustKeepWin$Neg) * keptProbaNegWin
     }
-    if (maxCov>0){
-        if (useCoverage){
-            keepMorePos <- (pos>neg)*(fromCoverage$MaxCoverage>=maxCov)
-            keepMoreNeg <- (pos<neg)*(fromCoverage$MaxCoverage>=maxCov)
+    if (maxCov > 0) {
+        if (useCoverage) {
+            keepMorePos <- (pos > neg) * (fromCoverage$MaxCoverage >= maxCov)
+            keepMoreNeg <- (pos < neg) * (fromCoverage$MaxCoverage >= maxCov)
+        } else {
+            keepMorePos <- (pos > neg) * (pos >= maxCov)
+            keepMoreNeg <- (pos < neg) * (neg >= maxCov)
         }
-        else{
-            keepMorePos <- (pos>neg)*(pos>=maxCov)
-            keepMoreNeg <- (pos<neg)*(neg>=maxCov)
-        }
-        keptProbaPosWin <- keepMorePos+(!keepMorePos)*keptProbaPosWin
-        keptProbaNegWin <- keepMoreNeg+(!keepMoreNeg)*keptProbaNegWin
+        keptProbaPosWin <- keepMorePos + (!keepMorePos) * keptProbaPosWin
+        keptProbaNegWin <- keepMoreNeg + (!keepMoreNeg) * keptProbaNegWin
     }
-    if (getWin){
-        return(list("Positive"=keptProbaPosWin,
-                    "Negative"=keptProbaNegWin,"Win"=Win))
-    } else{
-        return(list("Positive"=keptProbaPosWin,"Negative"=keptProbaNegWin))
+    if (getWin) {
+        return(list(Pos = keptProbaPosWin, Neg = keptProbaNegWin, Win = Win))
+    } else {
+        return(list(Pos = keptProbaPosWin, Neg = keptProbaNegWin))
     }
 }
 

@@ -4,22 +4,23 @@
 \alias{keptProbaWin}
 \title{get the probability of begin kept for each window}
 \usage{
-keptProbaWin(winPositiveAlignments, winNegativeAlignments, winWidth, winStep,
-logitThreshold, pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov,
-getWin, useCoverage = FALSE)
+keptProbaWin(winPosAlignments, winNegAlignments, winWidth, winStep, threshold,
+pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov, getWin,
+useCoverage = FALSE)
 }
 \arguments{
-\item{winPositiveAlignments}{an object returned by getWinOfAlignments for 
+\item{winPosAlignments}{an object returned by getWinOfAlignments for 
 positive reads}
 
-\item{winNegativeAlignments}{an object returned by getWinOfAlignments for 
+\item{winNegAlignments}{an object returned by getWinOfAlignments for 
 negative reads}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 
 \item{winStep}{the winStep length to sliding the window, 100 by default.}
 
-\item{logitThreshold}{logistic value of the threshold}
+\item{threshold}{the strand proportion threshold to test whether to keep a 
+window or not.}
 
 \item{pvalueThreshold}{threshold of p-value}
 

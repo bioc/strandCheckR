@@ -4,13 +4,13 @@
 \alias{calculateStrandNbReads}
 \title{Calculate the strand information based the number of reads}
 \usage{
-calculateStrandNbReads(winPositiveAlignments, winNegativeAlignments)
+calculateStrandNbReads(winPosAlignments, winNegAlignments)
 }
 \arguments{
-\item{winPositiveAlignments}{a list that has a `Win` field that contains 
+\item{winPosAlignments}{a list that has a `Win` field that contains 
 information of sliding windows overalapping positive reads}
 
-\item{winNegativeAlignments}{a a list that has a `Win` field that contains 
+\item{winNegAlignments}{a a list that has a `Win` field that contains 
 information of sliding windows overalapping negative reads}
 }
 \value{

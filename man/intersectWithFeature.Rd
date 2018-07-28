@@ -42,19 +42,19 @@ Intersect the windows with an annotation data frame to get
 features that overlap with each window
 }
 \examples{
-bamfilein = system.file("extdata","s2.sorted.bam",package = "strandCheckR")
+bamfilein = system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
 windows <- getWinFromBamFile(file = bamfilein)
 #add chr before chromosome names to be consistent with the annotation
-windows$Seq <- paste0("chr",windows$Seq) 
+windows$Seq <- paste0('chr',windows$Seq) 
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 annot <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
 # get the transcript names that overlap with each window
-windows <- intersectWithFeature(windows,annot,mcolsAnnot="tx_name") 
+windows <- intersectWithFeature(windows,annot,mcolsAnnot='tx_name') 
 # just want to know whether there's any transcript that 
 # overlaps with each window
-windows <- intersectWithFeature(windows,annot,overlapCol="OverlapTranscript")
-plotHist(windows,facets = "OverlapTranscript")
-plotWin(windows,facets = "OverlapTranscript")
+windows <- intersectWithFeature(windows,annot,overlapCol='OverlapTranscript')
+plotHist(windows,facets = 'OverlapTranscript')
+plotWin(windows,facets = 'OverlapTranscript')
 
 }
 \seealso{

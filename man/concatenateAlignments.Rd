@@ -4,14 +4,14 @@
 \alias{concatenateAlignments}
 \title{Concatenate a list of Alignments into One}
 \usage{
-concatenateAlignments(bam, sequenceInfo)
+concatenateAlignments(readInfo, seqInfo)
 }
 \arguments{
-\item{bam}{a list returned by \code{scanBam} function, each element 
+\item{readInfo}{a list returned by \code{scanBam} function, each element 
 correspond to a sequence, containing the information of strand, starting 
 position, cigar string, and eventually flag, qname}
 
-\item{sequenceInfo}{a data frame that contains some key information of the 
+\item{seqInfo}{a data frame that contains some key information of the 
 alignments}
 }
 \value{

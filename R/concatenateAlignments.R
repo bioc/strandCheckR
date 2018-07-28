@@ -8,49 +8,35 @@
 #' and concatenates them into a single set of alignments which may include 
 #' multiple sequences
 #' 
-#' @param bam a list returned by \code{scanBam} function, each element 
+#' @param readInfo a list returned by \code{scanBam} function, each element 
 #' correspond to a sequence, containing the information of strand, starting 
 #' position, cigar string, and eventually flag, qname
-#' @param sequenceInfo a data frame that contains some key information of the 
+#' @param seqInfo a data frame that contains some key information of the 
 #' alignments
 #' 
 #' @return the concatenated alignments of the input list
 #'
-concatenateAlignments <- function(bam, sequenceInfo){
-
-    nm <- names(bam[[1]])
-    chk <- vapply(bam, function(x){all(names(x) %in% nm)}, logical(1))
+concatenateAlignments <- function(readInfo, seqInfo)
+{   
+    nameScanWhat <- names(readInfo[[1]])
+    nField <- length(nameScanWhat)
+    nSeq <- length(readInfo)
+    chk <- vapply(readInfo, function(x){
+        all(names(x) %in% nameScanWhat)}, logical(1))
     stopifnot(all(chk))
-    stopifnot(nrow(sequenceInfo) == length(bam))
-
-    #initialize the concatenating alignments
-    nbTotalReads <- sum(sequenceInfo$NbOriginalReads)
-    concatAlignments <- vector("list",length(nm))
-    names(concatAlignments) <- nm
-    for (name in nm){
-    if (is.factor(bam[[1]][[name]])){
-        concatAlignments[[name]] <- factor(rep("*",nbTotalReads), 
-                                        levels = levels(bam[[1]][[name]]))
-    } else{
-        if (typeof(bam[[1]][[name]]) == "integer"){
-        concatAlignments[[name]] <- rep(0,nbTotalReads)
-        } 
-        if (typeof(bam[[1]][[name]]) == "character"){
-        concatAlignments[[name]] <- rep("",nbTotalReads)
-        }  
-    }
-    }
-    #concatenate the alignments
-    for (i in seq_along(bam)){
-    if (sequenceInfo$NbOriginalRead[i] > 0){
-        range <- sequenceInfo$FirstReadInPartition[i]:
-        sequenceInfo$LastReadInPartition[i]
-        concatAlignments$pos[range] <- bam[[i]]$pos + 
-        sequenceInfo$FirstBaseInPartition[i]
-        for (name in nm[nm!="pos"]){
-        concatAlignments[[name]][range] <- bam[[i]][[name]]
-        }
-    }
+    stopifnot(nrow(seqInfo) == nSeq)
+    
+    readInfo <- do.call(c, readInfo)
+    concatAlignments <- lapply(seq_along(nameScanWhat),function(n){
+        unlist(readInfo[seq(n,nSeq*nField,nField)], use.names = FALSE)})
+    names(concatAlignments) <- nameScanWhat
+    
+    # shift the position of each record after concatening the sequences
+    iPos <- which(nameScanWhat == "pos")
+    for (i in seq_along(seqInfo$Sequence)) {
+        range <- seqInfo$FirstReadInPart[i]:seqInfo$LastReadInPart[i]
+        concatAlignments$pos[range] <- 
+            readInfo[[iPos + (i - 1) * nField]] + seqInfo$FirstBaseInPart[i] - 1
     }
     return(concatAlignments)
 }

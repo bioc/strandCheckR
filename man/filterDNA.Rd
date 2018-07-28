@@ -5,7 +5,7 @@
 \title{Filter Double Strand Sequences from a Bam File}
 \usage{
 filterDNA(file, destination, statfile, sequences, mapqFilter = 0, paired,
-partitionSize = 1e+08, winWidth = 1000, winStep = 100, readProp = 0.5,
+yieldSize = 1e+06, winWidth = 1000, winStep = 100, readProp = 0.5,
 threshold = 0.7, pvalueThreshold = 0.05, useCoverage = FALSE,
 mustKeepRanges, getWin = FALSE, minCov = 0, maxCov = 0,
 errorRate = 0.01)
@@ -28,8 +28,9 @@ If missing, the entire bam file will be read.}
 reads. If missing, 100 thousands first reads will be inspected to test if
 the input bam file in paired end or single end.}
 
-\item{partitionSize}{by default is 1e8, i.e. the bam file is read by block of
-sequences such that the total length of each block is at least 1e8}
+\item{yieldSize}{by default is 1e6, i.e. the bam file is read by block of
+records whose size is defined by this paramter. It is used to pass to same
+paramter of the scanBam function.}
 
 \item{winWidth}{the length of the sliding window, 1000 by default.}
 
@@ -108,8 +109,8 @@ probability of keeping an alignment is the maximum probability defined by
 all windows that contain it.
 }
 \examples{
-file <- system.file("extdata","s2.sorted.bam",package = "strandCheckR")
-filterDNA(file,sequences="10",destination="out.bam")
+file <- system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
+filterDNA(file,sequences='10',destination='out.bam')
 
 }
 \seealso{
