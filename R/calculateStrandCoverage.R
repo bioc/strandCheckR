@@ -53,8 +53,10 @@ calculateStrandCoverage <- function(
         covNeg <- Rle(sum(covNeg))
         
         # calculate the max coverage in each window
-        maxCoverage <- Rle(max(Views(winPosAlignments$Coverage + 
-            winNegAlignments$Coverage, start = st, end = end)))
+        maxCoverage <- Rle(max(Views(
+            winPosAlignments$Coverage + winNegAlignments$Coverage, 
+            start = st, end = end
+            )))
     }
     return(list(CovPos = covPos, CovNeg = covNeg, MaxCoverage = maxCoverage))
 }

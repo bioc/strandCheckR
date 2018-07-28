@@ -47,7 +47,7 @@ summarizeHist <- function(
     allows_group_by <- setdiff(colnames(windows), c(reqWinCols, "Start", "End"))
     group_by <- intersect(group_by, allows_group_by)
     if (length(group_by) > 0){
-        cat("Windows are grouped by",group_by,"\n")
+        message("Windows are grouped by",group_by,"\n")
     }
     # Calculate the proportion of reads for the + strand, based on either 
     # coverage or the number of reads
@@ -103,7 +103,7 @@ summarizeHist <- function(
     # Convert the numbers of windows into proportions keeping R1 & R2 separate
     normalize_by <- intersect(normalize_by, group_by)
     if (length(normalize_by) > 0) {
-        cat("Windows are normalized by", normalize_by,"\n")
+        message("Windows are normalized by", normalize_by,"\n")
         windows <- lapply(
             split(windows, f = windows[, normalize_by]), 
             function(x) {
