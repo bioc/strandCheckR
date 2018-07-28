@@ -135,7 +135,7 @@ plotHist(
     )
 ```
 
-In this example, file *s2.sorted.bam* is heavily contaminated with double 
+In this example, file *s2.sorted.bam* seems to be contaminated with double 
 strand DNA, while file *s1.sorted.bam* is cleaner. By default, the windows are 
 splitted in to 4 coverage groups *<10*, *10-100*, *100-1000*, and *>1000*.
 It can be set via option *split*.
