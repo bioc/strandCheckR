@@ -9,8 +9,9 @@ Applicable to check the strandedness of a stranded RNA-Seq experiment and to fil
 # Installation
 
 ```
-source("https://bioconductor.org/biocLite.R")
-biocLite(c("devtools", "BiocStyle", "GenomeInfoDb", "GenomicAlignments", "GenomicRanges", "IRanges", "Rsamtools", "S4Vectors", "BiocGenerics", "TxDb.Hsapiens.UCSC.hg38.knownGene"))
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install(c("devtools", "BiocStyle", "GenomeInfoDb", "GenomicAlignments", "GenomicRanges", "IRanges", "Rsamtools", "S4Vectors", "BiocGenerics", "TxDb.Hsapiens.UCSC.hg38.knownGene"))
 devtools::install_github('UofABioinformaticsHub/strandCheckR', build_vignettes = TRUE)
 library(strandCheckR)
 ```
