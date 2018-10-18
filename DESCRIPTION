@@ -1,10 +1,10 @@
 Package: strandCheckR
 Type: Package
 Title: Calculate strandness information of a bam file
-Version: 0.99.14
+Version: 0.99.15
 Authors@R: c(
-    person("Steve", "Pederson", , "stephen.pederson@adelaide.edu.au", c("aut")),
-    person("Thu-Hien", "To", , "tothuhien@gmail.com", c("aut", "cre"))
+    person("Thu-Hien", "To", , "tothuhien@gmail.com", c("aut", "cre")),
+    person("Steve", "Pederson", , "stephen.pederson@adelaide.edu.au", c("aut"))
     )
 Maintainer: Thu-Hien To <tothuhien@gmail.com>
 Description: This package aims to quantify and remove putative double strand DNA from a strand-specific RNA sample. There are also options and methods to plot the positive/negative proportions of all sliding windows, which allow users to have an idea of how much the sample was contaminated and the appropriate threshold to be used for filtering.
