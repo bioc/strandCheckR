@@ -1,2 +1,4 @@
-Changes in version 0.99.16 
+# Changes in version 0.99.17
++ add ImmunoOncology to biocViews in DESCRIPTION file
+# Version 0.99.16 
 + Submitted version to Bioconductor
