@@ -28,7 +28,7 @@ Imports:
   TxDb.Hsapiens.UCSC.hg38.knownGene,
   methods,
   stringr
-biocViews: RNASeq, Alignment, QualityControl, Coverage
+biocViews: RNASeq, Alignment, QualityControl, Coverage, ImmunoOncology
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, testthat
