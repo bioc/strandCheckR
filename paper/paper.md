@@ -1,22 +1,23 @@
 ---
-title: "strandCheckR: An R package for quantifying and removing double strand sequences for strand-specific RNA-seq"
-author:
--   name: Thu-Hien To
-    affiliation: Bioinformatics Hub - University of Adelaide
-    email: tothuhien@gmail.com
--   name: Stephen M Pederson
-    affiliation: Bioinformatics Hub - University of Adelaide
-    email: stephen.pederson@adelaide.edu.au
-date: "14 December 2018"
+title: 'strandCheckR: An R package for quantifying and removing double strand sequences for strand-specific RNA-seq'
+tags:
+  - R
+  - Bioinformatics
+  - RNA-seq
+  - strand specific
+  - DNA contamination
+authors:
+  - name: Thu-Hien To
+    orcid: 0000-0003-2902-3655
+    affiliation: 1 
+  - name: Stephen M Pederson
+    orcid: 0000-0001-8197-3303
+    affiliation: 1
+affiliations:
+ - name: Bioinformatics Hub - University of Adelaide
+   index: 1
+date: 14 December 2018
 bibliography: paper.bib
-keywords:
-- R
-- Bioinformatics
-- RNA-seq
-- strand specific
-- DNA contamination
-output:
-    BiocStyle::html_document
 ---
 
 # Summary
