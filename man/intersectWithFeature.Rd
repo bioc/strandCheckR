@@ -5,7 +5,7 @@
 \title{Intersect the windows data frame with an annotation data frame}
 \usage{
 intersectWithFeature(windows, annotation, getFeatureInfo = FALSE,
-overlapCol = "OverlapFeature", mcolsAnnot, collapse, ...)
+  overlapCol = "OverlapFeature", mcolsAnnot, collapse, ...)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 

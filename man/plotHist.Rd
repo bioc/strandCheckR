@@ -5,8 +5,8 @@
 \title{Plot the histogram of positive proportions}
 \usage{
 plotHist(windows, save = FALSE, file = "hist.pdf", group_by = NULL,
-normalize_by = NULL, split = c(10, 100, 1000), breaks = 100,
-useCoverage = FALSE, heatmap = FALSE, ...)
+  normalize_by = NULL, split = c(10, 100, 1000), breaks = 100,
+  useCoverage = FALSE, heatmap = FALSE, ...)
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 

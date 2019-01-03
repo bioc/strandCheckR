@@ -4,8 +4,8 @@
 \alias{calculateStrandCoverage}
 \title{Calculate the strand information based on coverage}
 \usage{
-calculateStrandCoverage(winPosAlignments, winNegAlignments, winWidth = 1000,
-winStep = 100)
+calculateStrandCoverage(winPosAlignments, winNegAlignments,
+  winWidth = 1000, winStep = 100)
 }
 \arguments{
 \item{winPosAlignments}{a list that has a `Coverage` field containing 

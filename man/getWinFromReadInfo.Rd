@@ -5,7 +5,7 @@
 \title{get the strand information of all windows from read information}
 \usage{
 getWinFromReadInfo(readInfo, winWidth = 1000, winStep = 100,
-readProp = 0.5, subset = NULL)
+  readProp = 0.5, subset = NULL)
 }
 \arguments{
 \item{readInfo}{a list contains read information returned by 

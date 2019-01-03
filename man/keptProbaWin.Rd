@@ -4,9 +4,9 @@
 \alias{keptProbaWin}
 \title{get the probability of begin kept for each window}
 \usage{
-keptProbaWin(winPosAlignments, winNegAlignments, winWidth, winStep, threshold,
-pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov, getWin,
-useCoverage = FALSE)
+keptProbaWin(winPosAlignments, winNegAlignments, winWidth, winStep,
+  threshold, pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov,
+  getWin, useCoverage = FALSE)
 }
 \arguments{
 \item{winPosAlignments}{an object returned by getWinOfAlignments for 
