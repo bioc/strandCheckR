@@ -4,8 +4,8 @@
 #' 
 #' @param readInfo a list contains the read information of one sequence
 #' @param strand the considering strand
-#' @param winWidth the window size
-#' @param winStep the window winStep
+#' @param winWidth the width of the sliding window, 1000 by default.
+#' @param winStep the step length to sliding the window, 100 by default.
 #' @param readProp a read is considered to be included in a window if and only 
 #' if at least \code{readProp} 
 #' percent of it is in the window.

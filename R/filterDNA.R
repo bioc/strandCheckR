@@ -4,7 +4,7 @@
 #' @param file the input bam file to be filterd. Your bamfile should be sorted
 #' and have an index file located at the same path.
 #' @param destination The file path where the filtered output will be written
-#' @param statfile the file to write the summary of the results
+#' @param statFile the file to write the summary of the results
 #' @param sequences the list of sequences to be filtered. 
 #' @param mapqFilter every read that has mapping quality below \code{mapqFilter}
 #' will be removed before any analysis
@@ -91,7 +91,7 @@
 #' obtained by the function \code{getWinFromBamFile}
 #' @export
 filterDNA <- function(
-    file, destination, statfile, sequences, mapqFilter = 0, paired, 
+    file, destination, statFile, sequences, mapqFilter = 0, paired, 
     yieldSize = 1e+06, winWidth = 1000, winStep = 100, readProp = 0.5, 
     threshold = 0.7, pvalueThreshold = 0.05, useCoverage = FALSE, 
     mustKeepRanges, getWin = FALSE, minCov = 0, maxCov = 0, errorRate = 0.01
@@ -153,13 +153,13 @@ filterDNA <- function(
     
     
     # Define the file to write the summary of the results
-    if (missing(statfile)) {
-        statfile <- "out.stat"
+    if (missing(statFile)) {
+        statFile <- "out.stat"
     } else {
-        stopifnot(file.exists(dirname(statfile)))
+        stopifnot(file.exists(dirname(statFile)))
     }
-    message("Summary will be written to ", statfile)
-    file.create(statfile)
+    message("Summary will be written to ", statFile)
+    file.create(statFile)
     
     # Get the sequence list of the ranges which must be kept
     if (!missing(mustKeepRanges)) {
@@ -340,7 +340,7 @@ filterDNA <- function(
             cat(
                 "Sequences ",readSeq,", number of reads: ", 
                 sum(seqInfo$NbReads[idP]),", number of kept reads: ", 
-                length(keptRecords),"\n", file=statfile, append = TRUE
+                length(keptRecords),"\n", file=statFile, append = TRUE
                 )
             rm(keptRecords)
         }
@@ -363,18 +363,18 @@ filterDNA <- function(
                 )
             )
         )
-    cat("Summary:\n", file = statfile, append = TRUE)
+    cat("Summary:\n", file = statFile, append = TRUE)
     nbKepReads <- vapply(toKeepRecords,sum,integer(1))
     cat(
         "Number of original reads: ", sum(seqInfo$NbReads),
         ", number of kept reads: ", sum(nbKepReads), ", removal proportion: ",
         (sum(seqInfo$NbReads)-sum(nbKepReads))/sum(seqInfo$NbReads), "\n", 
-        file = statfile, append = TRUE
+        file = statFile, append = TRUE
         )
     endTime <- proc.time()
     cat(
         "Total elapsed time: ", (endTime - startTime)[[3]]/60, " minutes\n", 
-        file = statfile, append = TRUE
+        file = statFile, append = TRUE
         )
     if (getWin) {
         allWin <- do.call(rbind, allWin)

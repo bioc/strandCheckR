@@ -11,12 +11,12 @@
 #' window or not. 
 #' @param pvalueThreshold threshold of p-value
 #' @param minCov In the case that \code{useCoverage=FALSE}, if a window has 
-#' least than \code{minCov} reads, then it will be rejected regardless the 
+#' less than \code{minCov} reads, then it will be rejected regardless of the 
 #' strand proportion. 
 #' For the case that \code{useCoverage=TRUE}, if a window has max coverage
 #' least than \code{minCov}, then it will be rejected. 0 by default
 #' @param maxCov In the case that \code{useCoverage=FALSE}, if a window has 
-#' more than \code{maxCov} reads, then it will be kept regardless the strand 
+#' more than \code{maxCov} reads, then it will be kept regardless of the strand 
 #' proportion. 
 #' For the case that \code{useCoverage=TRUE}, if a window has max coverage 
 #' more than \code{maxCov}, then it will be kept. If 0 then it doesn't have 

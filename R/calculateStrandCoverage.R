@@ -1,7 +1,7 @@
 #' @title Calculate the strand information based on coverage
 #'
 #' @description Calculate the coverage coming from '+'/'-' reads 
-#' in all sliding wndows
+#' in all sliding windows
 #' 
 #' @param winPosAlignments a list that has a `Coverage` field containing 
 #' coverage coming from positive reads

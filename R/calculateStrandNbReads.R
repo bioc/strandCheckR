@@ -1,4 +1,4 @@
-#' @title Calculate the strand information based the number of reads
+#' @title Calculate the strand information based on the number of reads
 #'
 #' @description Calculate the number of reads coming from '+'/'-' strands in 
 #' all sliding wndows
