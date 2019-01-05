@@ -11,8 +11,8 @@
 #' 
 #' @param x an IRanges object containing the start and end position of 
 #' each read fragment
-#' @param winWidth The width of each window
-#' @param winStep The step size for sliding the window
+#' @param winWidth the width of the sliding window, 1000 by default.
+#' @param winStep the step length to sliding the window, 100 by default.
 #' @param readProp A read is considered to be included in a window if at least 
 #' \code{readProp} of it is in the window. Specified as a proportion.
 #' @param maxWin The maximum window ID

@@ -6,8 +6,8 @@
 #' @param x a GRanges object
 #' @param seqInfo a data frame that contains some key information of 
 #' the alignments
-#' @param winWidth The width of each window
-#' @param winStep The step size for sliding the window
+#' @param winWidth the width of the sliding window, 1000 by default.
+#' @param winStep the step length to sliding the window, 100 by default.
 #' @return A list of two logical vectors (for positive and negative strand) 
 #' defining which windows that overlap the given Granges objects
 #' 
