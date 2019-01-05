@@ -4,7 +4,7 @@
 \alias{filterDNA}
 \title{Filter Double Strand Sequences from a Bam File}
 \usage{
-filterDNA(file, destination, statfile, sequences, mapqFilter = 0, paired,
+filterDNA(file, destination, statFile, sequences, mapqFilter = 0, paired,
   yieldSize = 1e+06, winWidth = 1000, winStep = 100,
   readProp = 0.5, threshold = 0.7, pvalueThreshold = 0.05,
   useCoverage = FALSE, mustKeepRanges, getWin = FALSE, minCov = 0,
@@ -16,7 +16,7 @@ and have an index file located at the same path.}
 
 \item{destination}{The file path where the filtered output will be written}
 
-\item{statfile}{the file to write the summary of the results}
+\item{statFile}{the file to write the summary of the results}
 
 \item{sequences}{the list of sequences to be filtered.}
 

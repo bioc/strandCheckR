@@ -12,9 +12,9 @@ getWinFromGranges(x, seqInfo, winWidth = 1000, winStep = 100)
 \item{seqInfo}{a data frame that contains some key information of 
 the alignments}
 
-\item{winWidth}{The width of each window}
+\item{winWidth}{the width of the sliding window, 1000 by default.}
 
-\item{winStep}{The step size for sliding the window}
+\item{winStep}{the step length to sliding the window, 100 by default.}
 }
 \value{
 A list of two logical vectors (for positive and negative strand) 

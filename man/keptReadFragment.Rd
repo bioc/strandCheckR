@@ -2,7 +2,7 @@
 % Please edit documentation in R/keptReadFragment.R
 \name{keptReadFragment}
 \alias{keptReadFragment}
-\title{calculate the read fragments to be kept}
+\title{Calculate the read fragments to be kept}
 \usage{
 keptReadFragment(fragments, keptProbaW)
 }

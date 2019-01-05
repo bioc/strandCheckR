@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculateStrandNbReads.R
 \name{calculateStrandNbReads}
 \alias{calculateStrandNbReads}
-\title{Calculate the strand information based the number of reads}
+\title{Calculate the strand information based on the number of reads}
 \usage{
 calculateStrandNbReads(winPosAlignments, winNegAlignments)
 }

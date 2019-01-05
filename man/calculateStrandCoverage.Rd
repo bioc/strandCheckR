@@ -24,5 +24,5 @@ the input positive/negative windows
 }
 \description{
 Calculate the coverage coming from '+'/'-' reads 
-in all sliding wndows
+in all sliding windows
 }

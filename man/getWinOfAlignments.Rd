@@ -12,9 +12,9 @@ getWinOfAlignments(readInfo, strand, winWidth, winStep, readProp,
 
 \item{strand}{the considering strand}
 
-\item{winWidth}{the window size}
+\item{winWidth}{the width of the sliding window, 1000 by default.}
 
-\item{winStep}{the window winStep}
+\item{winStep}{the step length to sliding the window, 100 by default.}
 
 \item{readProp}{a read is considered to be included in a window if and only 
 if at least \code{readProp} 

@@ -11,9 +11,9 @@ getWinFromIRanges(x, winWidth = 1000L, winStep = 100L,
 \item{x}{an IRanges object containing the start and end position of 
 each read fragment}
 
-\item{winWidth}{The width of each window}
+\item{winWidth}{the width of the sliding window, 1000 by default.}
 
-\item{winStep}{The step size for sliding the window}
+\item{winStep}{the step length to sliding the window, 100 by default.}
 
 \item{readProp}{A read is considered to be included in a window if at least 
 \code{readProp} of it is in the window. Specified as a proportion.}
