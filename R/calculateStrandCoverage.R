@@ -18,7 +18,7 @@
 
 
 calculateStrandCoverage <- function(
-    winPosAlignments, winNegAlignments, winWidth = 1000, winStep = 100
+    winPosAlignments, winNegAlignments, winWidth = 1000L, winStep = 100L
     ) 
 {
     # make sure winPosAlignments$Coverage and winNegAlignments$Coverage

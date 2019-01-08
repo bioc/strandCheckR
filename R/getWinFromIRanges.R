@@ -1,16 +1,16 @@
-#' @title Get the Ranges of Sliding Windows from an IRanges object
+#' @title Get the Ranges of Sliding Windows that overlap an IRanges object
 #' 
-#' @description Get the Ranges of Sliding Windows from an IRanges object
+#' @description Get the Ranges of Sliding Windows that overlap an IRanges 
+#' object. 
 #' 
 #' @details
 #' This finds the windows that overlap each fragment of a read and returns a 
-#' range containing
-#' this list of windows for each read fragment.
+#' range containing this list of windows for each read fragment.
 #' This allows the total number of read fragments within a window to be 
 #' calculated simply using \link{coverage}.
 #' 
 #' @param x an IRanges object containing the start and end position of 
-#' each read fragment
+#' each read fragment. 
 #' @param winWidth the width of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
 #' @param readProp A read is considered to be included in a window if at least 

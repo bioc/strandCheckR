@@ -15,10 +15,9 @@
 #' @param breaks an integer giving the number of bins for the histogram
 #' @param useCoverage if TRUE then plot the coverage strand information, 
 #' otherwise plot the number of reads strand information. FALSE by default
-#' @param group_by the column names of windows that will be used to group 
-#' the data
-#' @param normalize_by the column names of windows that will be used to 
-#' normalize the read count or read coverage into proportion
+#' @param groupBy the columns that will be used to split the data.
+#' @param normalizeBy the columns that will be used to normalize the read 
+#' count or read coverage into a proportion.
 #' @param heatmap if TRUE, then use heat map to plot the histogram, otherwise 
 #' use barplot. FALSE by default.
 #' @param ... used to pass parameters to facet_wrap
@@ -44,21 +43,21 @@
 #' @importFrom dplyr filter
 #' @export
 plotHist <- function(
-    windows, save = FALSE, file = "hist.pdf", group_by = NULL, 
-    normalize_by = NULL, split = c(10, 100, 1000), breaks = 100, 
+    windows, save = FALSE, file = "hist.pdf", groupBy = NULL, 
+    normalizeBy = NULL, split = c(10, 100, 1000), breaks = 100, 
     useCoverage = FALSE, heatmap = FALSE, ...
     ) 
 {
     histWin <- summarizeHist(
         windows, split = split, breaks = breaks, useCoverage = useCoverage, 
-        group_by = group_by, normalize_by = normalize_by
+        groupBy = groupBy, normalizeBy = normalizeBy
         )
     # The initial checks for appropriate input
     reqWinCols <- c("PosProp", "ReadCountProp")
     stopifnot(all(reqWinCols %in% colnames(histWin)))
     stopifnot(is.logical(save))
     allows_facet_wrap <- setdiff(colnames(histWin), c(reqWinCols, "Coverage"))
-    group_by <- intersect(group_by, allows_facet_wrap)
+    groupBy <- intersect(groupBy, allows_facet_wrap)
     
     # Make the plot
     if (heatmap == FALSE) {
@@ -74,12 +73,12 @@ plotHist <- function(
                 ) + 
             theme_bw() + 
             theme(plot.margin = unit(c(0.02, 0.04, 0.03, 0.02), "npc"))
-        if (length(group_by) > 0) {
+        if (length(groupBy) > 0) {
             # Get any facet arguments from dotArgs that have been set manually
             dotArgs <- list(...)
             allowed <- names(formals(facet_wrap))
             keepArgs <- names(dotArgs) %in% setdiff(allowed, "facets")
-            argList <- c(list(facets = group_by), dotArgs[keepArgs])
+            argList <- c(list(facets = groupBy), dotArgs[keepArgs])
             myFacets <- do.call(facet_wrap, argList)
             g <- g + myFacets
         }
@@ -89,13 +88,13 @@ plotHist <- function(
         if (!("File" %in% colnames(histWin))) {
             histWin$File <- "File"
         }
-        group_by <- group_by[group_by != "File"]
-        if (length(group_by) > 0) {
+        groupBy <- groupBy[groupBy != "File"]
+        if (length(groupBy) > 0) {
             # Get any facet arguments from dotArgs that have been set manually
             dotArgs <- list(...)
             allowed <- names(formals(facet_wrap))
             keepArgs <- names(dotArgs) %in% setdiff(allowed, "facets")
-            argList <- c(list(facets = group_by), dotArgs[keepArgs])
+            argList <- c(list(facets = groupBy), dotArgs[keepArgs])
             myFacets <- do.call(facet_wrap, argList)
         }
         for (i in seq_along(cov)) {
@@ -111,7 +110,7 @@ plotHist <- function(
                 scale_fill_gradient(
                     low = "white", high = "red", na.value = "white"
                     )
-            if (length(group_by) > 0) {
+            if (length(groupBy) > 0) {
                 g[[i]] <- g[[i]] + myFacets
             }
             if (length(cov) > 1) {

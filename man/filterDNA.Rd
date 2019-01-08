@@ -5,7 +5,7 @@
 \title{Filter Double Strand Sequences from a Bam File}
 \usage{
 filterDNA(file, destination, statFile, sequences, mapqFilter = 0, paired,
-  yieldSize = 1e+06, winWidth = 1000, winStep = 100,
+  yieldSize = 1e+06, winWidth = 1000L, winStep = 100L,
   readProp = 0.5, threshold = 0.7, pvalueThreshold = 0.05,
   useCoverage = FALSE, mustKeepRanges, getWin = FALSE, minCov = 0,
   maxCov = 0, errorRate = 0.01)

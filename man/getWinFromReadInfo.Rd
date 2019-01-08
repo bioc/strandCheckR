@@ -4,7 +4,7 @@
 \alias{getWinFromReadInfo}
 \title{get the strand information of all windows from read information}
 \usage{
-getWinFromReadInfo(readInfo, winWidth = 1000, winStep = 100,
+getWinFromReadInfo(readInfo, winWidth = 1000L, winStep = 100L,
   readProp = 0.5, subset = NULL)
 }
 \arguments{

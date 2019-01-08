@@ -13,9 +13,9 @@
 #' @param breaks an integer giving the number of bins for the histogram
 #' @param useCoverage if TRUE then plot the coverage strand information, 
 #' otherwise plot the number of reads strand information. FALSE by default
-#' @param group_by the column names of windows that will be used to group 
+#' @param groupBy the column names of windows that will be used to group 
 #' the data
-#' @param normalize_by the column names of windows that will be used to 
+#' @param normalizeBy the column names of windows that will be used to 
 #' normalize the read count or read coverage into proportion
 #' 
 #' @return a dataframe object
@@ -28,8 +28,8 @@
 #' @importFrom reshape2 dcast melt
 
 summarizeHist <- function(
-    windows, split = c(10, 100, 1000), breaks = 100, useCoverage = FALSE, 
-    group_by = NULL, normalize_by = NULL
+    windows, split = c(10L, 100L, 1000L), breaks = 100L, useCoverage = FALSE, 
+    groupBy = NULL, normalizeBy = NULL
     ) 
 {   
     # The initial checks for appropriate input
@@ -44,21 +44,21 @@ summarizeHist <- function(
     readType <- ifelse("Type" %in% colnames(windows), "PE", "SE")
     if (readType == "SE") windows$Type <- "R1"
     
-    allows_group_by <- setdiff(colnames(windows), c(reqWinCols, "Start", "End"))
-    group_by <- intersect(group_by, allows_group_by)
-    if (length(group_by) > 0){
-        message("Windows are grouped by",group_by,"\n")
+    allows_groupBy <- setdiff(colnames(windows), c(reqWinCols, "Start", "End"))
+    groupBy <- intersect(groupBy, allows_groupBy)
+    if (length(groupBy) > 0){
+        message("Windows are grouped by",groupBy,"\n")
     }
     # Calculate the proportion of reads for the + strand, based on either 
     # coverage or the number of reads
     keepCols <- c("Nb", "Cov")[useCoverage + 1]
     windows <- as.data.frame(windows)
     windows <- dplyr::select(
-        windows, one_of(c("MaxCoverage", group_by)), starts_with(keepCols)
+        windows, one_of(c("MaxCoverage", groupBy)), starts_with(keepCols)
         )
     names(windows) <- str_extract(
         names(windows), 
-        paste0(c("MaxCoverage", "Pos", "Neg", group_by), collapse = "|")
+        paste0(c("MaxCoverage", "Pos", "Neg", groupBy), collapse = "|")
         )
     if (useCoverage == FALSE) windows <- filter(windows, Pos + Neg > 0)
     windows$PosProp <- windows$Pos/(windows$Pos + windows$Neg)
@@ -89,23 +89,23 @@ summarizeHist <- function(
         )
     # Tally the bins by coverage
     formula <- paste0(
-        paste0(c(group_by, "PosProp"), collapse = "+"), " ~ group"
+        paste0(c(groupBy, "PosProp"), collapse = "+"), " ~ group"
         )
     windows <- dcast(
         windows, formula, fun.aggregate = length, value.var = "PosProp"
         )
     # Melt for easy plotting with ggplot2
     windows <- melt(
-        windows, id.vars = c(group_by, "PosProp"), variable.name = "Coverage", 
+        windows, id.vars = c(groupBy, "PosProp"), variable.name = "Coverage", 
         value.name = "ReadCountProp"
         )
     windows$PosProp <- (as.integer(windows$PosProp) - 1)/breaks
     # Convert the numbers of windows into proportions keeping R1 & R2 separate
-    normalize_by <- intersect(normalize_by, group_by)
-    if (length(normalize_by) > 0) {
-        message("Windows are normalized by", normalize_by,"\n")
+    normalizeBy <- intersect(normalizeBy, groupBy)
+    if (length(normalizeBy) > 0) {
+        message("Windows are normalized by", normalizeBy,"\n")
         windows <- lapply(
-            split(windows, f = windows[, normalize_by]), 
+            split(windows, f = windows[, normalizeBy]), 
             function(x) {
                 x$ReadCountProp <- x$ReadCountProp/sum(x$ReadCountProp)
                 x

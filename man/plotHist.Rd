@@ -4,8 +4,8 @@
 \alias{plotHist}
 \title{Plot the histogram of positive proportions}
 \usage{
-plotHist(windows, save = FALSE, file = "hist.pdf", group_by = NULL,
-  normalize_by = NULL, split = c(10, 100, 1000), breaks = 100,
+plotHist(windows, save = FALSE, file = "hist.pdf", groupBy = NULL,
+  normalizeBy = NULL, split = c(10, 100, 1000), breaks = 100,
   useCoverage = FALSE, heatmap = FALSE, ...)
 }
 \arguments{
@@ -17,11 +17,10 @@ windows. Windows can be obtained using the function \code{getWinFromBamFile}.}
 
 \item{file}{the file name to save to plot}
 
-\item{group_by}{the column names of windows that will be used to group 
-the data}
+\item{groupBy}{the columns that will be used to split the data.}
 
-\item{normalize_by}{the column names of windows that will be used to 
-normalize the read count or read coverage into proportion}
+\item{normalizeBy}{the columns that will be used to normalize the read 
+count or read coverage into a proportion.}
 
 \item{split}{an integer vector that specifies how you want to partition the 
 windows based on the coverage. By default \code{split} = c(10,100,1000), 

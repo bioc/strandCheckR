@@ -3,9 +3,13 @@
 #' bam files
 #' @param files the input bam files. Your bamfiles should be sorted and have 
 #' their index files located at the same path.
-#' @param sequences the list of sequences to be read
+#' @param sequences is used to subset the reads to be read from the bam file. 
+#' They correspond to chromosomes/scaffolds of the reference genome to which 
+#' the reads were mapped. If absent then the method will read the whole input 
+#' bam files, ortherwise it will read only the reads mapped to the given 
+#' sequences.
 #' @param mapqFilter every read that has mapping quality below 
-#' \code{mapqFilter} will be removed before any analysis
+#' \code{mapqFilter} will be removed before any analysis.
 #' @param yieldSize by default is 1e6, i.e. the bam file is read by block of
 #' records whose size is defined by this paramter. It is used to pass to same
 #' paramter of the scanBam function.
@@ -19,7 +23,29 @@
 #' if the input bam file in paired end or single end.
 #' 
 #' @return a DataFrame object containing the number of positive/negative reads 
-#' and coverage of each window sliding across the bam file
+#' and coverage of each window sliding across the bam file.
+#' 
+#' @details The return DataFrame has 10 columns:
+#' 
+#' Type: can be either SE if the input file contains single-end reads,
+#' or R1/R2 if the input file contains paired-end reads.
+#' 
+#' Seq: the reference sequence (chromosome/scaffold) that the reads were mapped
+#' to.
+#' 
+#' Start: the start position of the sliding window.
+#' 
+#' End: the end position of the sliding window.
+#' 
+#' NbPos/NbNeg: number of positive/negative reads that overlap the sliding 
+#' window.
+#' 
+#' CovPos/CovNeg: number of bases coming from positive/negative reads that were 
+#' mapped in the sliding window.
+#' 
+#' MaxCoverage: the maximum coverage of the sliding window.
+#' 
+#' File: the name of the input file.
 #' 
 #' @seealso \code{\link{filterDNA}}, \code{\link{plotHist}}, 
 #' \code{\link{plotWin}}
@@ -37,8 +63,8 @@
 #' win
 
 getWinFromBamFile <- function(
-    files, sequences, mapqFilter = 0, yieldSize = 1e+06, winWidth = 1000, 
-    winStep = 100, readProp = 0.5, paired
+    files, sequences, mapqFilter = 0, yieldSize = 1e+06, winWidth = 1000L, 
+    winStep = 100L, readProp = 0.5, paired
     ) 
 {
     # Check the input is a BamFileList. Convert if necessary

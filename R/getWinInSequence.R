@@ -7,7 +7,7 @@
 # #' @param winWidth the length of sliding window 
 # #' @param winStep the step
 # #' length to sliding the window 
-getWinInSequence <- function(Win, seqInfo, winWidth = 1000, winStep = 100) 
+getWinInSequence <- function(Win, seqInfo, winWidth = 1000L, winStep = 100L) 
 {
     # Check the correct columns are in the seqInfo df
     reqCols <- c("FirstBaseInPart", "LastBaseInPart")

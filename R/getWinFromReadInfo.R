@@ -15,7 +15,7 @@
 #' @seealso \code{\link{filterDNA}}, \code{\link{getWinFromBamFile}}
 
 getWinFromReadInfo <- function(
-    readInfo, winWidth = 1000, winStep = 100, readProp = 0.5, subset = NULL
+    readInfo, winWidth = 1000L, winStep = 100L, readProp = 0.5, subset = NULL
     ) 
 {
     winPosAlignments <- getWinOfAlignments(

@@ -130,8 +130,8 @@ sample was contaminated by DNA.
 
 ```{r plotHist, eval=TRUE, message=FALSE,warning=FALSE}
 plotHist(
-    windows = win, group_by = c("File","OverlapTranscript"), 
-    normalize_by = "File", scales = "free_y"
+    windows = win, groupBy = c("File","OverlapTranscript"), 
+    normalizeBy = "File", scales = "free_y"
     )
 ```
 
@@ -144,7 +144,7 @@ For paired-end data, we can group the Data Frame by read type:
 
 ```{r plotHistPaired, eval=TRUE,message=FALSE,warning=FALSE}
 plotHist(
-    windows = winP, group_by = "Type", normalize_by = "Type", scales = "free_y"
+    windows = winP, groupBy = "Type", normalizeBy = "Type", scales = "free_y"
     )
 ```
 
@@ -154,8 +154,8 @@ same plot.
 
 ```{r heatMap, eval=TRUE, message = FALSE, warning=FALSE,}
 plotHist(
-    windows = win, group_by = c("File","OverlapTranscript"), 
-    normalize_by = "File", heatmap = TRUE
+    windows = win, groupBy = c("File","OverlapTranscript"), 
+    normalizeBy = "File", heatmap = TRUE
     )
 ```
 
@@ -169,7 +169,7 @@ threshold line on this plot. This can be used to give guidance as to the best
 threshold to choose when filtering windows.
 
 ```{r plotwin,eval=TRUE,message=FALSE,warning=FALSE}
-plotWin(win, group_by = "File")
+plotWin(win, groupBy = "File")
 ```
 
 # Filter bam files
@@ -196,7 +196,7 @@ Plotting the windows before and after filering:
 win2$File <- basename(as.character(win2$File))
 win2$File <- factor(win2$File,levels = c("s2.sorted.bam","s2.filter.bam"))
 library(ggplot2)
-plotHist(win2,group_by = "File",normalize_by = "File",scales = "free_y") +
+plotHist(win2,groupBy = "File",normalizeBy = "File",scales = "free_y") +
     ggtitle("Histogram of positive proportions over all sliding windows before 
             and after filtering reads coming from double strand DNA")
 ```
