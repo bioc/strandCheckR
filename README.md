@@ -3,7 +3,9 @@
 strandCheckR
 ============
 
-This package aims to check the strandeness of the reads in a bam file.
+This package aims to check the strandeness of the reads in a bam file, 
+enabling easy detection of any contaminating genomic DNA, or other
+unexpected sources of contamination.
 It can be applied to quantify and remove putative double strand DNA from
 a strand-specific RNA sample. The package uses a sliding window to scan
 a bam file to get the number of positive/negative reads in each window.
