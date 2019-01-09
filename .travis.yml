@@ -1,12 +1,15 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: r
-r: bioc-release
+r:
+  - bioc-release
+  - bioc-devel
 sudo: false
 cache: packages
 notifications:
   recipients:
-    - bioinf_hub@adelaide.edu.au
+    - tothuhien@gmail.com
+    - stephen.pederson@adelaide.edu.au
   email:
     on_success: change
     on_failure: change
