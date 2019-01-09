@@ -135,6 +135,21 @@ plotHist(win2, groupBy = "File", normalizeBy = "File", scales = "free_y")
 
 A more comprehensive vignette is available at https://bioconductor.org/packages/release/bioc/vignettes/strandCheckR/inst/doc/strandCheckR.html
 
+## Support
+
+We recommend that questions seeking support in using the software are posted to 
+the Bioconductor support forum - https://support.bioconductor.org/ - where they 
+will attract not only our attention but that of the wider Bioconductor community.
+
+Code contributions, bug reports and feature requests are most welcome. 
+Please make any pull requests against the master branch at https://github.com/UofABioinformaticsHub/strandCheckR and file issues at https://github.com/UofABioinformaticsHub/strandCheckR/issues
+
+## Author Contributions
+
+- *Hien To* authored the vast majority of code within the package along with unit tests
+- *Hien To* and *Stephen Pederson* worked closely together on the package design and 
+methodology
+
 ## License
 
 `strandCheckR` is licensed under [GPL >= 2.0](https://www.r-project.org/Licenses/GPL-2)

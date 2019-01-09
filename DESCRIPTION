@@ -9,6 +9,7 @@ Authors@R: c(
 Maintainer: Thu-Hien To <tothuhien@gmail.com>
 Description: This package aims to quantify and remove putative double strand DNA from a strand-specific RNA sample. There are also options and methods to plot the positive/negative proportions of all sliding windows, which allow users to have an idea of how much the sample was contaminated and the appropriate threshold to be used for filtering.
 URL: https://github.com/UofABioinformaticsHub/strandCheckR
+BugReports: https://github.com/UofABioinformaticsHub/strandCheckR/issues
 License: GPL (>= 2)
 LazyData: TRUE
 Imports:
