@@ -13,8 +13,8 @@
 #' reads. If missing, 100 thousands first reads will be inspected to test if
 #' the input bam file in paired end or single end.
 #' @param yieldSize by default is 1e6, i.e. the bam file is read by block of
-#' records whose size is defined by this paramter. It is used to pass to same
-#' paramter of the scanBam function.
+#' records whose size is defined by this parameter. It is used to pass to same
+#' parameter of the scanBam function.
 #' @param winWidth the length of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
 #' @param readProp A read is considered to be included in a window if at least 

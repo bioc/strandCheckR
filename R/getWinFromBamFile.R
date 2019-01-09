@@ -1,18 +1,22 @@
-#' @title get the strand information of all windows from bam files
-#' @description get the number of positive/negative reads of all windows from 
+#' @title Get the strand information of all windows from bam files
+#' 
+#' @description Get the number of positive/negative reads of all windows from 
 #' bam files
+#' 
 #' @param files the input bam files. Your bamfiles should be sorted and have 
 #' their index files located at the same path.
-#' @param sequences is used to subset the reads to be read from the bam file. 
-#' They correspond to chromosomes/scaffolds of the reference genome to which 
-#' the reads were mapped. If absent then the method will read the whole input 
-#' bam files, ortherwise it will read only the reads mapped to the given 
-#' sequences.
+#' @param sequences character vector used to restrict analysed alignments to a 
+#' subset of chromosomes (i.e. sequences) within the provided bam file. 
+#' These correspond to chromosomes/scaffolds of the reference genome to which 
+#' the reads were mapped. If absent, the whole bam file will be read.
+#' NB: This must match the chromosomes as defined in your reference genome.
+#' If the reference chromosomes were specified using the 'chr' prefix, ensure 
+#' the supplied vector matches this specification.
 #' @param mapqFilter every read that has mapping quality below 
 #' \code{mapqFilter} will be removed before any analysis.
 #' @param yieldSize by default is 1e6, i.e. the bam file is read by block of
-#' records whose size is defined by this paramter. It is used to pass to same
-#' paramter of the scanBam function.
+#' records whose size is defined by this parameter. It is used to pass to same
+#' parameter of the scanBam function.
 #' @param winWidth the width of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
 #' @param readProp A read is considered to be included in a window if at least
@@ -22,10 +26,19 @@
 #' end reads. If missing, 100 thousands first reads will be inspected to test 
 #' if the input bam file in paired end or single end.
 #' 
+#' @details
+#' This function moves along the specified chromosomes (i.e. sequences) using a
+#' sliding window approach, and counts the number of reads in each window which 
+#' align to the +/- strands of the reference genome.
+#' As well as the number of reads, the total coverage for each strand is also 
+#' returned for each window, representing the total number of bases covered.
+#' 
+#' Average coverage for the entire window can be simply calculated by dividing 
+#' the total coverage by the window size.
+#' 
 #' @return a DataFrame object containing the number of positive/negative reads 
 #' and coverage of each window sliding across the bam file.
-#' 
-#' @details The return DataFrame has 10 columns:
+#' The returned DataFrame has 10 columns:
 #' 
 #' Type: can be either SE if the input file contains single-end reads,
 #' or R1/R2 if the input file contains paired-end reads.
@@ -43,7 +56,7 @@
 #' CovPos/CovNeg: number of bases coming from positive/negative reads that were 
 #' mapped in the sliding window.
 #' 
-#' MaxCoverage: the maximum coverage of the sliding window.
+#' MaxCoverage: the maximum coverage within the sliding window.
 #' 
 #' File: the name of the input file.
 #' 
