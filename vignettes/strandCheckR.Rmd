@@ -47,7 +47,7 @@ probability caluclated based on the proportion of +/- stranded of those windows.
 
 # Get windows information
 
-The function *getWinFromBamFile* is used to get the number of +/- stranded 
+The function *getStrandFromBamFile* is used to get the number of +/- stranded 
 reads from all sliding windows throughout a list of bam files.
 The bam files should be sorted and have their index files located at the same 
 path as well.
@@ -58,7 +58,7 @@ library(strandCheckR)
 files <- system.file(
     "extdata",c("s1.sorted.bam","s2.sorted.bam"),package = "strandCheckR"
     )
-win <- getWinFromBamFile(files, sequences = "10")
+win <- getStrandFromBamFile(files, sequences = "10")
 # shorten the file name
 win$File <- basename(as.character(win$File))
 win
@@ -82,7 +82,7 @@ Here is an example for paired end bam file.
 
 ```{r paired end, eval=TRUE,message=FALSE,warning=FALSE}
 fileP <- system.file("extdata","paired.bam",package = "strandCheckR")
-winP <- getWinFromBamFile(fileP, sequences = "10")
+winP <- getStrandFromBamFile(fileP, sequences = "10")
 winP$File <- basename(as.character(winP$File)) #shorten file name
 winP
 ```

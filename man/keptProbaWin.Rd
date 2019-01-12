@@ -9,10 +9,10 @@ keptProbaWin(winPosAlignments, winNegAlignments, winWidth, winStep,
   getWin, useCoverage = FALSE)
 }
 \arguments{
-\item{winPosAlignments}{an object returned by getWinOfAlignments for 
+\item{winPosAlignments}{an object returned by getWinIdOverlapAlignments for 
 positive reads}
 
-\item{winNegAlignments}{an object returned by getWinOfAlignments for 
+\item{winNegAlignments}{an object returned by getWinIdOverlapAlignments for 
 negative reads}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}

@@ -7,11 +7,11 @@ test_that("keptReadFragment works properly", {
         which = GRanges("10",ranges = IRanges(7800000,8000000))
         )
     readInfo <- scanBam(file, param = sbp)[[1]]
-    winPosRecords <- getWinOfAlignments(
+    winPosRecords <- getWinIdOverlapAlignments(
         readInfo = readInfo, strand = "+", winWidth = 1000, 
         winStep = 100, readProp = 0.5, useCoverage = FALSE
         )
-    winNegRecords <- getWinOfAlignments(
+    winNegRecords <- getWinIdOverlapAlignments(
         readInfo = readInfo, strand = "-", winWidth = 1000, 
         winStep = 100, readProp = 0.5, useCoverage = FALSE
         )

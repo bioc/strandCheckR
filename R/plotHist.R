@@ -4,7 +4,7 @@
 #' histogram data frame
 #'
 #' @param windows data frame containing the strand information of the sliding 
-#' windows. Windows can be obtained using the function \code{getWinFromBamFile}.
+#' windows. Windows can be obtained using the function \code{getStrandFromBamFile}.
 #' @param save if TRUE, then the plot will be save into the file given by 
 #' \code{file} parameter
 #' @param file the file name to save to plot
@@ -16,19 +16,21 @@
 #' @param useCoverage if TRUE then plot the coverage strand information, 
 #' otherwise plot the number of reads strand information. FALSE by default
 #' @param groupBy the columns that will be used to split the data.
-#' @param normalizeBy the columns that will be used to normalize the read 
-#' count or read coverage into a proportion.
+#' @param normalizeBy instead of using the raw read count/coverage, we will 
+#' normalize it to a proportion by dividing it to the total number of read 
+#' count/coverage of windows that have the same value in the \code{normalizeBy} 
+#' columns.
 #' @param heatmap if TRUE, then use heat map to plot the histogram, otherwise 
 #' use barplot. FALSE by default.
 #' @param ... used to pass parameters to facet_wrap
 #' 
 #' @return If \code{heatmap=FALSE}: a ggplot object
 #' 
-#' @seealso \code{\link{getWinFromBamFile}}, \code{\link{plotWin}}
+#' @seealso \code{\link{getStrandFromBamFile}}, \code{\link{plotWin}}
 #'
 #' @examples
 #' bamfilein = system.file('extdata','s1.sorted.bam',package = 'strandCheckR')
-#' win  <- getWinFromBamFile(file = bamfilein,sequences='10')
+#' win  <- getStrandFromBamFile(file = bamfilein,sequences='10')
 #' plotHist(win)
 #' 
 #' @importFrom gridExtra grid.arrange

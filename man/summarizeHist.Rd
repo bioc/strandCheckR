@@ -10,7 +10,7 @@ summarizeHist(windows, split = c(10L, 100L, 1000L), breaks = 100L,
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 
-windows. Windows can be obtained using the function \code{getWinFromBamFile}.}
+windows. Windows can be obtained using the function \code{getStrandFromBamFile}.}
 
 \item{split}{an integer vector that specifies how you want to partition the 
 windows based on the coverage. By default \code{split} = c(10,100,1000), 
@@ -25,16 +25,18 @@ otherwise plot the number of reads strand information. FALSE by default}
 \item{groupBy}{the column names of windows that will be used to group 
 the data}
 
-\item{normalizeBy}{the column names of windows that will be used to 
-normalize the read count or read coverage into proportion}
+\item{normalizeBy}{instead of using the raw read count/coverage, we will 
+normalize it to a proportion by dividing it to the total number of read 
+count/coverage of windows that have the same value in the \code{normalizeBy} 
+columns.}
 }
 \value{
 a dataframe object
 }
 \description{
 Summarize the histogram of positive proportions from the input 
-windows obtained from the function \code{getWinFromBamFile}
+windows obtained from the function \code{getStrandFromBamFile}
 }
 \seealso{
-getWinFromBamFile, plotHist, plotWin
+getStrandFromBamFile, plotHist, plotWin
 }

@@ -63,7 +63,7 @@ files <- system.file(
 )
 
 # Find the read proportions from chromosome 10 for the two files
-win <- getWinFromBamFile(files, sequences = "10")
+win <- getStrandFromBamFile(files, sequences = "10")
 
 # Tidy up the file name for prettier output
 win$File <- basename(as.character(win$File))
@@ -146,8 +146,8 @@ Please make any pull requests against the master branch at https://github.com/Uo
 
 ## Author Contributions
 
-- *Hien To* authored the vast majority of code within the package along with unit tests
-- *Hien To* and *Stephen Pederson* worked closely together on the package design and 
+- *Thu-Hien To* authored the vast majority of code within the package along with unit tests
+- *Thu-Hien To* and *Stephen Pederson* worked closely together on the package design and 
 methodology
 
 ## License

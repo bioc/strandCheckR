@@ -17,21 +17,21 @@
 \details{
 The package has some following main functions:
 
-- \code{\link{getWinFromBamFile}}: calculate positive/negative proprortion and 
+- \code{\link{getStrandFromBamFile}}: calculate positive/negative proprortion and 
 sum of reads over all sliding windows from a bam file
 
 - \code{\link{plotHist}}: plot histogram of positive proportion of windows 
-calculated from \code{\link{getWinFromBamFile}} method
+calculated from \code{\link{getStrandFromBamFile}} method
 
 - \code{\link{plotWin}}: plot positive proportion vs number of reads of 
-windows calculated from \code{\link{getWinFromBamFile}} method
+windows calculated from \code{\link{getStrandFromBamFile}} method
 
 - \code{\link{filterDNA}}: filter a bam file
 }
 \author{
 Thu-Hien To & Steve Pederson
 
-Maintainer: Hien To <hien.to@adelaide.edu.au>
+Maintainer: Thu-Hien To <tothuhien@gmail.com>
 }
 %\references{
 %  This optional section can contain literature or other references for
@@ -45,7 +45,7 @@ Maintainer: Hien To <hien.to@adelaide.edu.au>
 %}
 \examples{
 bamfilein <- system.file("extdata","s1.sorted.bam",package = "strandCheckR")
-windows <- getWinFromBamFile(bamfilein)
+windows <- getStrandFromBamFile(bamfilein)
 plotWin(windows)
 plotHist(windows)
 filterDNA(file = bamfilein,destination = "filter.bam")

@@ -12,17 +12,17 @@
 #' @return a DataFrame object containing the number of positive/negative reads 
 #' and coverage of each window sliding 
 #' 
-#' @seealso \code{\link{filterDNA}}, \code{\link{getWinFromBamFile}}
+#' @seealso \code{\link{filterDNA}}, \code{\link{getStrandFromBamFile}}
 
-getWinFromReadInfo <- function(
+getStrandFromReadInfo <- function(
     readInfo, winWidth = 1000L, winStep = 100L, readProp = 0.5, subset = NULL
     ) 
 {
-    winPosAlignments <- getWinOfAlignments(
+    winPosAlignments <- getWinIdOverlapAlignments(
         readInfo, "+", winWidth, winStep, readProp = readProp, 
         useCoverage = TRUE, subset
         )
-    winNegAlignments <- getWinOfAlignments(
+    winNegAlignments <- getWinIdOverlapAlignments(
         readInfo, "-", winWidth, winStep, readProp = readProp, 
         useCoverage = TRUE, subset
         )

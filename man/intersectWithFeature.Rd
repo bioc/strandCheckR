@@ -9,7 +9,7 @@ intersectWithFeature(windows, annotation, getFeatureInfo = FALSE,
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 
-windows. Windows can be obtained using the function \code{getWinFromBamFile}.}
+windows. Windows can be obtained using the function \code{getStrandFromBamFile}.}
 
 \item{annotation}{a Grange object that you want to intersect with your 
 windows. It can have mcols which contains the information or features that 
@@ -43,7 +43,7 @@ features that overlap with each window
 }
 \examples{
 bamfilein = system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
-windows <- getWinFromBamFile(file = bamfilein)
+windows <- getStrandFromBamFile(file = bamfilein)
 #add chr before chromosome names to be consistent with the annotation
 windows$Seq <- paste0('chr',windows$Seq) 
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
@@ -58,6 +58,6 @@ plotWin(windows,facets = 'OverlapTranscript')
 
 }
 \seealso{
-\code{\link{getWinFromBamFile}}, \code{\link{plotHist}}, 
+\code{\link{getStrandFromBamFile}}, \code{\link{plotHist}}, 
 \code{\link{plotWin}}
 }

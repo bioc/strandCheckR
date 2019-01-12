@@ -1,4 +1,4 @@
-test_that("getWinFromOfAlignments can work", {
+test_that("getWinIdOverlapAlignments can work", {
     file <- system.file("extdata", "ex1.bam", package="Rsamtools")
     sbp <- ScanBamParam(
         what=c("pos","cigar","strand","flag"),
@@ -6,7 +6,7 @@ test_that("getWinFromOfAlignments can work", {
         )
     readInfo <- scanBam(BamFile(file), param = sbp)[[1]]
     firstReadIndex <- which(floor(readInfo$flag/64)%%2 == 1)
-    wP <- getWinOfAlignments(
+    wP <- getWinIdOverlapAlignments(
         readInfo = readInfo, strand = "+",winWidth = 1000, winStep =100, 
         readProp = 0.5,useCoverage = TRUE,subset = firstReadIndex
         )

@@ -22,7 +22,7 @@
 #' @importFrom S4Vectors mcols
 #' @importFrom IRanges IRanges coverage
 #'
-getWinOfAlignments <- function(
+getWinIdOverlapAlignments <- function(
     readInfo, strand, winWidth, winStep, readProp, useCoverage = FALSE, 
     subset = NULL
     ) 
@@ -42,7 +42,7 @@ getWinOfAlignments <- function(
         # Get the final window number
         maxWin <- ceiling((max(position$end) - winWidth)/winStep) + 1
         range <- IRanges(position$start, position$end, position$width)
-        winrange <- getWinFromIRanges(
+        winrange <- getWinIdOverlapIRanges(
             range, winWidth, winStep, readProp, maxWin
             )
         mcols(winrange) <- data.frame(alignment = index[position$group])

@@ -73,7 +73,7 @@ If 0 then it doesn't have effect on selecting window. 0 by default.}
 }
 \value{
 if \code{getWin} is TRUE: a DataFrame object which could also be 
-obtained by the function \code{getWinFromBamFile}
+obtained by the function \code{getStrandFromBamFile}
 }
 \description{
 Filter putative double strand DNA from a strand specific RNA-seq
@@ -114,6 +114,6 @@ filterDNA(file,sequences='10',destination='out.bam')
 
 }
 \seealso{
-\code{\link{getWinFromBamFile}}, \code{\link{plotHist}}, 
+\code{\link{getStrandFromBamFile}}, \code{\link{plotHist}}, 
 \code{\link{plotWin}}
 }

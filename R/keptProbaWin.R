@@ -1,9 +1,9 @@
 #' @title get the probability of begin kept for each window
 #' @description calculate the keeping probability of each window based on its 
 #' positive/negative proportion
-#' @param winPosAlignments an object returned by getWinOfAlignments for 
+#' @param winPosAlignments an object returned by getWinIdOverlapAlignments for 
 #' positive reads
-#' @param winNegAlignments an object returned by getWinOfAlignments for 
+#' @param winNegAlignments an object returned by getWinIdOverlapAlignments for 
 #' negative reads
 #' @param winWidth the width of the sliding window, 1000 by default.
 #' @param winStep the winStep length to sliding the window, 100 by default.

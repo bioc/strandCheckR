@@ -2,10 +2,10 @@
 #' data frame
 #'
 #' @description Summarize the histogram of positive proportions from the input 
-#' windows obtained from the function \code{getWinFromBamFile}
+#' windows obtained from the function \code{getStrandFromBamFile}
 #'
 #' @param windows data frame containing the strand information of the sliding 
-#' windows. Windows can be obtained using the function \code{getWinFromBamFile}.
+#' windows. Windows can be obtained using the function \code{getStrandFromBamFile}.
 #' @param split an integer vector that specifies how you want to partition the 
 #' windows based on the coverage. By default \code{split} = c(10,100,1000), 
 #' which means that your windows will be partitionned into 4 groups, those have 
@@ -15,12 +15,14 @@
 #' otherwise plot the number of reads strand information. FALSE by default
 #' @param groupBy the column names of windows that will be used to group 
 #' the data
-#' @param normalizeBy the column names of windows that will be used to 
-#' normalize the read count or read coverage into proportion
+#' @param normalizeBy instead of using the raw read count/coverage, we will 
+#' normalize it to a proportion by dividing it to the total number of read 
+#' count/coverage of windows that have the same value in the \code{normalizeBy} 
+#' columns.
 #' 
 #' @return a dataframe object
 #' 
-#' @seealso getWinFromBamFile, plotHist, plotWin
+#' @seealso getStrandFromBamFile, plotHist, plotWin
 #' 
 #' @importFrom magrittr set_colnames
 #' @importFrom dplyr mutate select one_of starts_with bind_rows
@@ -47,7 +49,7 @@ summarizeHist <- function(
     allows_groupBy <- setdiff(colnames(windows), c(reqWinCols, "Start", "End"))
     groupBy <- intersect(groupBy, allows_groupBy)
     if (length(groupBy) > 0){
-        message("Windows are grouped by",groupBy,"\n")
+        message("Windows are grouped by ",paste0(groupBy,collapse = ", "),"\n")
     }
     # Calculate the proportion of reads for the + strand, based on either 
     # coverage or the number of reads
@@ -103,7 +105,7 @@ summarizeHist <- function(
     # Convert the numbers of windows into proportions keeping R1 & R2 separate
     normalizeBy <- intersect(normalizeBy, groupBy)
     if (length(normalizeBy) > 0) {
-        message("Windows are normalized by", normalizeBy,"\n")
+        message("Windows are normalized by ", paste0(normalizeBy,collapse = ", "),"\n")
         windows <- lapply(
             split(windows, f = windows[, normalizeBy]), 
             function(x) {

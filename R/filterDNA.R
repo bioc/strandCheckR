@@ -72,7 +72,7 @@
 #' probability of keeping an alignment is the maximum probability defined by 
 #' all windows that contain it. 
 #'
-#' @seealso \code{\link{getWinFromBamFile}}, \code{\link{plotHist}}, 
+#' @seealso \code{\link{getStrandFromBamFile}}, \code{\link{plotHist}}, 
 #' \code{\link{plotWin}}
 #'
 #' @examples
@@ -88,7 +88,7 @@
 #' @importFrom methods is
 #'
 #' @return if \code{getWin} is TRUE: a DataFrame object which could also be 
-#' obtained by the function \code{getWinFromBamFile}
+#' obtained by the function \code{getStrandFromBamFile}
 #' @export
 filterDNA <- function(
     file, destination, statFile, sequences, mapqFilter = 0, paired, 
@@ -235,7 +235,7 @@ filterDNA <- function(
             mustKeepWin <- list()
             if (!missing(mustKeepRanges)) {
                 if (length(intersect(allSequencesMustKeep, readSeq)) > 0) {
-                    mustKeepWin <- getWinFromGRanges(
+                    mustKeepWin <- getMustKeepWinId(
                         mustKeepRanges[seqnames(mustKeepRanges) %in% readSeq], 
                         seqInfo[idP, ], winWidth, winStep
                         )
@@ -266,11 +266,11 @@ filterDNA <- function(
             for (s in seq_along(subset)) {
                 # Get the ids of sliding windows containing 
                 # each '+'/'-' read fragment
-                winPosRecords <- getWinOfAlignments(
+                winPosRecords <- getWinIdOverlapAlignments(
                     readInfo, "+", winWidth, winStep, readProp = readProp, 
                     useCoverage = (useCoverage || getWin), subset[[s]]
                     )
-                winNegRecords <- getWinOfAlignments(
+                winNegRecords <- getWinIdOverlapAlignments(
                     readInfo, "-", winWidth, winStep, readProp = readProp, 
                     useCoverage = (useCoverage || getWin), subset[[s]]
                     )
@@ -301,7 +301,7 @@ filterDNA <- function(
                 # windows from the orignial and filtered files
                 if (getWin) {
                     # get the window information of filtered file
-                    winA <- getWinFromReadInfo(
+                    winA <- getStrandFromReadInfo(
                         readInfo, winWidth, winStep, readProp,subset = kept
                         )
                     # get the correct position of windows in each sequence 

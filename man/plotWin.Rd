@@ -11,7 +11,7 @@ plotWin(windows, split = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 
 windows. Windows should be obtained using the function 
-\code{\link{getWinFromBamFile}} to ensure the correct data structure.}
+\code{\link{getStrandFromBamFile}} to ensure the correct data structure.}
 
 \item{split}{an integer vector that specifies how you want to partition the 
 windows based on coverage. 
@@ -53,7 +53,7 @@ Any plot can be easily modified using standard ggplot2 syntax (see Examples)
 }
 \examples{
 bamfilein = system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
-windows <- getWinFromBamFile(file = bamfilein,sequences = '10')
+windows <- getStrandFromBamFile(file = bamfilein,sequences = '10')
 plotWin(windows)
 
 # Change point colour using ggplot2
@@ -63,5 +63,5 @@ scale_colour_manual(values = rgb(seq(0, 1, length.out = 4), 0, 0))
 
 }
 \seealso{
-\code{\link{getWinFromBamFile}},  \code{\link{plotHist}}
+\code{\link{getStrandFromBamFile}},  \code{\link{plotHist}}
 }

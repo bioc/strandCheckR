@@ -72,10 +72,10 @@
 #' @importFrom methods is
 #' @examples
 #' file <- system.file('extdata','s1.sorted.bam',package = 'strandCheckR')
-#' win <- getWinFromBamFile(file,sequences='10')
+#' win <- getStrandFromBamFile(file,sequences='10')
 #' win
 
-getWinFromBamFile <- function(
+getStrandFromBamFile <- function(
     files, sequences, mapqFilter = 0, yieldSize = 1e+06, winWidth = 1000L, 
     winStep = 100L, readProp = 0.5, paired
     ) 
@@ -201,7 +201,7 @@ getWinFromBamFile <- function(
                     type <- "SE"
                 }
                 for (s in seq_along(subset)) {
-                    win <- getWinFromReadInfo(
+                    win <- getStrandFromReadInfo(
                         readInfo, winWidth, winStep, readProp, subset[[s]]
                         )
                     if (!is.null(win)){

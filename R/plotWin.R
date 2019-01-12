@@ -12,7 +12,7 @@
 #'  
 #' @param windows data frame containing the strand information of the sliding 
 #' windows. Windows should be obtained using the function 
-#' \code{\link{getWinFromBamFile}} to ensure the correct data structure.
+#' \code{\link{getStrandFromBamFile}} to ensure the correct data structure.
 #' @param split an integer vector that specifies how you want to partition the 
 #' windows based on coverage. 
 #' By default \code{split} = c(10,100,1000), partition windows into 4 groups 
@@ -32,7 +32,7 @@
 #' 
 #' @return The plot will be returned as a standard ggplot2 object
 #' 
-#' @seealso \code{\link{getWinFromBamFile}},  \code{\link{plotHist}}
+#' @seealso \code{\link{getStrandFromBamFile}},  \code{\link{plotHist}}
 #'
 #' @importFrom dplyr select mutate distinct one_of starts_with
 #' @importFrom stats pnorm
@@ -42,7 +42,7 @@
 #' @importFrom grid unit
 #' @examples
 #' bamfilein = system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
-#' windows <- getWinFromBamFile(file = bamfilein,sequences = '10')
+#' windows <- getStrandFromBamFile(file = bamfilein,sequences = '10')
 #' plotWin(windows)
 #' 
 #' # Change point colour using ggplot2

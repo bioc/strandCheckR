@@ -21,7 +21,7 @@
 #' each read fragment
 #' 
 #'
-getWinFromIRanges <- function(
+getWinIdOverlapIRanges <- function(
     x, winWidth = 1000L, winStep = 100L, readProp = 0.5, maxWin = Inf
     ) 
 {   
