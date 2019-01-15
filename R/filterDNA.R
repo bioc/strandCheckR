@@ -283,10 +283,10 @@ filterDNA <- function(
                     )
                 
                 # Calculate the '+'/'-' read fragments to be kept
-                keptPosRecord <- keptReadFragment(
+                keptPosRecord <- .keptReadFragment(
                     winPosRecords$Win, probaWin$Pos
                     )
-                keptNegRecord <- keptReadFragment(
+                keptNegRecord <- .keptReadFragment(
                     winNegRecords$Win, probaWin$Neg
                     )
                 

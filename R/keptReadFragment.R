@@ -10,8 +10,8 @@
 #' @return an integer vector of read fragment indices to be kept
 #' @importFrom stats rbinom
 #' 
-
-keptReadFragment <- function(fragments, keptProbaW) {
+#' @keywords internal
+.keptReadFragment <- function(fragments, keptProbaW) {
     if (length(fragments) > 0) {
         minL <- min(width(fragments))
         maxL <- max(width(fragments))
