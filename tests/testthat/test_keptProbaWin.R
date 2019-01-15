@@ -1,4 +1,4 @@
-test_that("keptProbaWin can work", {
+test_that(".keptProbaWin can work", {
     file <- BamFile(
         system.file("extdata/s1.sorted.bam", package = "strandCheckR")
         )
@@ -15,7 +15,7 @@ test_that("keptProbaWin can work", {
         readInfo = readInfo, strand = "-", winWidth = 1000, winStep = 100, 
         readProp = 0.5, useCoverage = FALSE
         )
-    probaWin <- keptProbaWin(
+    probaWin <- .keptProbaWin(
         winPosAlignments = winPosRecords, winNegAlignments = winNegRecords, 
         winWidth =  winWidth, winStep = 100, threshold = 0.7, 
         pvalueThreshold = 0.05, errorRate = 0, mustKeepWin = NULL, minCov = 0, 

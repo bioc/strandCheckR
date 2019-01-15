@@ -1,4 +1,4 @@
-test_that("concatenateAlignments works correctly", {
+test_that(".concatenateAlignments works correctly", {
     file <- BamFile(system.file("extdata","ex1.bam", package = "Rsamtools"))
     seqi <- seqinfo(file)
     sbp <- ScanBamParam(
@@ -13,7 +13,7 @@ test_that("concatenateAlignments works correctly", {
         )
     seqInfo <- sequenceInfoInPartition(
         seqInfo = seqInfo, winWidth = 1000, winStep = 100)
-    readInfoMerge <- concatenateAlignments(
+    readInfoMerge <- .concatenateAlignments(
         readInfo = readInfo,seqInfo = seqInfo)
     expect_equal(
         c(readInfo[[1]]$cigar,readInfo[[2]]$cigar), readInfoMerge$cigar

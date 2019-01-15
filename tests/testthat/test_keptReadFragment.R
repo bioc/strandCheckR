@@ -1,4 +1,4 @@
-test_that("keptReadFragment works properly", {
+test_that(".keptReadFragment works properly", {
     file <- BamFile(
         system.file("extdata/s1.sorted.bam",package = "strandCheckR")
         )
@@ -15,16 +15,16 @@ test_that("keptReadFragment works properly", {
         readInfo = readInfo, strand = "-", winWidth = 1000, 
         winStep = 100, readProp = 0.5, useCoverage = FALSE
         )
-    probaWin <- keptProbaWin(
+    probaWin <- .keptProbaWin(
         winPosAlignments = winPosRecords, winNegAlignments = winNegRecords, 
         winWidth = 1000, winStep = 100, threshold = 0.7, 
         pvalueThreshold = 0.05, errorRate = 0, mustKeepWin = NULL, 
         minCov = 0, maxCov = 0, getWin = FALSE, useCoverage = FALSE
         )
-    keptPosRecord <- keptReadFragment(
+    keptPosRecord <- .keptReadFragment(
         fragments = winPosRecords$Win, keptProbaW = probaWin$Pos
         )
-    keptNegRecord <- keptReadFragment(
+    keptNegRecord <- .keptReadFragment(
         fragments = winNegRecords$Win, keptProbaW = probaWin$Neg
         )
     pos <- unique(mcols(winPosRecords$Win)$alignment[keptPosRecord])
