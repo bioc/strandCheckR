@@ -10,9 +10,9 @@
 #' @return a list of two vectors, containing a positive/negative number of 
 #' reads of the input positive/negative windows
 #' @importFrom IRanges coverage end
-
-
-calculateStrandNbReads <- function(winPosAlignments, winNegAlignments) 
+#' 
+#' @keywords internal
+.calculateStrandNbReads <- function(winPosAlignments, winNegAlignments) 
 {   
     # Calculate strand information based on number of reads have the same 
     # length to avoid some warnings afterward

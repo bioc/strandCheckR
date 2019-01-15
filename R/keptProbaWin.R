@@ -56,7 +56,7 @@ keptProbaWin <- function(
             winNegAlignments = winNegAlignments, winWidth = winWidth, 
             winStep = winStep
             )
-        fromNbReads <- calculateStrandNbReads(
+        fromNbReads <- .calculateStrandNbReads(
             winPosAlignments = winPosAlignments, 
             winNegAlignments = winNegAlignments
             )
@@ -78,7 +78,7 @@ keptProbaWin <- function(
             winPosAlignments, winNegAlignments, winWidth, winStep
             )
     } else {
-        fromNbReads <- calculateStrandNbReads(
+        fromNbReads <- .calculateStrandNbReads(
             winPosAlignments, winNegAlignments
             )
     }
