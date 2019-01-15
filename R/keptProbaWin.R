@@ -39,8 +39,8 @@
 #' @importFrom IRanges coverage Views
 #' @importFrom stats pnorm
 #'
-
-keptProbaWin <- function(
+#' @keywords internal
+.keptProbaWin <- function(
     winPosAlignments, winNegAlignments, winWidth, winStep, threshold, 
     pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov, getWin, 
     useCoverage = FALSE

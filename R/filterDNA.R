@@ -276,7 +276,7 @@ filterDNA <- function(
                     )
                 
                 # Calculate the keeping probability of each sliding window
-                probaWin <- keptProbaWin(
+                probaWin <- .keptProbaWin(
                     winPosRecords, winNegRecords, winWidth, winStep, 
                     threshold, pvalueThreshold, errorRate, mustKeepWin, 
                     minCov, maxCov, getWin = getWin, useCoverage = useCoverage
