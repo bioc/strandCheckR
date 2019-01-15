@@ -179,7 +179,7 @@ getStrandFromBamFile <- function(
                     )
                 
                 # Concatenate lists of mutiple sequences into one list
-                readInfo <- concatenateAlignments(
+                readInfo <- .concatenateAlignments(
                     readInfo[idReadSeq], seqInfo[idP,]
                     )
                 if (paired) {

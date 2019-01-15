@@ -228,7 +228,7 @@ filterDNA <- function(
                 )
             
             # Concatenate lists of mutiple sequences into one list
-            readInfo <- concatenateAlignments(
+            readInfo <- .concatenateAlignments(
                 readInfo[idReadSeq], seqInfo[idP,]
                 )
             # Calculate the windows that overlap mustKeepRanges

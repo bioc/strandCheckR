@@ -16,7 +16,8 @@
 #' 
 #' @return the concatenated alignments of the input list
 #'
-concatenateAlignments <- function(readInfo, seqInfo)
+#' @keywords internal
+.concatenateAlignments <- function(readInfo, seqInfo)
 {   
     nameScanWhat <- names(readInfo[[1]])
     nField <- length(nameScanWhat)
