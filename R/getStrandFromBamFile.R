@@ -201,7 +201,7 @@ getStrandFromBamFile <- function(
                     type <- "SE"
                 }
                 for (s in seq_along(subset)) {
-                    win <- getStrandFromReadInfo(
+                    win <- .getStrandFromReadInfo(
                         readInfo, winWidth, winStep, readProp, subset[[s]]
                         )
                     if (!is.null(win)){

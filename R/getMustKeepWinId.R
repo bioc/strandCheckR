@@ -29,8 +29,8 @@
 #' @importFrom BiocGenerics strand
 #' @importFrom GenomeInfoDb seqlevels
 #' 
-
-getMustKeepWinId <- function(
+#' @keywords internal
+.getMustKeepWinId <- function(
     x, seqInfo, winWidth = 1000L, winStep = 100L
 ) 
 {   

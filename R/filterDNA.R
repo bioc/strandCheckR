@@ -235,7 +235,7 @@ filterDNA <- function(
             mustKeepWin <- list()
             if (!missing(mustKeepRanges)) {
                 if (length(intersect(allSequencesMustKeep, readSeq)) > 0) {
-                    mustKeepWin <- getMustKeepWinId(
+                    mustKeepWin <- .getMustKeepWinId(
                         mustKeepRanges[seqnames(mustKeepRanges) %in% readSeq], 
                         seqInfo[idP, ], winWidth, winStep
                         )
@@ -301,7 +301,7 @@ filterDNA <- function(
                 # windows from the orignial and filtered files
                 if (getWin) {
                     # get the window information of filtered file
-                    winA <- getStrandFromReadInfo(
+                    winA <- .getStrandFromReadInfo(
                         readInfo, winWidth, winStep, readProp,subset = kept
                         )
                     # get the correct position of windows in each sequence 

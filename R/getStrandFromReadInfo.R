@@ -13,8 +13,9 @@
 #' and coverage of each window sliding 
 #' 
 #' @seealso \code{\link{filterDNA}}, \code{\link{getStrandFromBamFile}}
-
-getStrandFromReadInfo <- function(
+#' 
+#' @keywords internal
+.getStrandFromReadInfo <- function(
     readInfo, winWidth = 1000L, winStep = 100L, readProp = 0.5, subset = NULL
     ) 
 {
