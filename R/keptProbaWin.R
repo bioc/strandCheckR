@@ -51,7 +51,7 @@ keptProbaWin <- function(
             "Coverage" %in% names(winPosAlignments) && 
                 "Coverage" %in% names(winNegAlignments)
             )
-        fromCoverage <- calculateStrandCoverage(
+        fromCoverage <- .calculateStrandCoverage(
             winPosAlignments = winPosAlignments, 
             winNegAlignments = winNegAlignments, winWidth = winWidth, 
             winStep = winStep
@@ -74,7 +74,7 @@ keptProbaWin <- function(
             File = Rle("",length(presentWin))
             )
     } else if (useCoverage) {
-        fromCoverage <- calculateStrandCoverage(
+        fromCoverage <- .calculateStrandCoverage(
             winPosAlignments, winNegAlignments, winWidth, winStep
             )
     } else {

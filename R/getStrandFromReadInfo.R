@@ -31,7 +31,7 @@ getStrandFromReadInfo <- function(
     fromNbReads <- calculateStrandNbReads(winPosAlignments, winNegAlignments)
     
     # calculate strand information based on coverage 
-    fromCoverage <- calculateStrandCoverage(
+    fromCoverage <- .calculateStrandCoverage(
         winPosAlignments, winNegAlignments, winWidth, winStep
         )
     

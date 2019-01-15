@@ -15,9 +15,9 @@
 #' 
 #' @importFrom IRanges Views
 #' @importFrom S4Vectors Rle
-
-
-calculateStrandCoverage <- function(
+#' 
+#' @keywords internal
+.calculateStrandCoverage <- function(
     winPosAlignments, winNegAlignments, winWidth = 1000L, winStep = 100L
     ) 
 {
