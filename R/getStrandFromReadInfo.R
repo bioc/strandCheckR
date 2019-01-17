@@ -14,8 +14,14 @@
 #' 
 #' @seealso \code{\link{filterDNA}}, \code{\link{getStrandFromBamFile}}
 #' 
-#' @keywords internal
-.getStrandFromReadInfo <- function(
+#' @examples 
+#' library(Rsamtools)
+#' file <- system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
+#' readInfo <- scanBam(file, param = 
+#' ScanBamParam(what = c("pos","cigar","strand")))
+#' getStrandFromReadInfo(readInfo[[1]],1000,100,0.5)
+#' 
+getStrandFromReadInfo <- function(
     readInfo, winWidth = 1000L, winStep = 100L, readProp = 0.5, subset = NULL
     ) 
 {

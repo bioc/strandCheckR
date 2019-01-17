@@ -301,7 +301,7 @@ filterDNA <- function(
                 # windows from the orignial and filtered files
                 if (getWin) {
                     # get the window information of filtered file
-                    winA <- .getStrandFromReadInfo(
+                    winA <- getStrandFromReadInfo(
                         readInfo, winWidth, winStep, readProp,subset = kept
                         )
                     # get the correct position of windows in each sequence 

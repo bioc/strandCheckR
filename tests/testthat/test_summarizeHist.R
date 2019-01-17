@@ -1,4 +1,4 @@
-test_that("summarizeHist works correctly", {
+test_that(".summarizeHist works correctly", {
     files <- system.file(
         "extdata", c("s1.sorted.bam","s2.sorted.bam"), package="strandCheckR"
         )

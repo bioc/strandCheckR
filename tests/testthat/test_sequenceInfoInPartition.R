@@ -1,4 +1,4 @@
-test_that("sequenceInfoInPartition works correctly", {
+test_that(".sequenceInfoInPartition works correctly", {
     n <- round(runif(1,2,10))
     seqInfo <- data.frame(
         Sequence = paste0("seq",1:n), Length = round(runif(n,1e+6,1e+7)),
