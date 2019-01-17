@@ -17,11 +17,18 @@
 #' If \code{useCoverage=TRUE}: a list of two objects, the first one is the 
 #' later IRanges object, the second one is an integer-Rle object which contains 
 #' the coverage of the input readInfo
-#' 
+#' @export
 #' @importFrom GenomicAlignments extractAlignmentRangesOnReference
 #' @importFrom S4Vectors mcols
 #' @importFrom IRanges IRanges coverage
-#'
+#' @examples 
+#' library(Rsamtools)
+#' file <- system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
+#' readInfo <- scanBam(file, param = 
+#' ScanBamParam(what = c("pos","cigar","strand")))
+#' getWinIdOverlapAlignments(readInfo[[1]],"+",1000,100,0.5)
+
+
 getWinIdOverlapAlignments <- function(
     readInfo, strand, winWidth, winStep, readProp, useCoverage = FALSE, 
     subset = NULL

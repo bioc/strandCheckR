@@ -34,3 +34,10 @@ the coverage of the input readInfo
 \description{
 calculate the windows that contain each read fragment
 }
+\examples{
+library(Rsamtools)
+file <- system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
+readInfo <- scanBam(file, param = 
+ScanBamParam(what = c("pos","cigar","strand")))
+getWinIdOverlapAlignments(readInfo[[1]],"+",1000,100,0.5)
+}
