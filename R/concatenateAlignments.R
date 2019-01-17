@@ -12,7 +12,7 @@
 #' correspond to a sequence, containing the information of strand, starting 
 #' position, cigar string, and eventually flag, qname
 #' @param seqInfo a data frame that contains some key information of the 
-#' alignments
+#' sequences
 #' 
 #' @return the concatenated alignments of the input list
 #'

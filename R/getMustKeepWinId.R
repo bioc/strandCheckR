@@ -18,8 +18,8 @@
 #' @param x a GRanges object, which defines the coordinates of 
 #' the ranges in the reference genome that all reads mapped to those ranges
 #' must be kept by the filtering method \code{filterDNA}.
-#' @param seqInfo a data frame that contains some key information of 
-#' the alignments.
+#' @param seqInfo a data frame that contains some key information of the 
+#' sequences
 #' @param winWidth the width of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
 #' @param nbOverlapBases a window is considered to overlap with a range of 

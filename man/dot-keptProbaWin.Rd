@@ -2,7 +2,7 @@
 % Please edit documentation in R/keptProbaWin.R
 \name{.keptProbaWin}
 \alias{.keptProbaWin}
-\title{get the probability of begin kept for each window}
+\title{Get the probability of begin kept for each window}
 \usage{
 .keptProbaWin(winPosAlignments, winNegAlignments, winWidth, winStep,
   threshold, pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov,
@@ -57,7 +57,7 @@ If \code{getWin=TRUE} then the list contains an additional DataFrame for the
 number of reads and coverage of the input window +/- alignments
 }
 \description{
-calculate the keeping probability of each window based on its 
+Calculate the keeping probability of each window based on its 
 positive/negative proportion
 }
 \keyword{internal}

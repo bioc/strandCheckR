@@ -223,7 +223,7 @@ filterDNA <- function(
             }
             
             # Calculate First/Last Base/Read in each part of the partition
-            seqInfo[idP, ] <- sequenceInfoInPartition(
+            seqInfo[idP, ] <- .sequenceInfoInPartition(
                 seqInfo[idP,], winWidth, winStep
                 )
             

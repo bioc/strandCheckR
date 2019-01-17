@@ -1,5 +1,5 @@
-#' @title get the strand information of all windows from read information
-#' @description get the number of positive/negative reads of all windows from 
+#' @title Get the strand information of all windows from read information
+#' @description Get the number of positive/negative reads of all windows from 
 #' read information obtained from \code{\link{scanBam}} function
 #' @param readInfo a list contains read information returned by 
 #' \code{\link{scanBam}} function when read a bam file

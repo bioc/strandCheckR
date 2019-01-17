@@ -12,8 +12,8 @@ getMustKeepWinId(x, seqInfo, winWidth = 1000L, winStep = 100L,
 the ranges in the reference genome that all reads mapped to those ranges
 must be kept by the filtering method \code{filterDNA}.}
 
-\item{seqInfo}{a data frame that contains some key information of 
-the alignments.}
+\item{seqInfo}{a data frame that contains some key information of the 
+sequences}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 

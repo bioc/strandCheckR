@@ -1,8 +1,12 @@
-# #' @title calculate the first/last base/read of each sequence within the part
-# #' @param seqInfo a data frame contains information of sequence
-# #' @winStep the step of sliding windows
+#' @title Calculate the first/last base/read of each sequence within each part
+#' of the partition.
+#' @param seqInfo a data frame that contains some key information of the 
+#' sequences
+#' @param winWidth the length of sliding window 
+#' @param winStep the step length to sliding the window 
+#' @keywords internal
 
-sequenceInfoInPartition <- function(seqInfo, winWidth, winStep) 
+.sequenceInfoInPartition <- function(seqInfo, winWidth, winStep) 
 {
     reqNames <- c("Sequence", "Length", "NbReads")
     stopifnot(all(reqNames %in% names(seqInfo)))

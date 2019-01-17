@@ -12,7 +12,7 @@ correspond to a sequence, containing the information of strand, starting
 position, cigar string, and eventually flag, qname}
 
 \item{seqInfo}{a data frame that contains some key information of the 
-alignments}
+sequences}
 }
 \value{
 the concatenated alignments of the input list

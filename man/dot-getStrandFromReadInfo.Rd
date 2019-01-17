@@ -2,7 +2,7 @@
 % Please edit documentation in R/getStrandFromReadInfo.R
 \name{.getStrandFromReadInfo}
 \alias{.getStrandFromReadInfo}
-\title{get the strand information of all windows from read information}
+\title{Get the strand information of all windows from read information}
 \usage{
 .getStrandFromReadInfo(readInfo, winWidth = 1000L, winStep = 100L,
   readProp = 0.5, subset = NULL)
@@ -26,7 +26,7 @@ a DataFrame object containing the number of positive/negative reads
 and coverage of each window sliding
 }
 \description{
-get the number of positive/negative reads of all windows from 
+Get the number of positive/negative reads of all windows from 
 read information obtained from \code{\link{scanBam}} function
 }
 \seealso{

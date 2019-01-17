@@ -1,5 +1,5 @@
-#' @title get the probability of begin kept for each window
-#' @description calculate the keeping probability of each window based on its 
+#' @title Get the probability of begin kept for each window
+#' @description Calculate the keeping probability of each window based on its 
 #' positive/negative proportion
 #' @param winPosAlignments an object returned by getWinIdOverlapAlignments for 
 #' positive reads

@@ -1,5 +1,5 @@
 #' @title Calculate the read fragments to be kept
-#' @description  calculate the keeping probability of each read fragment based 
+#' @description Calculate the keeping probability of each read fragment based 
 #' on the keeping probability of the windows containing it. Then get the list 
 #' of read fragments to be kept.
 #' @param fragments an IRange object defind the starting, ending position of 

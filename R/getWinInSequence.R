@@ -1,8 +1,8 @@
-#' @title get window data frame with the correct sequence name and position 
-#' @description get the correct sequence name and position for each window 
+#' @title Get window data frame with the correct sequence name and position 
+#' @description Get the correct sequence name and position for each window 
 #' @param Win a data frame contains the strand information of every window 
-#' @param seqInfo a data frame that contains some information of 
-#' the alignments
+#' @param seqInfo a data frame that contains some key information of the 
+#' sequences
 #' @param winWidth the length of sliding window 
 #' @param winStep the step length to sliding the window 
 #' @keywords internal

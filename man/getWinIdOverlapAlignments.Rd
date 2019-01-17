@@ -2,7 +2,7 @@
 % Please edit documentation in R/getWinIdOverlapAlignments.R
 \name{getWinIdOverlapAlignments}
 \alias{getWinIdOverlapAlignments}
-\title{get the window ranges of alignments}
+\title{Get the window ranges of alignments}
 \usage{
 getWinIdOverlapAlignments(readInfo, strand, winWidth, winStep, readProp,
   useCoverage = FALSE, subset = NULL)
@@ -32,7 +32,7 @@ later IRanges object, the second one is an integer-Rle object which contains
 the coverage of the input readInfo
 }
 \description{
-calculate the windows that contain each read fragment
+Calculate the windows that contain each read fragment
 }
 \examples{
 library(Rsamtools)

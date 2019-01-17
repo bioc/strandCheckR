@@ -1,6 +1,6 @@
-#' @title get the window ranges of alignments
+#' @title Get the window ranges of alignments
 #' 
-#' @description calculate the windows that contain each read fragment
+#' @description Calculate the windows that contain each read fragment
 #' 
 #' @param readInfo a list contains the read information of one sequence
 #' @param strand the considering strand
