@@ -1,4 +1,4 @@
-#' @title Get the Sliding Windows that overlap a GRanges object
+#' @title Get the sliding windows that overlap a GRanges object
 #' 
 #' @description Get the sliding windows that overlap a GRanges object. 
 #' 
@@ -8,12 +8,12 @@
 #' \code{filterDNA} method, defines the coordinates of the ranges in the 
 #' reference genome that all reads mapped to those ranges must be kept by the 
 #' filtering method \code{filterDNA}. 
-#' This method makes use of the method \code{getWinIdOverlapIRanges} by 
-#' pretending each given range as the range of a read. Since the ranges of 
+#' This method makes use of the method \code{getWinOverlapEachIRange} by 
+#' pretending each given range as the range of a read. Since the widths of 
 #' \code{x} are not necessarily the same (as normal read lengths), we
 #' use \code{nbOverlapBases} to specify the number of bases a window should 
 #' overlap with a range of \code{x}, instead of using proprotion as 
-#' \code{readProp} in \code{getWinIdOverlapIRanges}.
+#' \code{readProp} in \code{getWinOverlapEachIRange}.
 #' 
 #' @param x a GRanges object, which defines the coordinates of 
 #' the ranges in the reference genome that all reads mapped to those ranges
@@ -25,7 +25,7 @@
 #' @param nbOverlapBases a window is considered to overlap with a range of 
 #' \code{x} if it overlaps with at least \code{nbOverlapBases} bases.
 #' @return A list of two logical vectors (for positive and negative strand) 
-#' defining which windows that overlap the given Granges objects
+#' defining which windows that overlap the given Granges object.
 #' @export
 #' @importFrom GenomicRanges start<-
 #' @importFrom GenomicRanges end<-
@@ -37,12 +37,12 @@
 #' x <- GRanges(seqnames = "10",ranges = IRanges(start = c(10000,15000),
 #' end=c(20000,30000)),strand = c("+","-"))
 #' seqInfo <- data.frame("Sequence"=10,"FirstBaseInPart"=1)
-#' getMustKeepWinId(x,seqInfo)
+#' getWinOverlapGRanges(x,seqInfo)
 #' seqInfo <- data.frame("Sequence"=10,"FirstBaseInPart"=10000000)
-#' getMustKeepWinId(x,seqInfo)
+#' getWinOverlapGRanges(x,seqInfo)
 
 
-getMustKeepWinId <- function(
+getWinOverlapGRanges <- function(
     x, seqInfo, winWidth = 1000L, winStep = 100L, nbOverlapBases = 1
 ) 
 {   
@@ -65,14 +65,14 @@ getMustKeepWinId <- function(
     }
     
     # Calculate the windows that overlap the '+' ranges of x
-    mustKeepPos <- getWinIdOverlapIRanges(
+    mustKeepPos <- getWinOverlapEachIRange(
         ranges(x)[strand(x) != "-", ], winWidth, winStep, 
         readProp = nbOverlapBases/width(x)
         )
     mustKeepPos <- coverage(mustKeepPos) > 0
     
     # Calculate the windows that overlap the '-' ranges of x
-    mustKeepNeg <- getWinIdOverlapIRanges(
+    mustKeepNeg <- getWinOverlapEachIRange(
         ranges(x)[strand(x) != "+", ], winWidth, winStep, 
         readProp = nbOverlapBases/width(x)
         )

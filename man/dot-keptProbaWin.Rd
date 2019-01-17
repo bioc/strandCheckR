@@ -2,17 +2,17 @@
 % Please edit documentation in R/keptProbaWin.R
 \name{.keptProbaWin}
 \alias{.keptProbaWin}
-\title{Get the probability of begin kept for each window}
+\title{Get the probability of being kept for each window}
 \usage{
 .keptProbaWin(winPosAlignments, winNegAlignments, winWidth, winStep,
   threshold, pvalueThreshold, errorRate, mustKeepWin, minCov, maxCov,
   getWin, useCoverage = FALSE)
 }
 \arguments{
-\item{winPosAlignments}{an object returned by getWinIdOverlapAlignments for 
+\item{winPosAlignments}{an object returned by getWinOverlapEachReadFragment for 
 positive reads}
 
-\item{winNegAlignments}{an object returned by getWinIdOverlapAlignments for 
+\item{winNegAlignments}{an object returned by getWinOverlapEachReadFragment for 
 negative reads}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}

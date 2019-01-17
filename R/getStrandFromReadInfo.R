@@ -2,7 +2,7 @@
 #' @description Get the number of positive/negative reads of all windows from 
 #' read information obtained from \code{\link{scanBam}} function
 #' @param readInfo a list contains read information returned by 
-#' \code{\link{scanBam}} function when read a bam file
+#' \code{\link{scanBam}} function when read a bam file.
 #' @param winWidth the width of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
 #' @param readProp A read is considered to be included in a window if at least
@@ -10,7 +10,7 @@
 #' 0.5 by default.
 #' @param subset an integer vector specifying the subset of reads to consider
 #' @return a DataFrame object containing the number of positive/negative reads 
-#' and coverage of each window sliding 
+#' and coverage of each window sliding .
 #' 
 #' @seealso \code{\link{filterDNA}}, \code{\link{getStrandFromBamFile}}
 #' @export
@@ -25,11 +25,11 @@ getStrandFromReadInfo <- function(
     readInfo, winWidth = 1000L, winStep = 100L, readProp = 0.5, subset = NULL
     ) 
 {
-    winPosAlignments <- getWinIdOverlapAlignments(
+    winPosAlignments <- getWinOverlapEachReadFragment(
         readInfo, "+", winWidth, winStep, readProp = readProp, 
         useCoverage = TRUE, subset
         )
-    winNegAlignments <- getWinIdOverlapAlignments(
+    winNegAlignments <- getWinOverlapEachReadFragment(
         readInfo, "-", winWidth, winStep, readProp = readProp, 
         useCoverage = TRUE, subset
         )

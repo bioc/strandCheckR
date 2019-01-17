@@ -1,13 +1,13 @@
-#' @title Get the Ranges of Sliding Windows that overlap an IRanges object
+#' @title Get the ranges of sliding windows that overlap each range of an 
+#' IRanges object.
 #' 
-#' @description Get the Ranges of Sliding Windows that overlap an IRanges 
-#' object. 
+#' @description Get the ranges of sliding windows that overlap each range of an 
+#' IRanges object.
 #' 
 #' @details
-#' This finds the windows that overlap each fragment of a read and returns a 
-#' range containing this list of windows for each read fragment.
-#' This allows the total number of read fragments within a window to be 
-#' calculated simply using \link{coverage}.
+#' This finds the windows that overlap each range of the input IRanges object. 
+#' Each range corresponds to a read fragment. This allows the total number of 
+#' read fragments within a window to be calculated simply using \link{coverage}.
 #' 
 #' @param x an IRanges object containing the start and end position of 
 #' each read fragment. 
@@ -18,19 +18,21 @@
 #' @param maxWin The maximum window ID
 #' 
 #' @export
-#' @return An IRanges object containing the index of the windows containing 
+#' @return An IRanges object containing the index of the windows overlapping 
 #' each read fragment
 #' @examples
 #' library(IRanges)
 #' x <- IRanges(start=round(runif(100,1000,10000)),width=100)
-#' getWinIdOverlapIRanges(x)
+#' getWinOverlapEachIRange(x)
 #' 
-getWinIdOverlapIRanges <- function(
+getWinOverlapEachIRange <- function(
     x, winWidth = 1000L, winStep = 100L, readProp = 0.5, maxWin = Inf
     ) 
 {   
-    readProp <- readProp[1]
-    if (readProp <= 0 || readProp > 1) {
+    if (length(readProp)>1 && length(readProp)!=length(x)){
+        readProp <- readProp[1]    
+    }
+    if (any(readProp <= 0) || any(readProp > 1)) {
         stop("readProp must be within the range (0, 1]")
     }
     

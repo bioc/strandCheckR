@@ -235,7 +235,7 @@ filterDNA <- function(
             mustKeepWin <- list()
             if (!missing(mustKeepRanges)) {
                 if (length(intersect(allSequencesMustKeep, readSeq)) > 0) {
-                    mustKeepWin <- getMustKeepWinId(
+                    mustKeepWin <- getWinOverlapGRanges(
                         mustKeepRanges[seqnames(mustKeepRanges) %in% readSeq], 
                         seqInfo[idP, ], winWidth, winStep
                         )
@@ -266,11 +266,11 @@ filterDNA <- function(
             for (s in seq_along(subset)) {
                 # Get the ids of sliding windows containing 
                 # each '+'/'-' read fragment
-                winPosRecords <- getWinIdOverlapAlignments(
+                winPosRecords <- getWinOverlapEachReadFragment(
                     readInfo, "+", winWidth, winStep, readProp = readProp, 
                     useCoverage = (useCoverage || getWin), subset[[s]]
                     )
-                winNegRecords <- getWinIdOverlapAlignments(
+                winNegRecords <- getWinOverlapEachReadFragment(
                     readInfo, "-", winWidth, winStep, readProp = readProp, 
                     useCoverage = (useCoverage || getWin), subset[[s]]
                     )

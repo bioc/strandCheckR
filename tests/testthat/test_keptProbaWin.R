@@ -7,11 +7,11 @@ test_that(".keptProbaWin can work", {
         which = GRanges("10",ranges = IRanges(7900000,8000000))
         )
     readInfo <- scanBam(file = file, param = sbp)[[1]]
-    winPosRecords <- getWinIdOverlapAlignments(
+    winPosRecords <- getWinOverlapEachReadFragment(
         readInfo = readInfo, strand = "+", winWidth = 1000, winStep = 100, 
         readProp = 0.5, useCoverage = FALSE
         )
-    winNegRecords <- getWinIdOverlapAlignments(
+    winNegRecords <- getWinOverlapEachReadFragment(
         readInfo = readInfo, strand = "-", winWidth = 1000, winStep = 100, 
         readProp = 0.5, useCoverage = FALSE
         )

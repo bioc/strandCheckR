@@ -9,7 +9,7 @@ getStrandFromReadInfo(readInfo, winWidth = 1000L, winStep = 100L,
 }
 \arguments{
 \item{readInfo}{a list contains read information returned by 
-\code{\link{scanBam}} function when read a bam file}
+\code{\link{scanBam}} function when read a bam file.}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}
 
@@ -23,7 +23,7 @@ getStrandFromReadInfo(readInfo, winWidth = 1000L, winStep = 100L,
 }
 \value{
 a DataFrame object containing the number of positive/negative reads 
-and coverage of each window sliding
+and coverage of each window sliding .
 }
 \description{
 Get the number of positive/negative reads of all windows from 

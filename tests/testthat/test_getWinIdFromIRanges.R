@@ -1,6 +1,6 @@
-test_that("getWinIdOverlapIRanges can work", {
+test_that("getWinOverlapEachIRange can work", {
     ranges <- IRanges(start = as.integer(runif(10,1,2000)),width = 100)
-    w <- getWinIdOverlapIRanges(ranges,readProp=0.5)
+    w <- getWinOverlapEachIRange(ranges,readProp=0.5)
     s <- (start(w)-1)*100+1000
     s1 <- (start(w)-2)*100+1000
     e <- (end(w)-1)*100 + 1
