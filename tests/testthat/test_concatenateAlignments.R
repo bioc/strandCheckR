@@ -11,7 +11,7 @@ test_that(".concatenateAlignments works correctly", {
         FirstBaseInPart = 0, LastBaseInPart = 0, FirstReadInPart = 0,
         LastReadInPart = 0
         )
-    seqInfo <- sequenceInfoInPartition(
+    seqInfo <- .sequenceInfoInPartition(
         seqInfo = seqInfo, winWidth = 1000, winStep = 100)
     readInfoMerge <- .concatenateAlignments(
         readInfo = readInfo,seqInfo = seqInfo)

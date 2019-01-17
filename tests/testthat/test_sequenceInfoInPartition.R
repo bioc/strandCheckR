@@ -7,7 +7,7 @@ test_that("sequenceInfoInPartition works correctly", {
         )
     winStep <- round(runif(1,50,150))
     winWidth <- winStep * 10
-    seqInfo <- sequenceInfoInPartition(seqInfo,winWidth,winStep)
+    seqInfo <- .sequenceInfoInPartition(seqInfo,winWidth,winStep)
     expect_equal(seqInfo$LastBaseInPart %% winStep,rep(0,n))
     expect_equal(seqInfo$LastBaseInPart[-n]+1,seqInfo$FirstBaseInPart[-1])    
     expect_equal(seqInfo$LastReadInPart[-n]+1,seqInfo$FirstReadInPart[-1])
