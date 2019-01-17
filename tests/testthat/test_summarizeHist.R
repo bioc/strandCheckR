@@ -3,7 +3,7 @@ test_that("summarizeHist works correctly", {
         "extdata", c("s1.sorted.bam","s2.sorted.bam"), package="strandCheckR"
         )
     win <- getStrandFromBamFile(files)
-    h <- summarizeHist(win,groupBy = "File", normalizeBy = "File")
+    h <- .summarizeHist(win,groupBy = "File", normalizeBy = "File")
     expect_length(unique(h$File),2)
     expect_equal(sum(h$ReadCountProp),2)
     expect_true(

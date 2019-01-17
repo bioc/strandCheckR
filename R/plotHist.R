@@ -50,7 +50,7 @@ plotHist <- function(
     useCoverage = FALSE, heatmap = FALSE, ...
     ) 
 {
-    histWin <- summarizeHist(
+    histWin <- .summarizeHist(
         windows, split = split, breaks = breaks, useCoverage = useCoverage, 
         groupBy = groupBy, normalizeBy = normalizeBy
         )

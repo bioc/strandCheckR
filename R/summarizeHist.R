@@ -28,8 +28,9 @@
 #' @importFrom dplyr mutate select one_of starts_with bind_rows
 #' @importFrom stringr str_extract
 #' @importFrom reshape2 dcast melt
+#' @keywords internal
 
-summarizeHist <- function(
+.summarizeHist <- function(
     windows, split = c(10L, 100L, 1000L), breaks = 100L, useCoverage = FALSE, 
     groupBy = NULL, normalizeBy = NULL
     ) 
