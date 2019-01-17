@@ -34,3 +34,9 @@ range containing this list of windows for each read fragment.
 This allows the total number of read fragments within a window to be 
 calculated simply using \link{coverage}.
 }
+\examples{
+library(IRanges)
+x <- IRanges(start=round(runif(100,1000,10000)),width=100)
+getWinIdOverlapIRange(x)
+
+}

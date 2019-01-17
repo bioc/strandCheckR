@@ -17,10 +17,14 @@
 #' \code{readProp} of it is in the window. Specified as a proportion.
 #' @param maxWin The maximum window ID
 #' 
+#' @export
 #' @return An IRanges object containing the index of the windows containing 
 #' each read fragment
+#' @examples
+#' library(IRanges)
+#' x <- IRanges(start=round(runif(100,1000,10000)),width=100)
+#' getWinIdOverlapIRange(x)
 #' 
-#'
 getWinIdOverlapIRanges <- function(
     x, winWidth = 1000L, winStep = 100L, readProp = 0.5, maxWin = Inf
     ) 
@@ -41,6 +45,13 @@ getWinIdOverlapIRanges <- function(
     # Calculate the index of the final window that overlaps a fragment
     endWin <- floor((end(x) - 1 - (readProp) * width(x))/winStep) + 1
     endWin[endWin > maxWin] <- maxWin
+    
+    # Throw warning if there're some 
+    notSatisfy <- endWin < startWin
+    if (sum(notSatisfy) > 0){
+        cat("Some reads do not have any window that overlap by the given read 
+proportion. Either read length is too big or window width is too small.\n")
+    }
     # Return the complete set of windows for each fragment
-    IRanges(start = startWin, end = endWin)
+    IRanges(start = startWin[!notSatisfy], end = endWin[!notSatisfy])
 }

@@ -235,7 +235,7 @@ filterDNA <- function(
             mustKeepWin <- list()
             if (!missing(mustKeepRanges)) {
                 if (length(intersect(allSequencesMustKeep, readSeq)) > 0) {
-                    mustKeepWin <- .getMustKeepWinId(
+                    mustKeepWin <- getMustKeepWinId(
                         mustKeepRanges[seqnames(mustKeepRanges) %in% readSeq], 
                         seqInfo[idP, ], winWidth, winStep
                         )
@@ -307,10 +307,10 @@ filterDNA <- function(
                     # get the correct position of windows in each sequence 
                     # of partition
                     
-                    win <- getWinInSequence(
+                    win <- .getWinInSequence(
                         probaWin$Win, seqInfo[idP,], winWidth, winStep
                         )
-                    winA <- getWinInSequence(
+                    winA <- .getWinInSequence(
                         winA, seqInfo[idP,], winWidth, winStep
                         )
                     # assign appropriate file name to each window data

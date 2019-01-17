@@ -205,7 +205,7 @@ getStrandFromBamFile <- function(
                         readInfo, winWidth, winStep, readProp, subset[[s]]
                         )
                     if (!is.null(win)){
-                        win <- getWinInSequence(
+                        win <- .getWinInSequence(
                             win, seqInfo[idP, ], winWidth, winStep
                             )
                         if (s == 1) {

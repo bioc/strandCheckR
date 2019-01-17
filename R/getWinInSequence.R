@@ -1,13 +1,12 @@
-# #' @title get window data frame with the correct sequence name and position 
-# #' @description get the correct sequence name and position for each window 
-# #' @param Win a data frame contains the information of every window in 
-# #' \code{sequences} 
-# #' @param seqInfo a data frame that contains some information of 
-# #' the alignments
-# #' @param winWidth the length of sliding window 
-# #' @param winStep the step
-# #' length to sliding the window 
-getWinInSequence <- function(Win, seqInfo, winWidth = 1000L, winStep = 100L) 
+#' @title get window data frame with the correct sequence name and position 
+#' @description get the correct sequence name and position for each window 
+#' @param Win a data frame contains the strand information of every window 
+#' @param seqInfo a data frame that contains some information of 
+#' the alignments
+#' @param winWidth the length of sliding window 
+#' @param winStep the step length to sliding the window 
+#' @keywords internal
+.getWinInSequence <- function(Win, seqInfo, winWidth = 1000L, winStep = 100L) 
 {
     # Check the correct columns are in the seqInfo df
     reqCols <- c("FirstBaseInPart", "LastBaseInPart")
