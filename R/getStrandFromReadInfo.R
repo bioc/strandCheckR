@@ -13,7 +13,7 @@
 #' and coverage of each window sliding 
 #' 
 #' @seealso \code{\link{filterDNA}}, \code{\link{getStrandFromBamFile}}
-#' 
+#' @export
 #' @examples 
 #' library(Rsamtools)
 #' file <- system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
