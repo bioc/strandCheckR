@@ -1,7 +1,7 @@
-#' @title Plot the Proportion of + Stranded Reads
+#' @title Plot the number of reads vs the proportion of '+' stranded reads.
 #'
 #' @description Plot the number of reads vs the proportion of '+'
-#' stranded reads.
+#' stranded reads of all windows from the input data frame.
 #' 
 #' @details This function will plot the proportion of '+' stranded reads for 
 #' each window, against the number of reads in each window.

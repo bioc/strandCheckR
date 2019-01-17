@@ -11,7 +11,7 @@ getStrandFromReadInfo(readInfo, winWidth = 1000L, winStep = 100L,
 \item{readInfo}{a list contains read information returned by 
 \code{\link{scanBam}} function when read a bam file.}
 
-\item{winWidth}{the width of the sliding window, 1000 by default.}
+\item{winWidth}{the length of the sliding window, 1000 by default.}
 
 \item{winStep}{the step length to sliding the window, 100 by default.}
 

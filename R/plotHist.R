@@ -1,10 +1,11 @@
 #' @title Plot the histogram of positive proportions 
 #'
 #' @description Plot the histogram of positive proportions of the input 
-#' histogram data frame
+#' data frame coming from \code{getStrandFromBamFile}
 #'
 #' @param windows data frame containing the strand information of the sliding 
-#' windows. Windows can be obtained using the function \code{getStrandFromBamFile}.
+#' windows. Windows can be obtained using the function 
+#' \code{getStrandFromBamFile}.
 #' @param save if TRUE, then the plot will be save into the file given by 
 #' \code{file} parameter
 #' @param file the file name to save to plot

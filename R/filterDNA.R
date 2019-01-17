@@ -1,23 +1,23 @@
-#' @title Filter Double Strand Sequences from a Bam File
+#' @title Filter reads comming from double strand sequences from a bam File
 #' @description Filter putative double strand DNA from a strand specific RNA-seq
 #' using a window sliding across the genome.
 #' @param file the input bam file to be filterd. Your bamfile should be sorted
 #' and have an index file located at the same path.
-#' @param destination The file path where the filtered output will be written
+#' @param destination the file path where the filtered output will be written
 #' @param statFile the file to write the summary of the results
-#' @param sequences the list of sequences to be filtered. 
+#' @param sequences the list of sequences to be filtered 
 #' @param mapqFilter every read that has mapping quality below \code{mapqFilter}
-#' will be removed before any analysis
+#' will be removed before any analysis.
 #' If missing, the entire bam file will be read.
-#' @param paired if TRUE then the input bamfile will be considered as paired end
+#' @param paired if TRUE then the input bamfile will be considered as paired-end
 #' reads. If missing, 100 thousands first reads will be inspected to test if
-#' the input bam file in paired end or single end.
+#' the input bam file in paired-end or single-end.
 #' @param yieldSize by default is 1e6, i.e. the bam file is read by block of
-#' records whose size is defined by this parameter. It is used to pass to same
+#' reads whose size is defined by this parameter. It is used to pass to same
 #' parameter of the scanBam function.
 #' @param winWidth the length of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
-#' @param readProp A read is considered to be included in a window if at least 
+#' @param readProp a read is considered to be included in a window if at least 
 #' \code{readProp} of it is in the window. Specified as a proportion.
 #' 0.5 by default.
 #' @param threshold the strand proportion threshold to test whether to keep a 

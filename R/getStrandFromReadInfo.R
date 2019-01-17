@@ -3,7 +3,7 @@
 #' read information obtained from \code{\link{scanBam}} function
 #' @param readInfo a list contains read information returned by 
 #' \code{\link{scanBam}} function when read a bam file.
-#' @param winWidth the width of the sliding window, 1000 by default.
+#' @param winWidth the length of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
 #' @param readProp A read is considered to be included in a window if at least
 #' \code{readProp} of it is in the window. Specified as a proportion.

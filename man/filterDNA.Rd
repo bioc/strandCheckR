@@ -2,7 +2,7 @@
 % Please edit documentation in R/filterDNA.R
 \name{filterDNA}
 \alias{filterDNA}
-\title{Filter Double Strand Sequences from a Bam File}
+\title{Filter reads comming from double strand sequences from a bam File}
 \usage{
 filterDNA(file, destination, statFile, sequences, mapqFilter = 0, paired,
   yieldSize = 1e+06, winWidth = 1000L, winStep = 100L,
@@ -14,29 +14,29 @@ filterDNA(file, destination, statFile, sequences, mapqFilter = 0, paired,
 \item{file}{the input bam file to be filterd. Your bamfile should be sorted
 and have an index file located at the same path.}
 
-\item{destination}{The file path where the filtered output will be written}
+\item{destination}{the file path where the filtered output will be written}
 
 \item{statFile}{the file to write the summary of the results}
 
-\item{sequences}{the list of sequences to be filtered.}
+\item{sequences}{the list of sequences to be filtered}
 
 \item{mapqFilter}{every read that has mapping quality below \code{mapqFilter}
-will be removed before any analysis
+will be removed before any analysis.
 If missing, the entire bam file will be read.}
 
-\item{paired}{if TRUE then the input bamfile will be considered as paired end
+\item{paired}{if TRUE then the input bamfile will be considered as paired-end
 reads. If missing, 100 thousands first reads will be inspected to test if
-the input bam file in paired end or single end.}
+the input bam file in paired-end or single-end.}
 
 \item{yieldSize}{by default is 1e6, i.e. the bam file is read by block of
-records whose size is defined by this parameter. It is used to pass to same
+reads whose size is defined by this parameter. It is used to pass to same
 parameter of the scanBam function.}
 
 \item{winWidth}{the length of the sliding window, 1000 by default.}
 
 \item{winStep}{the step length to sliding the window, 100 by default.}
 
-\item{readProp}{A read is considered to be included in a window if at least 
+\item{readProp}{a read is considered to be included in a window if at least 
 \code{readProp} of it is in the window. Specified as a proportion.
 0.5 by default.}
 

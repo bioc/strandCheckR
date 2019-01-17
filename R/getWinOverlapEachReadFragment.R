@@ -1,6 +1,6 @@
-#' @title Get the window ranges of each read fragment
+#' @title Get the window ranges that overlap each read fragment
 #' 
-#' @description Calculate the windows that contain each read fragment
+#' @description Calculate the window ranges that overlap each read fragment
 #' 
 #' @param readInfo a list contains the read information 
 #' @param strand the considering strand

@@ -15,7 +15,7 @@ must be kept by the filtering method \code{filterDNA}.}
 \item{seqInfo}{a data frame that contains some key information of the 
 sequences}
 
-\item{winWidth}{the width of the sliding window, 1000 by default.}
+\item{winWidth}{the length of the sliding window, 1000 by default.}
 
 \item{winStep}{the step length to sliding the window, 100 by default.}
 
@@ -24,7 +24,7 @@ sequences}
 }
 \value{
 A list of two logical vectors (for positive and negative strand) 
-defining which windows that overlap the given Granges object.
+defining which windows that overlap with the given GRanges object.
 }
 \description{
 Get the sliding windows that overlap a GRanges object.
@@ -38,9 +38,9 @@ filtering method \code{filterDNA}.
 This method makes use of the method \code{getWinOverlapEachIRange} by 
 pretending each given range as the range of a read. Since the widths of 
 \code{x} are not necessarily the same (as normal read lengths), we
-use \code{nbOverlapBases} to specify the number of bases a window should 
-overlap with a range of \code{x}, instead of using proprotion as 
-\code{readProp} in \code{getWinOverlapEachIRange}.
+use \code{nbOverlapBases} to specify the minimum number of bases that a 
+window should overlap with a range of \code{x}, instead of using proprotion 
+as \code{readProp} in \code{getWinOverlapEachIRange}.
 }
 \examples{
 library(GenomicRanges)

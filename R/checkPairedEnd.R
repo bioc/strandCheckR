@@ -1,6 +1,6 @@
-#' @title Test whether a bam file if single end or paired end
+#' @title Test whether a bam file is single-end or paired-end
 #' @description Check the first 100000 first reads of the bam file to see 
-#' whether it is single end or paired end 
+#' whether it is single-end or paired-end 
 #' @param file the input bam file. Your bamfile should be sorted and have an 
 #' index file located at the same path as well.
 #' @param yieldSize the number of reads to be checked, 100000 by default.

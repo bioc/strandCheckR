@@ -24,7 +24,7 @@ the supplied vector matches this specification.}
 \code{mapqFilter} will be removed before any analysis.}
 
 \item{yieldSize}{by default is 1e6, i.e. the bam file is read by block of
-records whose size is defined by this parameter. It is used to pass to same
+reads whose size is defined by this parameter. It is used to pass to same
 parameter of the scanBam function.}
 
 \item{winWidth}{the width of the sliding window, 1000 by default.}
@@ -35,9 +35,9 @@ parameter of the scanBam function.}
 \code{readProp} of it is in the window. Specified as a proportion.
 0.5 by default.}
 
-\item{paired}{if TRUE then the input bamfile will be considered as paired 
-end reads. If missing, 100 thousands first reads will be inspected to test 
-if the input bam file in paired end or single end.}
+\item{paired}{if TRUE then the input bamfile will be considered as 
+paired-end reads. If missing, 100 thousands first reads will be inspected to 
+test if the input bam file in paired-end or single-end.}
 }
 \value{
 a DataFrame object containing the number of positive/negative reads 
@@ -65,8 +65,8 @@ MaxCoverage: the maximum coverage within the sliding window.
 File: the name of the input file.
 }
 \description{
-Get the number of positive/negative reads of all windows from 
-bam files
+Get the number of positive/negative reads/coverage of all 
+slding windows from the bam input files
 }
 \details{
 This function moves along the specified chromosomes (i.e. sequences) using a

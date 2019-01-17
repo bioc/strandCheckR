@@ -10,7 +10,8 @@ plotHist(windows, save = FALSE, file = "hist.pdf", groupBy = NULL,
 }
 \arguments{
 \item{windows}{data frame containing the strand information of the sliding 
-windows. Windows can be obtained using the function \code{getStrandFromBamFile}.}
+windows. Windows can be obtained using the function 
+\code{getStrandFromBamFile}.}
 
 \item{save}{if TRUE, then the plot will be save into the file given by 
 \code{file} parameter}
@@ -44,7 +45,7 @@ If \code{heatmap=FALSE}: a ggplot object
 }
 \description{
 Plot the histogram of positive proportions of the input 
-histogram data frame
+data frame coming from \code{getStrandFromBamFile}
 }
 \examples{
 bamfilein = system.file('extdata','s1.sorted.bam',package = 'strandCheckR')

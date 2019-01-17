@@ -1,7 +1,7 @@
 #' @title Get the strand information of all windows from bam files
 #' 
-#' @description Get the number of positive/negative reads of all windows from 
-#' bam files
+#' @description Get the number of positive/negative reads/coverage of all 
+#' slding windows from the bam input files
 #' 
 #' @param files the input bam files. Your bamfiles should be sorted and have 
 #' their index files located at the same path.
@@ -15,16 +15,16 @@
 #' @param mapqFilter every read that has mapping quality below 
 #' \code{mapqFilter} will be removed before any analysis.
 #' @param yieldSize by default is 1e6, i.e. the bam file is read by block of
-#' records whose size is defined by this parameter. It is used to pass to same
+#' reads whose size is defined by this parameter. It is used to pass to same
 #' parameter of the scanBam function.
 #' @param winWidth the width of the sliding window, 1000 by default.
 #' @param winStep the step length to sliding the window, 100 by default.
 #' @param readProp A read is considered to be included in a window if at least
 #' \code{readProp} of it is in the window. Specified as a proportion.
 #' 0.5 by default.
-#' @param paired if TRUE then the input bamfile will be considered as paired 
-#' end reads. If missing, 100 thousands first reads will be inspected to test 
-#' if the input bam file in paired end or single end.
+#' @param paired if TRUE then the input bamfile will be considered as 
+#' paired-end reads. If missing, 100 thousands first reads will be inspected to 
+#' test if the input bam file in paired-end or single-end.
 #' 
 #' @details
 #' This function moves along the specified chromosomes (i.e. sequences) using a

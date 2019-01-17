@@ -2,7 +2,7 @@
 % Please edit documentation in R/checkPairedEnd.R
 \name{checkPairedEnd}
 \alias{checkPairedEnd}
-\title{Test whether a bam file if single end or paired end}
+\title{Test whether a bam file is single-end or paired-end}
 \usage{
 checkPairedEnd(file, yieldSize = 1e+05)
 }
@@ -18,7 +18,7 @@ single end
 }
 \description{
 Check the first 100000 first reads of the bam file to see 
-whether it is single end or paired end
+whether it is single-end or paired-end
 }
 \examples{
 file <- system.file('extdata','s1.sorted.bam',package = 'strandCheckR')

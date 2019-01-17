@@ -2,7 +2,7 @@
 % Please edit documentation in R/getWinOverlapEachReadFragment.R
 \name{getWinOverlapEachReadFragment}
 \alias{getWinOverlapEachReadFragment}
-\title{Get the window ranges of each read fragment}
+\title{Get the window ranges that overlap each read fragment}
 \usage{
 getWinOverlapEachReadFragment(readInfo, strand, winWidth, winStep,
   readProp, useCoverage = FALSE, subset = NULL)
@@ -31,7 +31,7 @@ later IRanges object, the second one is an integer-Rle object which contains
 the coverage of the input \code{readInfo}
 }
 \description{
-Calculate the windows that contain each read fragment
+Calculate the window ranges that overlap each read fragment
 }
 \examples{
 library(Rsamtools)

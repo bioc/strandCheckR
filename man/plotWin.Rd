@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotWin.R
 \name{plotWin}
 \alias{plotWin}
-\title{Plot the Proportion of + Stranded Reads}
+\title{Plot the number of reads vs the proportion of '+' stranded reads.}
 \usage{
 plotWin(windows, split = c(10, 100, 1000), threshold = c(0.6, 0.7, 0.8,
   0.9), save = FALSE, file = "win.pdf", groupBy = NULL,
@@ -41,7 +41,7 @@ The plot will be returned as a standard ggplot2 object
 }
 \description{
 Plot the number of reads vs the proportion of '+'
-stranded reads.
+stranded reads of all windows from the input data frame.
 }
 \details{
 This function will plot the proportion of '+' stranded reads for 
