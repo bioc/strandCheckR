@@ -23,7 +23,7 @@
 #' @examples
 #' library(IRanges)
 #' x <- IRanges(start=round(runif(100,1000,10000)),width=100)
-#' getWinIdOverlapIRange(x)
+#' getWinIdOverlapIRanges(x)
 #' 
 getWinIdOverlapIRanges <- function(
     x, winWidth = 1000L, winStep = 100L, readProp = 0.5, maxWin = Inf
