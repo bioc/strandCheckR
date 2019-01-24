@@ -29,7 +29,7 @@ Quick Usage Guide
 
 Following are the main functions of the package.
 
--   `getWinFromBamFile()`
+-   `getStrandFromBamFile()`
 
 To get the number of +/- stranded reads of all sliding windows across a bam file:
 
