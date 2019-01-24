@@ -33,9 +33,8 @@ highest number of reads) through the whole genome and not only feature regions.
 The window read count function is designed flexibly so that user can filter
 low mapping quality reads, set read proportion to overlap a window, set window 
 length & step etc. It was also implemented in an efficient way to manange big
-bam file. In a typical example of a human RNA-seq bam file of more than *4Gb*, 
-it takes about *3* minutes to scan the whole file and return a Data Frame of 
-about than *1.5Gb*.
+bam file. For a typical human RNA-seq bam file, it takes about 3 minutes to 
+scan and get strand information using a standard laptop 2,3 GHz i5 16 GB.
 
 A function to filter out reads coming from double strand DNA is also provided.
 For each sliding window, it considers the proportion of +/- stranded reads 
