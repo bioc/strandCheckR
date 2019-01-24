@@ -68,7 +68,7 @@ Fig.3 shows the differences in strand proportion before and after filtering DNA 
 ``strandCheckR`` is an R package which make uses of several functions from core Bioconductor packages such as ``GenomicAlignments``, ``GenomicRanges``  [@Lawrence2013], and ``Rsamtools`` [@Morgan2018].
 The window read count function is designed flexibly so that user can filter low  mapping quality reads, set the minimum proportion required for a read to overlap and be included in a window, define window length & step size etc. 
 It has also been implemented in an efficient way to manage large bam files. 
-For a human RNA-seq bam file of ~4Gb, it takes less than 3 minutes to scan the whole file and return a Data Frame of about 1.5Gb. 
+For a typical human RNA-seq bam file, it takes about 3 minutes to scan and get strand information using a standard laptop 2,3 GHz i5 16 GB.
 The package can be installed via Bioconductor repository https://bioconductor.org/packages/strandCheckR and is also available on github http://github.com/UofABioinformaticsHub/strandCheckR.
 
 
