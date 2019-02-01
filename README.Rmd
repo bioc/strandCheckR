@@ -79,7 +79,7 @@ windows.
 ```{r plotHist, message=FALSE}
 plotHist(
         windows = win, 
-        groupBy = c("File", "OverlapTranscript"), 
+        groupBy = "File", 
         normalizeBy = "File", 
         scales = "free_y"
         )

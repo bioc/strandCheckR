@@ -83,7 +83,7 @@ The histogram plot shows you the proportion of +/- stranded reads across all win
 ``` r
 plotHist(
         windows = win, 
-        groupBy = c("File", "OverlapTranscript"), 
+        groupBy = "File", 
         normalizeBy = "File", 
         scales = "free_y"
         )
