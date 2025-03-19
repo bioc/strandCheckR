@@ -159,3 +159,10 @@ methodology
 file.remove("s2.filtered.bam", "s2.filtered.bam.bai", "out.stat")
 ```
 
+
+## Session Info
+
+```{r sessio-info, echo = FALSE}
+sessionInfo()
+```
+
