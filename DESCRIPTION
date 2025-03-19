@@ -1,10 +1,14 @@
 Package: strandCheckR
 Type: Package
 Title: Calculate strandness information of a bam file
-Version: 1.25.0
+Version: 1.25.1
 Authors@R: c(
-    person("Thu-Hien", "To", , "tothuhien@gmail.com", c("aut", "cre")),
-    person("Steve", "Pederson", , "stephen.pederson@adelaide.edu.au", c("aut"))
+    person("Thu-Hien", "To", email = "tothuhien@gmail.com", role = c("aut", "cre")),
+    person(
+        "Stevie", "Pederson", 
+        email = "stephen.pederson.au@gmail.com", role = c("aut"),
+        comment = c(ORCID = "0000-0001-8197-3303")
+        )
     )
 Maintainer: Thu-Hien To <tothuhien@gmail.com>
 Description: This package aims to quantify and remove putative double strand DNA from a strand-specific RNA sample. There are also options and methods to plot the positive/negative proportions of all sliding windows, which allow users to have an idea of how much the sample was contaminated and the appropriate threshold to be used for filtering.
@@ -13,26 +17,32 @@ BugReports: https://github.com/UofABioinformaticsHub/strandCheckR/issues
 License: GPL (>= 2)
 LazyData: TRUE
 Encoding: UTF-8
+Depends:
+  ggplot2 (>= 3.5.0),
+  Rsamtools,
+  S4Vectors
 Imports:
+  BiocGenerics,
   dplyr,
-  magrittr,
   GenomeInfoDb,
   GenomicAlignments,
   GenomicRanges,
-  IRanges,
-  Rsamtools,
-  S4Vectors,
-  grid,
-  BiocGenerics,
-  ggplot2,
-  reshape2,
-  stats, 
   gridExtra,
-  TxDb.Hsapiens.UCSC.hg38.knownGene,
+  IRanges,
+  grid,
   methods,
+  reshape2,
+  rlang,
+  stats, 
   stringr,
-  rmarkdown
+  TxDb.Hsapiens.UCSC.hg38.knownGene,
+  tidyselect
 biocViews: RNASeq, Alignment, QualityControl, Coverage, ImmunoOncology
-RoxygenNote: 6.1.1
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
-Suggests: BiocStyle, knitr, testthat
+Suggests: 
+  BiocStyle, 
+  knitr, 
+  magrittr,
+  rmarkdown,
+  testthat 

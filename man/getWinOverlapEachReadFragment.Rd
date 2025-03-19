@@ -4,8 +4,15 @@
 \alias{getWinOverlapEachReadFragment}
 \title{Get the window ranges that overlap each read fragment}
 \usage{
-getWinOverlapEachReadFragment(readInfo, strand, winWidth, winStep,
-  readProp, useCoverage = FALSE, subset = NULL)
+getWinOverlapEachReadFragment(
+  readInfo,
+  strand,
+  winWidth,
+  winStep,
+  readProp,
+  useCoverage = FALSE,
+  subset = NULL
+)
 }
 \arguments{
 \item{readInfo}{a list contains the read information}
@@ -16,7 +23,7 @@ getWinOverlapEachReadFragment(readInfo, strand, winWidth, winStep,
 
 \item{winStep}{the step length to sliding the window, 100 by default.}
 
-\item{readProp}{a read fragment is considered to be included in a window if 
+\item{readProp}{a read fragment is considered to be included in a window if
 and only if at least \code{readProp} percent of it is in the window.}
 
 \item{useCoverage}{either base on coverage or number of reads}
@@ -24,10 +31,10 @@ and only if at least \code{readProp} percent of it is in the window.}
 \item{subset}{if we consider only a subset of the input reads}
 }
 \value{
-If \code{useCoverage=FALSE}: an IRanges object which contains the 
-range of sliding windows that overlap each read fragment. 
-If \code{useCoverage=TRUE}: a list of two objects, the first one is the 
-later IRanges object, the second one is an integer-Rle object which contains 
+If \code{useCoverage=FALSE}: an IRanges object which contains the
+range of sliding windows that overlap each read fragment.
+If \code{useCoverage=TRUE}: a list of two objects, the first one is the
+later IRanges object, the second one is an integer-Rle object which contains
 the coverage of the input \code{readInfo}
 }
 \description{
@@ -36,7 +43,8 @@ Calculate the window ranges that overlap each read fragment
 \examples{
 library(Rsamtools)
 file <- system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
-readInfo <- scanBam(file, param = 
+readInfo <- scanBam(file, param =
 ScanBamParam(what = c("pos","cigar","strand")))
 getWinOverlapEachReadFragment(readInfo[[1]],"+",1000,100,0.5)
+
 }

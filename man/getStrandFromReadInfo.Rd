@@ -4,11 +4,16 @@
 \alias{getStrandFromReadInfo}
 \title{Get the strand information of all windows from read information}
 \usage{
-getStrandFromReadInfo(readInfo, winWidth = 1000L, winStep = 100L,
-  readProp = 0.5, subset = NULL)
+getStrandFromReadInfo(
+  readInfo,
+  winWidth = 1000L,
+  winStep = 100L,
+  readProp = 0.5,
+  subset = NULL
+)
 }
 \arguments{
-\item{readInfo}{a list contains read information returned by 
+\item{readInfo}{a list contains read information returned by
 \code{\link{scanBam}} function when read a bam file.}
 
 \item{winWidth}{the length of the sliding window, 1000 by default.}
@@ -22,17 +27,17 @@ getStrandFromReadInfo(readInfo, winWidth = 1000L, winStep = 100L,
 \item{subset}{an integer vector specifying the subset of reads to consider}
 }
 \value{
-a DataFrame object containing the number of positive/negative reads 
+a DataFrame object containing the number of positive/negative reads
 and coverage of each window sliding .
 }
 \description{
-Get the number of positive/negative reads of all windows from 
+Get the number of positive/negative reads of all windows from
 read information obtained from \code{\link{scanBam}} function
 }
 \examples{
 library(Rsamtools)
 file <- system.file('extdata','s2.sorted.bam',package = 'strandCheckR')
-readInfo <- scanBam(file, param = 
+readInfo <- scanBam(file, param =
 ScanBamParam(what = c("pos","cigar","strand")))
 getStrandFromReadInfo(readInfo[[1]],1000,100,0.5)
 

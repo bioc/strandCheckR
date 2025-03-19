@@ -4,9 +4,9 @@ author:
 -   name: Thu-Hien To
     affiliation: Bioinformatics Hub, University of Adelaide
     email: hien.to@adelaide.edu.au
--   name: Steve Pederson
-    affiliation: Bioinformatics Hub, University of Adelaide
-    email: stephen.pederson@adelaide.edu.au
+-   name: Stevie Pederson
+    affiliation: Black Ochre Data Labs, The Kids Research Institute Australia
+    email: stephen.pederson.au@gmail.com
 package: strandCheckR
 output:
     BiocStyle::html_document

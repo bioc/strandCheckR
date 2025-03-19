@@ -4,23 +4,30 @@
 \alias{getStrandFromBamFile}
 \title{Get the strand information of all windows from bam files}
 \usage{
-getStrandFromBamFile(files, sequences, mapqFilter = 0,
-  yieldSize = 1e+06, winWidth = 1000L, winStep = 100L,
-  readProp = 0.5, paired)
+getStrandFromBamFile(
+  files,
+  sequences,
+  mapqFilter = 0,
+  yieldSize = 1e+06,
+  winWidth = 1000L,
+  winStep = 100L,
+  readProp = 0.5,
+  paired
+)
 }
 \arguments{
-\item{files}{the input bam files. Your bamfiles should be sorted and have 
+\item{files}{the input bam files. Your bamfiles should be sorted and have
 their index files located at the same path.}
 
-\item{sequences}{character vector used to restrict analysed alignments to a 
-subset of chromosomes (i.e. sequences) within the provided bam file. 
-These correspond to chromosomes/scaffolds of the reference genome to which 
+\item{sequences}{character vector used to restrict analysed alignments to a
+subset of chromosomes (i.e. sequences) within the provided bam file.
+These correspond to chromosomes/scaffolds of the reference genome to which
 the reads were mapped. If absent, the whole bam file will be read.
 NB: This must match the chromosomes as defined in your reference genome.
-If the reference chromosomes were specified using the 'chr' prefix, ensure 
+If the reference chromosomes were specified using the 'chr' prefix, ensure
 the supplied vector matches this specification.}
 
-\item{mapqFilter}{every read that has mapping quality below 
+\item{mapqFilter}{every read that has mapping quality below
 \code{mapqFilter} will be removed before any analysis.}
 
 \item{yieldSize}{by default is 1e6, i.e. the bam file is read by block of
@@ -35,12 +42,12 @@ parameter of the scanBam function.}
 \code{readProp} of it is in the window. Specified as a proportion.
 0.5 by default.}
 
-\item{paired}{if TRUE then the input bamfile will be considered as 
-paired-end reads. If missing, 100 thousands first reads will be inspected to 
+\item{paired}{if TRUE then the input bamfile will be considered as
+paired-end reads. If missing, 100 thousands first reads will be inspected to
 test if the input bam file in paired-end or single-end.}
 }
 \value{
-a DataFrame object containing the number of positive/negative reads 
+a DataFrame object containing the number of positive/negative reads
 and coverage of each window sliding across the bam file.
 The returned DataFrame has 10 columns:
 
@@ -54,10 +61,10 @@ Start: the start position of the sliding window.
 
 End: the end position of the sliding window.
 
-NbPos/NbNeg: number of positive/negative reads that overlap the sliding 
+NbPos/NbNeg: number of positive/negative reads that overlap the sliding
 window.
 
-CovPos/CovNeg: number of bases coming from positive/negative reads that were 
+CovPos/CovNeg: number of bases coming from positive/negative reads that were
 mapped in the sliding window.
 
 MaxCoverage: the maximum coverage within the sliding window.
@@ -65,17 +72,17 @@ MaxCoverage: the maximum coverage within the sliding window.
 File: the name of the input file.
 }
 \description{
-Get the number of positive/negative reads/coverage of all 
+Get the number of positive/negative reads/coverage of all
 slding windows from the bam input files
 }
 \details{
 This function moves along the specified chromosomes (i.e. sequences) using a
-sliding window approach, and counts the number of reads in each window which 
+sliding window approach, and counts the number of reads in each window which
 align to the +/- strands of the reference genome.
-As well as the number of reads, the total coverage for each strand is also 
+As well as the number of reads, the total coverage for each strand is also
 returned for each window, representing the total number of bases covered.
 
-Average coverage for the entire window can be simply calculated by dividing 
+Average coverage for the entire window can be simply calculated by dividing
 the total coverage by the window size.
 }
 \examples{
@@ -84,6 +91,6 @@ win <- getStrandFromBamFile(file,sequences='10')
 win
 }
 \seealso{
-\code{\link{filterDNA}}, \code{\link{plotHist}}, 
+\code{\link{filterDNA}}, \code{\link{plotHist}},
 \code{\link{plotWin}}
 }

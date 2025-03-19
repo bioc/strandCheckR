@@ -4,38 +4,47 @@
 \alias{plotHist}
 \title{Plot the histogram of positive proportions}
 \usage{
-plotHist(windows, save = FALSE, file = "hist.pdf", groupBy = NULL,
-  normalizeBy = NULL, split = c(10, 100, 1000), breaks = 100,
-  useCoverage = FALSE, heatmap = FALSE, ...)
+plotHist(
+  windows,
+  save = FALSE,
+  file = "hist.pdf",
+  groupBy = NULL,
+  normalizeBy = NULL,
+  split = c(10, 100, 1000),
+  breaks = 100,
+  useCoverage = FALSE,
+  heatmap = FALSE,
+  ...
+)
 }
 \arguments{
-\item{windows}{data frame containing the strand information of the sliding 
-windows. Windows can be obtained using the function 
+\item{windows}{data frame containing the strand information of the sliding
+windows. Windows can be obtained using the function
 \code{getStrandFromBamFile}.}
 
-\item{save}{if TRUE, then the plot will be save into the file given by 
+\item{save}{if TRUE, then the plot will be save into the file given by
 \code{file} parameter}
 
 \item{file}{the file name to save to plot}
 
 \item{groupBy}{the columns that will be used to split the data.}
 
-\item{normalizeBy}{instead of using the raw read count/coverage, we will 
-normalize it to a proportion by dividing it to the total number of read 
-count/coverage of windows that have the same value in the \code{normalizeBy} 
+\item{normalizeBy}{instead of using the raw read count/coverage, we will
+normalize it to a proportion by dividing it to the total number of read
+count/coverage of windows that have the same value in the \code{normalizeBy}
 columns.}
 
-\item{split}{an integer vector that specifies how you want to partition the 
-windows based on the coverage. By default \code{split} = c(10,100,1000), 
-which means that your windows will be partitionned into 4 groups, those have 
+\item{split}{an integer vector that specifies how you want to partition the
+windows based on the coverage. By default \code{split} = c(10,100,1000),
+which means that your windows will be partitionned into 4 groups, those have
 coverage < 10, from 10 to 100, from 100 to 1000, and > 1000}
 
 \item{breaks}{an integer giving the number of bins for the histogram}
 
-\item{useCoverage}{if TRUE then plot the coverage strand information, 
+\item{useCoverage}{if TRUE then plot the coverage strand information,
 otherwise plot the number of reads strand information. FALSE by default}
 
-\item{heatmap}{if TRUE, then use heat map to plot the histogram, otherwise 
+\item{heatmap}{if TRUE, then use heat map to plot the histogram, otherwise
 use barplot. FALSE by default.}
 
 \item{...}{used to pass parameters to facet_wrap}
@@ -44,7 +53,7 @@ use barplot. FALSE by default.}
 If \code{heatmap=FALSE}: a ggplot object
 }
 \description{
-Plot the histogram of positive proportions of the input 
+Plot the histogram of positive proportions of the input
 data frame coming from \code{getStrandFromBamFile}
 }
 \examples{

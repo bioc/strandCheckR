@@ -1,80 +1,75 @@
-#' @title Plot the histogram of positive proportions 
+#' @title Plot the histogram of positive proportions
 #'
-#' @description Plot the histogram of positive proportions of the input 
+#' @description Plot the histogram of positive proportions of the input
 #' data frame coming from \code{getStrandFromBamFile}
 #'
-#' @param windows data frame containing the strand information of the sliding 
-#' windows. Windows can be obtained using the function 
+#' @param windows data frame containing the strand information of the sliding
+#' windows. Windows can be obtained using the function
 #' \code{getStrandFromBamFile}.
-#' @param save if TRUE, then the plot will be save into the file given by 
+#' @param save if TRUE, then the plot will be save into the file given by
 #' \code{file} parameter
 #' @param file the file name to save to plot
-#' @param split an integer vector that specifies how you want to partition the 
-#' windows based on the coverage. By default \code{split} = c(10,100,1000), 
-#' which means that your windows will be partitionned into 4 groups, those have 
+#' @param split an integer vector that specifies how you want to partition the
+#' windows based on the coverage. By default \code{split} = c(10,100,1000),
+#' which means that your windows will be partitionned into 4 groups, those have
 #' coverage < 10, from 10 to 100, from 100 to 1000, and > 1000
 #' @param breaks an integer giving the number of bins for the histogram
-#' @param useCoverage if TRUE then plot the coverage strand information, 
+#' @param useCoverage if TRUE then plot the coverage strand information,
 #' otherwise plot the number of reads strand information. FALSE by default
 #' @param groupBy the columns that will be used to split the data.
-#' @param normalizeBy instead of using the raw read count/coverage, we will 
-#' normalize it to a proportion by dividing it to the total number of read 
-#' count/coverage of windows that have the same value in the \code{normalizeBy} 
+#' @param normalizeBy instead of using the raw read count/coverage, we will
+#' normalize it to a proportion by dividing it to the total number of read
+#' count/coverage of windows that have the same value in the \code{normalizeBy}
 #' columns.
-#' @param heatmap if TRUE, then use heat map to plot the histogram, otherwise 
+#' @param heatmap if TRUE, then use heat map to plot the histogram, otherwise
 #' use barplot. FALSE by default.
 #' @param ... used to pass parameters to facet_wrap
-#' 
+#'
 #' @return If \code{heatmap=FALSE}: a ggplot object
-#' 
+#'
 #' @seealso \code{\link{getStrandFromBamFile}}, \code{\link{plotWin}}
 #'
 #' @examples
 #' bamfilein = system.file('extdata','s1.sorted.bam',package = 'strandCheckR')
 #' win  <- getStrandFromBamFile(file = bamfilein,sequences='10')
 #' plotHist(win)
-#' 
+#'
 #' @importFrom gridExtra grid.arrange
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_bar geom_tile
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 theme_bw theme element_blank
 #' @importFrom grid unit
-#' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 ggsave ggtitle scale_fill_gradient
 #' @importFrom dplyr filter
+#' @importFrom rlang !! sym
 #' @export
 plotHist <- function(
-    windows, save = FALSE, file = "hist.pdf", groupBy = NULL, 
-    normalizeBy = NULL, split = c(10, 100, 1000), breaks = 100, 
-    useCoverage = FALSE, heatmap = FALSE, ...
-    ) 
+        windows, save = FALSE, file = "hist.pdf", groupBy = NULL,
+        normalizeBy = NULL, split = c(10, 100, 1000), breaks = 100,
+        useCoverage = FALSE, heatmap = FALSE, ...
+)
 {
     histWin <- .summarizeHist(
-        windows, split = split, breaks = breaks, useCoverage = useCoverage, 
+        windows, split = split, breaks = breaks, useCoverage = useCoverage,
         groupBy = groupBy, normalizeBy = normalizeBy
-        )
+    )
     # The initial checks for appropriate input
     reqWinCols <- c("PosProp", "ReadCountProp")
     stopifnot(all(reqWinCols %in% colnames(histWin)))
     stopifnot(is.logical(save))
     allows_facet_wrap <- setdiff(colnames(histWin), c(reqWinCols, "Coverage"))
     groupBy <- intersect(groupBy, allows_facet_wrap)
-    
+
     # Make the plot
     if (heatmap == FALSE) {
         g <- ggplot(
-            histWin, aes_string(
-                x = "PosProp", y = "ReadCountProp", fill = "Coverage"
-                )
-            ) + 
-            geom_bar(stat = "identity") + 
+            histWin,
+            aes(
+                x = !!sym("PosProp"), y = !!sym("ReadCountProp"), fill = !!sym("Coverage")
+            )
+        ) +
+            geom_bar(stat = "identity") +
             labs(
-                x = "Proportion of Reads on '+' Strand", 
+                x = "Proportion of Reads on '+' Strand",
                 y = "Proportion of Windows"
-                ) + 
-            theme_bw() + 
+            ) +
+            theme_bw() +
             theme(plot.margin = unit(c(0.02, 0.04, 0.03, 0.02), "npc"))
         if (length(groupBy) > 0) {
             # Get any facet arguments from dotArgs that have been set manually
@@ -103,16 +98,17 @@ plotHist <- function(
         for (i in seq_along(cov)) {
             l <- filter(histWin, Coverage == cov[i])
             g[[i]] <- ggplot(
-                l, aes_string(x = "PosProp", y = "File", fill = "ReadCountProp")
-                ) + 
-                geom_tile() + theme_bw() + 
+                l,
+                aes(x = !!sym("PosProp"), y = !!sym("File"), fill = !!sym("ReadCountProp"))
+            ) +
+                geom_tile() + theme_bw() +
                 theme(
-                    panel.grid.major = element_blank(), 
+                    panel.grid.major = element_blank(),
                     panel.grid.minor = element_blank()
-                    ) + 
+                ) +
                 scale_fill_gradient(
                     low = "white", high = "red", na.value = "white"
-                    )
+                )
             if (length(groupBy) > 0) {
                 g[[i]] <- g[[i]] + myFacets
             }
@@ -122,7 +118,7 @@ plotHist <- function(
         }
         g <- grid.arrange(grobs = g, nrow = length(cov))
     }
-    
+
     if (save == TRUE) {
         message("The plot will be saved to the file ", file)
         dotArgs <- list(...)

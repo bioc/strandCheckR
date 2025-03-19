@@ -4,11 +4,26 @@
 \alias{filterDNA}
 \title{Filter reads comming from double strand sequences from a bam File}
 \usage{
-filterDNA(file, destination, statFile, sequences, mapqFilter = 0, paired,
-  yieldSize = 1e+06, winWidth = 1000L, winStep = 100L,
-  readProp = 0.5, threshold = 0.7, pvalueThreshold = 0.05,
-  useCoverage = FALSE, mustKeepRanges, getWin = FALSE, minCov = 0,
-  maxCov = 0, errorRate = 0.01)
+filterDNA(
+  file,
+  destination,
+  statFile,
+  sequences,
+  mapqFilter = 0,
+  paired,
+  yieldSize = 1e+06,
+  winWidth = 1000L,
+  winStep = 100L,
+  readProp = 0.5,
+  threshold = 0.7,
+  pvalueThreshold = 0.05,
+  useCoverage = FALSE,
+  mustKeepRanges,
+  getWin = FALSE,
+  minCov = 0,
+  maxCov = 0,
+  errorRate = 0.01
+)
 }
 \arguments{
 \item{file}{the input bam file to be filterd. Your bamfile should be sorted
@@ -36,11 +51,11 @@ parameter of the scanBam function.}
 
 \item{winStep}{the step length to sliding the window, 100 by default.}
 
-\item{readProp}{a read is considered to be included in a window if at least 
+\item{readProp}{a read is considered to be included in a window if at least
 \code{readProp} of it is in the window. Specified as a proportion.
 0.5 by default.}
 
-\item{threshold}{the strand proportion threshold to test whether to keep a 
+\item{threshold}{the strand proportion threshold to test whether to keep a
 window or not. 0.7 by default}
 
 \item{pvalueThreshold}{the threshold for the p-value in the test of keeping
@@ -50,7 +65,7 @@ windows. 0.05 by default}
 corresponds to the sum of coverage coming from positive/negative reads;
 and not the number of positive/negative reads as default.}
 
-\item{mustKeepRanges}{a GRanges object; all reads that map to those ranges 
+\item{mustKeepRanges}{a GRanges object; all reads that map to those ranges
 will be kept regardless the strand proportion of the windows containing them.}
 
 \item{getWin}{if TRUE, the function will not only filter the bam file but
@@ -58,21 +73,21 @@ also return a data frame containing the information of all windows of the
 original and filtered bam file.}
 
 \item{minCov}{if \code{useCoverage=FALSE}, every window that has less than
-\code{minCov} reads will be rejected regardless the strand proportion. 
-If \code{useCoverage=TRUE}, every window has max coverage least than 
+\code{minCov} reads will be rejected regardless the strand proportion.
+If \code{useCoverage=TRUE}, every window has max coverage least than
 \code{minCov} will be rejected. 0 by default}
 
 \item{maxCov}{if \code{useCoverage=FALSE}, every window that has more than
-\code{maxCov} reads will be kept regardless the strand proportion. 
-If \code{useCoverage=TRUE}, every window with max coverage more than 
-\code{maxCov} will be kept. 
+\code{maxCov} reads will be kept regardless the strand proportion.
+If \code{useCoverage=TRUE}, every window with max coverage more than
+\code{maxCov} will be kept.
 If 0 then it doesn't have effect on selecting window. 0 by default.}
 
 \item{errorRate}{the probability that an RNA read takes the false strand.
 0.01 by default.}
 }
 \value{
-if \code{getWin} is TRUE: a DataFrame object which could also be 
+if \code{getWin} is TRUE: a DataFrame object which could also be
 obtained by the function \code{getStrandFromBamFile}
 }
 \description{
@@ -85,7 +100,7 @@ filter reads coming from putative double strand DNA.
 Using a window sliding across the genome, we calculate the positive/negative
 proportion of reads in each window.
 We then use logistic regression to estimate the strand proportion of reads in
-each window, and calculate the p-value when comparing that to a given 
+each window, and calculate the p-value when comparing that to a given
 threshold.
 Let \eqn{\pi} be the strand proportion of reads in a window.
 
@@ -94,18 +109,18 @@ Null hypothesis for positive window: \eqn{\pi \le threshold}.
 Null hypothesis for negative window: \eqn{\pi \ge 1-threshold}.
 
 Only windows with p-value <= \code{pvalueThreshold} are kept. For a kept
-positive window, each positive read in this window is kept with the 
-probability (P-M)/P where P be the number of positive reads, and M be the 
-number of negative reads. That is because those M negative reads are 
-supposed to come from double-strand DNA, then there should be also M 
-postive reads among the P positive reads come from double-strand DNA. In 
-other words, there are only (P-M) positive reads come from RNA. Each 
-negative read is kept with the probability equalling the rate that an RNA 
-read of your sample has wrong strand, which  is \code{errorRate}. 
+positive window, each positive read in this window is kept with the
+probability (P-M)/P where P be the number of positive reads, and M be the
+number of negative reads. That is because those M negative reads are
+supposed to come from double-strand DNA, then there should be also M
+postive reads among the P positive reads come from double-strand DNA. In
+other words, there are only (P-M) positive reads come from RNA. Each
+negative read is kept with the probability equalling the rate that an RNA
+read of your sample has wrong strand, which  is \code{errorRate}.
 Similar for kept negative windows.
 
-Since each alignment can be belonged to several windows, then the 
-probability of keeping an alignment is the maximum probability defined by 
+Since each alignment can be belonged to several windows, then the
+probability of keeping an alignment is the maximum probability defined by
 all windows that contain it.
 }
 \examples{
@@ -114,6 +129,6 @@ filterDNA(file,sequences='10',destination='out.bam')
 
 }
 \seealso{
-\code{\link{getStrandFromBamFile}}, \code{\link{plotHist}}, 
+\code{\link{getStrandFromBamFile}}, \code{\link{plotHist}},
 \code{\link{plotWin}}
 }
