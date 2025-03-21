@@ -91,7 +91,7 @@
 #'
 #' @export
 filterDNA <- function(
-    file, destination, statFile, sequences, mapqFilter = 0, paired,
+    file, destination, statFile = "out.stat", sequences, mapqFilter = 0, paired,
     yieldSize = 1e+06, winWidth = 1000L, winStep = 100L, readProp = 0.5,
     threshold = 0.7, pvalueThreshold = 0.05, useCoverage = FALSE,
     mustKeepRanges, getWin = FALSE, minCov = 0, maxCov = 0, errorRate = 0.01
@@ -153,13 +153,12 @@ filterDNA <- function(
 
 
     # Define the file to write the summary of the results
-    if (missing(statFile)) {
-        statFile <- "out.stat"
-    } else {
+    writeStats <- !is.null(statFile)
+    if (writeStats) {
         stopifnot(file.exists(dirname(statFile)))
+        message("Summary will be written to ", statFile)
+        file.create(statFile)
     }
-    message("Summary will be written to ", statFile)
-    file.create(statFile)
 
     # Get the sequence list of the ranges which must be kept
     if (!missing(mustKeepRanges)) {
@@ -337,11 +336,14 @@ filterDNA <- function(
             rm(readInfo)
             toKeepRecords[[partName]] <- rep(FALSE, sum(seqInfo$NbReads[idP]))
             toKeepRecords[[partName]][keptRecords] <- TRUE
-            cat(
-                "Sequences ",readSeq,", number of reads: ",
-                sum(seqInfo$NbReads[idP]),", number of kept reads: ",
-                length(keptRecords),"\n", file = statFile, append = TRUE
+            if (writeStats) {
+                cat(
+                    "Sequences: ", paste(readSeq, collapse = ","),
+                    "\nNumber of reads: ",
+                    sum(seqInfo$NbReads[idP]),"\nNumber of kept reads: ",
+                    length(keptRecords),"\n", file = statFile, append = TRUE
                 )
+            }
             rm(keptRecords)
         }
     }
@@ -363,19 +365,22 @@ filterDNA <- function(
                 )
             )
         )
-    cat("Summary:\n", file = statFile, append = TRUE)
     nbKepReads <- vapply(toKeepRecords,sum,integer(1))
-    cat(
-        "Number of original reads: ", sum(seqInfo$NbReads),
-        ", number of kept reads: ", sum(nbKepReads), ", removal proportion: ",
-        (sum(seqInfo$NbReads) - sum(nbKepReads))/sum(seqInfo$NbReads), "\n",
-        file = statFile, append = TRUE
+    if (writeStats) {
+        cat("Summary:\n", file = statFile, append = TRUE)
+        cat(
+            "Number of original reads: ", sum(seqInfo$NbReads),
+            "\nNumber of kept reads: ", sum(nbKepReads),
+            "\nRemoval proportion: ",
+            (sum(seqInfo$NbReads) - sum(nbKepReads))/sum(seqInfo$NbReads), "\n",
+            file = statFile, append = TRUE
         )
-    endTime <- proc.time()
-    cat(
-        "Total elapsed time: ", (endTime - startTime)[[3]]/60, " minutes\n",
-        file = statFile, append = TRUE
+        endTime <- proc.time()
+        cat(
+            "Total elapsed time: ", (endTime - startTime)[[3]]/60, " minutes\n",
+            file = statFile, append = TRUE
         )
+    }
     if (getWin) {
         allWin <- do.call(rbind, allWin)
         allWin$Start <- (allWin$Start - 1) * winStep + 1
