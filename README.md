@@ -173,7 +173,7 @@ at <https://github.com/UofABioinformaticsHub/strandCheckR/issues>
 
 - *Thu-Hien To* authored the vast majority of code within the package
   along with unit tests
-- *Thu-Hien To* and *Stephen Pederson* worked closely together on the
+- *Thu-Hien To* and *Stevie Pederson* worked closely together on the
   package design and methodology
 
 ## License
