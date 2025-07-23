@@ -1,7 +1,7 @@
 Package: strandCheckR
 Type: Package
 Title: Calculate strandness information of a bam file
-Version: 1.27.0
+Version: 1.27.1
 Authors@R: c(
     person("Thu-Hien", "To", email = "tothuhien@gmail.com", role = c("aut", "cre")),
     person(
@@ -24,7 +24,7 @@ Depends:
 Imports:
   BiocGenerics,
   dplyr,
-  GenomeInfoDb,
+  Seqinfo,
   GenomicAlignments,
   GenomicRanges,
   gridExtra,
