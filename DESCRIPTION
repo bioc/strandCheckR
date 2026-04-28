@@ -1,7 +1,7 @@
 Package: strandCheckR
 Type: Package
 Title: Calculate strandness information of a bam file
-Version: 1.30.0
+Version: 1.31.0
 Authors@R: c(
     person("Thu-Hien", "To", email = "tothuhien@gmail.com", role = c("aut", "cre")),
     person(
